@@ -19,19 +19,20 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const user = await getCurrentUser();
+  try {
+    const user = await getCurrentUser();
 
-  // Skip database queries during build with placeholder database
-  if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
-    return (
-      <div className="min-h-screen">
-        <p>Loading...</p>
-      </div>
-    );
-  }
+    // Skip database queries during build with placeholder database
+    if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+      return (
+        <div className="min-h-screen">
+          <p>Loading...</p>
+        </div>
+      );
+    }
 
-  // Get featured content for hero
-  const [featuredContent] = await db
+    // Get featured content for hero
+    const [featuredContent] = await db
     .select({
       id: content.id,
       title: content.title,
@@ -197,4 +198,18 @@ export default async function HomePage() {
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('Homepage error:', error);
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">MovieFlix</h1>
+          <p className="text-muted-foreground mb-4">
+            ระบบกำลังเตรียมพร้อม กรุณารอสักครู่...
+          </p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
 }

@@ -18,20 +18,21 @@ export const metadata: Metadata = {
 };
 
 export default async function MoviesPage() {
-  // Skip database queries during build with placeholder database
-  if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
-    return (
-      <div className="min-h-screen">
-        <div className="container py-12">
-          <h1 className="text-4xl font-bold mb-8">หนัง</h1>
-          <p>Loading...</p>
+  try {
+    // Skip database queries during build with placeholder database
+    if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+      return (
+        <div className="min-h-screen">
+          <div className="container py-12">
+            <h1 className="text-4xl font-bold mb-8">หนัง</h1>
+            <p>Loading...</p>
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  // Get all published movies
-  const movies = await db
+    // Get all published movies
+    const movies = await db
     .select({
       id: content.id,
       title: content.title,
@@ -94,4 +95,17 @@ export default async function MoviesPage() {
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('Movies page error:', error);
+    return (
+      <div className="min-h-screen">
+        <div className="container py-12">
+          <h1 className="text-4xl font-bold mb-8">หนัง</h1>
+          <p className="text-muted-foreground">
+            ระบบกำลังเตรียมพร้อม กรุณารอสักครู่...
+          </p>
+        </div>
+      </div>
+    );
+  }
 }
