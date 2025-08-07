@@ -19,7 +19,8 @@ RUN npm ci && npm cache clean --force
 COPY src ./src
 COPY public ./public
 
-# Build the application
+# Build the application (with placeholder for required env vars)
+ENV DATABASE_URL="placeholder://placeholder"
 RUN npm run build
 
 # Production stage
