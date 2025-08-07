@@ -21,6 +21,19 @@ COPY public ./public
 
 # Build the application (with placeholder for required env vars)
 ENV DATABASE_URL="placeholder://placeholder"
+ENV JWT_SECRET="placeholder-jwt-secret-for-build"
+ENV CLOUDFLARE_R2_ACCOUNT_ID="placeholder"
+ENV CLOUDFLARE_R2_ACCESS_KEY_ID="placeholder"
+ENV CLOUDFLARE_R2_SECRET_ACCESS_KEY="placeholder"
+ENV CLOUDFLARE_R2_BUCKET_NAME="placeholder"
+ENV CLOUDFLARE_R2_PUBLIC_URL="https://placeholder.r2.dev"
+ENV TURNSTILE_SITE_KEY="placeholder"
+ENV TURNSTILE_SECRET_KEY="placeholder"
+ENV REDIS_URL="redis://placeholder:6379/0"
+ENV NODE_ENV="production"
+ENV NEXT_PUBLIC_APP_URL="https://placeholder.com"
+ENV NEXT_PUBLIC_API_URL="https://placeholder.com/api"
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY="placeholder"
 RUN npm run build
 
 # Production stage
