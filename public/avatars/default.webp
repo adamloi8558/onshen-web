@@ -1,0 +1,6 @@
+# This is a placeholder for default avatar
+# In production, you should replace this with an actual WebP image file
+# You can generate one using any image editing tool or online converter
+
+# For now, this serves as a reference that the file should exist at this path
+# The actual binary WebP file should be placed here before deployment

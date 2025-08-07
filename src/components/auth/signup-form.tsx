@@ -1,0 +1,267 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { isValidEmail, isValidPhone } from "@/lib/utils";
+
+const signupSchema = z.object({
+  username: z.string()
+    .min(3, "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร")
+    .max(50, "ชื่อผู้ใช้ต้องมีไม่เกิน 50 ตัวอักษร")
+    .regex(/^[a-zA-Z0-9_]+$/, "ชื่อผู้ใช้สามารถใช้ได้เฉพาะตัวอักษร ตัวเลข และ _"),
+  email: z.string()
+    .min(1, "กรุณาใส่อีเมล")
+    .refine(isValidEmail, "กรุณาใส่อีเมลที่ถูกต้อง"),
+  phone: z.string()
+    .min(1, "กรุณาใส่เบอร์โทรศัพท์")
+    .refine(isValidPhone, "กรุณาใส่เบอร์โทรศัพท์ที่ถูกต้อง"),
+  password: z.string()
+    .min(6, "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร")
+    .max(100, "รหัสผ่านต้องมีไม่เกิน 100 ตัวอักษร"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "รหัสผ่านไม่ตรงกัน",
+  path: ["confirmPassword"],
+});
+
+type SignupFormData = z.infer<typeof signupSchema>;
+
+export default function SignupForm() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const router = useRouter();
+
+  const form = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  // Cloudflare Turnstile callback
+  useEffect(() => {
+    const handleTurnstileSuccess = (event: CustomEvent) => {
+      setTurnstileToken(event.detail);
+    };
+
+    document.addEventListener('turnstileSuccess', handleTurnstileSuccess as EventListener);
+    
+    return () => {
+      document.removeEventListener('turnstileSuccess', handleTurnstileSuccess as EventListener);
+    };
+  }, []);
+
+  const onSubmit = async (data: SignupFormData) => {
+    if (!turnstileToken) {
+      toast.error("กรุณายืนยันว่าคุณไม่ใช่บอท");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+          turnstileToken,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(result.message || "สมัครสมาชิกสำเร็จ");
+        router.push("/");
+        router.refresh();
+      } else {
+        toast.error(result.error || "เกิดข้อผิดพลาด");
+        // Reset Turnstile on error
+        if (typeof window !== 'undefined' && window.turnstile) {
+          window.turnstile.reset();
+          setTurnstileToken("");
+        }
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>ชื่อผู้ใช้</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="ชื่อผู้ใช้ของคุณ"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>อีเมล</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="your@email.com"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>เบอร์โทรศัพท์</FormLabel>
+              <FormControl>
+                <Input
+                  type="tel"
+                  placeholder="08x-xxx-xxxx"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>รหัสผ่าน</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="รหัสผ่านของคุณ"
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>ยืนยันรหัสผ่าน</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="ยืนยันรหัสผ่านของคุณ"
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Cloudflare Turnstile */}
+        <div className="flex justify-center">
+          <div
+            className="cf-turnstile"
+            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+            data-callback="onTurnstileSuccess"
+          ></div>
+        </div>
+
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          สมัครสมาชิก
+        </Button>
+      </form>
+
+      {typeof window !== 'undefined' && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.onTurnstileSuccess = function(token) {
+                document.dispatchEvent(new CustomEvent('turnstileSuccess', { detail: token }));
+              };
+            `,
+          }}
+        />
+      )}
+    </Form>
+  );
+}
