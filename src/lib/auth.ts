@@ -74,6 +74,11 @@ export async function getCurrentUser(): Promise<{
   vip_expires_at: Date | null;
 } | null> {
   try {
+    // Skip during build with placeholder database
+    if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+      return null;
+    }
+
     const cookieStore = cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
 

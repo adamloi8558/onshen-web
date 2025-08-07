@@ -5,6 +5,9 @@ import ContentGrid from "@/components/content-grid";
 import Hero from "@/components/hero";
 import { getCurrentUser } from "@/lib/auth";
 
+// Force dynamic rendering because we use cookies()
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "หน้าแรก",
   description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
@@ -17,6 +20,15 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const user = await getCurrentUser();
+
+  // Skip database queries during build with placeholder database
+  if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+    return (
+      <div className="min-h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   // Get featured content for hero
   const [featuredContent] = await db

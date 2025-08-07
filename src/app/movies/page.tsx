@@ -3,6 +3,9 @@ import { db, content, categories } from "@/lib/db";
 import { desc, eq, and } from "drizzle-orm";
 import ContentGrid from "@/components/content-grid";
 
+// Force dynamic rendering to prevent static optimization
+export const dynamic = 'force-dynamic';
+
 
 export const metadata: Metadata = {
   title: "หนัง",
@@ -15,6 +18,18 @@ export const metadata: Metadata = {
 };
 
 export default async function MoviesPage() {
+  // Skip database queries during build with placeholder database
+  if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+    return (
+      <div className="min-h-screen">
+        <div className="container py-12">
+          <h1 className="text-4xl font-bold mb-8">หนัง</h1>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Get all published movies
   const movies = await db
     .select({
