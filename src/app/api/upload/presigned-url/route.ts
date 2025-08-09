@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const validatedData = presignedUrlSchema.parse(body);
 
     // Validate file type
-    const allowedTypes = process.env.ALLOWED_FILE_TYPES?.split(',') || [];
+    const allowedTypes = ['video/mp4', 'video/webm', 'video/mkv'];
     if (!validateFileType(validatedData.filename, allowedTypes)) {
       return NextResponse.json(
         { error: 'ประเภทไฟล์ไม่ได้รับอนุญาต' },
@@ -62,10 +62,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file size
-    const maxSize = parseFileSize(process.env.MAX_FILE_SIZE || '100MB');
+    const maxSize = parseFileSize('100MB');
     if (validatedData.fileSize > maxSize) {
       return NextResponse.json(
-        { error: `ไฟล์มีขนาดใหญ่เกินไป (สูงสุด ${process.env.MAX_FILE_SIZE})` },
+        { error: 'ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 100MB)' },
         { 
           status: 400,
           headers: rateLimitHeaders,
