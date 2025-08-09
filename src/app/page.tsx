@@ -26,7 +26,12 @@ export default async function HomePage() {
     if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
       return (
         <div className="min-h-screen">
-          <p>Loading...</p>
+          <div className="container py-12">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold mb-4">MovieFlix</h1>
+              <p className="text-muted-foreground">ดูหนังและซีรี่ย์ออนไลน์คุณภาพสูง</p>
+            </div>
+          </div>
         </div>
       );
     }

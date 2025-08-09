@@ -32,7 +32,9 @@ export default async function SavedPage() {
       <div className="min-h-screen">
         <div className="container py-12">
           <h1 className="text-4xl font-bold mb-8">รายการที่บันทึก</h1>
-          <p>Loading...</p>
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">เนื้อหาที่คุณบันทึกไว้</p>
+          </div>
         </div>
       </div>
     );

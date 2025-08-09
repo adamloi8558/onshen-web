@@ -88,7 +88,9 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
       <div className="min-h-screen">
         <div className="container py-12">
           <h1 className="text-4xl font-bold mb-8">ซีรี่ย์</h1>
-          <p>Loading...</p>
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">รายละเอียดซีรี่ย์</p>
+          </div>
         </div>
       </div>
     );

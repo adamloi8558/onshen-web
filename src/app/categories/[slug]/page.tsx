@@ -64,7 +64,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       <div className="min-h-screen">
         <div className="container py-12">
           <h1 className="text-4xl font-bold mb-8">หมวดหมู่</h1>
-          <p>Loading...</p>
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">เนื้อหาในหมวดหมู่นี้</p>
+          </div>
         </div>
       </div>
     );

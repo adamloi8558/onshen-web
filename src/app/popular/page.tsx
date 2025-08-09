@@ -27,17 +27,19 @@ export const metadata: Metadata = {
 export default async function PopularPage({ searchParams }: PopularPageProps) {
   const typeFilter = searchParams.type;
 
-  // Skip database queries during build with placeholder database
-  if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
-    return (
-      <div className="min-h-screen">
-        <div className="container py-12">
-          <h1 className="text-4xl font-bold mb-8">ยอดนิยม</h1>
-          <p>Loading...</p>
+      // Skip database queries during build with placeholder database
+    if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+      return (
+        <div className="min-h-screen">
+          <div className="container py-12">
+            <h1 className="text-4xl font-bold mb-8">ยอดนิยม</h1>
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">เนื้อหายอดนิยมที่คนดูมากที่สุด</p>
+            </div>
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   // Build where clause
   const baseClause = eq(content.status, 'published');

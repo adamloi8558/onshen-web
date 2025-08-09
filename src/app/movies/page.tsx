@@ -25,7 +25,9 @@ export default async function MoviesPage() {
         <div className="min-h-screen">
           <div className="container py-12">
             <h1 className="text-4xl font-bold mb-8">หนัง</h1>
-            <p>Loading...</p>
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">หนังคุณภาพสูงจากทั่วโลก</p>
+            </div>
           </div>
         </div>
       );
