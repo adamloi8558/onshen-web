@@ -6,7 +6,7 @@ import { verifyPassword, setAuthCookie } from '@/lib/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 
 const loginSchema = z.object({
-  email: z.string().email('กรุณาใส่อีเมลที่ถูกต้อง'),
+  phone: z.string().min(1, 'กรุณาใส่เบอร์โทรศัพท์'),
   password: z.string().min(6, 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'),
   turnstileToken: z.string().min(1, 'กรุณายืนยันว่าคุณไม่ใช่บอท'),
 });
@@ -88,12 +88,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find user by email
+    // Find user by phone
     const [user] = await db
       .select({
         id: users.id,
-        username: users.username,
-        email: users.email,
+        phone: users.phone,
         password_hash: users.password_hash,
         role: users.role,
         avatar_url: users.avatar_url,
@@ -103,12 +102,12 @@ export async function POST(request: NextRequest) {
         vip_expires_at: users.vip_expires_at,
       })
       .from(users)
-      .where(eq(users.email, validatedData.email.toLowerCase()))
+      .where(eq(users.phone, validatedData.phone))
       .limit(1);
 
     if (!user) {
       return NextResponse.json(
-        { error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' },
+        { error: 'เบอร์โทรศัพท์หรือรหัสผ่านไม่ถูกต้อง' },
         { 
           status: 401,
           headers: rateLimitHeaders,
@@ -120,7 +119,7 @@ export async function POST(request: NextRequest) {
     const isPasswordValid = await verifyPassword(validatedData.password, user.password_hash);
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' },
+        { error: 'เบอร์โทรศัพท์หรือรหัสผ่านไม่ถูกต้อง' },
         { 
           status: 401,
           headers: rateLimitHeaders,
@@ -140,7 +139,7 @@ export async function POST(request: NextRequest) {
     // Set auth cookie
     await setAuthCookie({
       userId: user.id,
-      email: user.email,
+      phone: user.phone,
       role: user.role,
     });
 
@@ -150,8 +149,7 @@ export async function POST(request: NextRequest) {
       {
         user: {
           id: user.id,
-          username: user.username,
-          email: user.email,
+          phone: user.phone,
           role: user.role,
           avatar_url: user.avatar_url,
           coins: user.coins,

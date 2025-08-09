@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 
 export interface JWTPayload {
   userId: string;
-  email: string;
+  phone: string;
   role: 'user' | 'admin';
   iat?: number;
   exp?: number;
@@ -64,8 +64,7 @@ export async function removeAuthCookie(): Promise<void> {
 
 export async function getCurrentUser(): Promise<{
   id: string;
-  username: string;
-  email: string;
+  phone: string;
   role: 'user' | 'admin';
   avatar_url: string | null;
   coins: number;
@@ -94,8 +93,7 @@ export async function getCurrentUser(): Promise<{
     const [user] = await db
       .select({
         id: users.id,
-        username: users.username,
-        email: users.email,
+        phone: users.phone,
         role: users.role,
         avatar_url: users.avatar_url,
         coins: users.coins,

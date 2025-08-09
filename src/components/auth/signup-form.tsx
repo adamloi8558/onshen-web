@@ -17,16 +17,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { isValidEmail, isValidPhone } from "@/lib/utils";
+import { isValidPhone } from "@/lib/utils";
 
 const signupSchema = z.object({
-  username: z.string()
-    .min(3, "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร")
-    .max(50, "ชื่อผู้ใช้ต้องมีไม่เกิน 50 ตัวอักษร")
-    .regex(/^[a-zA-Z0-9_]+$/, "ชื่อผู้ใช้สามารถใช้ได้เฉพาะตัวอักษร ตัวเลข และ _"),
-  email: z.string()
-    .min(1, "กรุณาใส่อีเมล")
-    .refine(isValidEmail, "กรุณาใส่อีเมลที่ถูกต้อง"),
   phone: z.string()
     .min(1, "กรุณาใส่เบอร์โทรศัพท์")
     .refine(isValidPhone, "กรุณาใส่เบอร์โทรศัพท์ที่ถูกต้อง"),
@@ -117,41 +110,6 @@ export default function SignupForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>ชื่อผู้ใช้</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="ชื่อผู้ใช้ของคุณ"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>อีเมล</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="your@email.com"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="phone"

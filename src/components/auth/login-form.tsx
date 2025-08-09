@@ -20,7 +20,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 const loginSchema = z.object({
-  email: z.string().email("กรุณาใส่อีเมลที่ถูกต้อง"),
+  phone: z.string().min(1, "กรุณาใส่เบอร์โทรศัพท์"),
   password: z.string().min(6, "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"),
 });
 
@@ -35,7 +35,7 @@ export default function LoginForm() {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      phone: "",
       password: "",
     },
   });
@@ -100,14 +100,14 @@ export default function LoginForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="email"
+          name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>อีเมล</FormLabel>
+              <FormLabel>เบอร์โทรศัพท์</FormLabel>
               <FormControl>
                 <Input
-                  type="email"
-                  placeholder="your@email.com"
+                  type="tel"
+                  placeholder="08x-xxx-xxxx"
                   {...field}
                 />
               </FormControl>

@@ -10,8 +10,6 @@ async function seed() {
     const adminPassword = await hashPassword('admin123456');
     
     await db.insert(users).values({
-      username: 'admin',
-      email: 'admin@movieflix.com',
       phone: '0800000000',
       password_hash: adminPassword,
       avatar_url: '/avatars/default.webp',

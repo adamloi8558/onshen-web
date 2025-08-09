@@ -4,16 +4,9 @@ import { db, users } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { hashPassword, setAuthCookie } from '@/lib/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
-import { isValidEmail, isValidPhone } from '@/lib/utils';
+import { isValidPhone } from '@/lib/utils';
 
 const signupSchema = z.object({
-  username: z.string()
-    .min(3, 'ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร')
-    .max(50, 'ชื่อผู้ใช้ต้องมีไม่เกิน 50 ตัวอักษร')
-    .regex(/^[a-zA-Z0-9_]+$/, 'ชื่อผู้ใช้สามารถใช้ได้เฉพาะตัวอักษร ตัวเลข และ _'),
-  email: z.string()
-    .min(1, 'กรุณาใส่อีเมล')
-    .refine(isValidEmail, 'กรุณาใส่อีเมลที่ถูกต้อง'),
   phone: z.string()
     .min(1, 'กรุณาใส่เบอร์โทรศัพท์')
     .refine(isValidPhone, 'กรุณาใส่เบอร์โทรศัพท์ที่ถูกต้อง'),
@@ -104,33 +97,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if username already exists
-    const [existingUsername] = await db
+    // Check if phone already exists
+    const [existingPhone] = await db
       .select({ id: users.id })
       .from(users)
-      .where(eq(users.username, validatedData.username))
+      .where(eq(users.phone, validatedData.phone))
       .limit(1);
 
-    if (existingUsername) {
+    if (existingPhone) {
       return NextResponse.json(
-        { error: 'ชื่อผู้ใช้นี้ถูกใช้แล้ว' },
-        { 
-          status: 400,
-          headers: rateLimitHeaders,
-        }
-      );
-    }
-
-    // Check if email already exists
-    const [existingEmail] = await db
-      .select({ id: users.id })
-      .from(users)
-      .where(eq(users.email, validatedData.email.toLowerCase()))
-      .limit(1);
-
-    if (existingEmail) {
-      return NextResponse.json(
-        { error: 'อีเมลนี้ถูกใช้แล้ว' },
+        { error: 'เบอร์โทรศัพท์นี้ถูกใช้แล้ว' },
         { 
           status: 400,
           headers: rateLimitHeaders,
@@ -145,8 +121,6 @@ export async function POST(request: NextRequest) {
     const [newUser] = await db
       .insert(users)
       .values({
-        username: validatedData.username,
-        email: validatedData.email.toLowerCase(),
         phone: validatedData.phone,
         password_hash: passwordHash,
         avatar_url: '/avatars/default.webp',
@@ -159,8 +133,7 @@ export async function POST(request: NextRequest) {
       })
       .returning({
         id: users.id,
-        username: users.username,
-        email: users.email,
+        phone: users.phone,
         role: users.role,
         avatar_url: users.avatar_url,
         coins: users.coins,
@@ -172,7 +145,7 @@ export async function POST(request: NextRequest) {
     // Set auth cookie
     await setAuthCookie({
       userId: newUser.id,
-      email: newUser.email,
+      phone: newUser.phone,
       role: newUser.role,
     });
 
@@ -201,15 +174,9 @@ export async function POST(request: NextRequest) {
 
     // Handle database constraint errors
     if (error instanceof Error && error.message.includes('duplicate key')) {
-      if (error.message.includes('username')) {
+      if (error.message.includes('phone')) {
         return NextResponse.json(
-          { error: 'ชื่อผู้ใช้นี้ถูกใช้แล้ว' },
-          { status: 400 }
-        );
-      }
-      if (error.message.includes('email')) {
-        return NextResponse.json(
-          { error: 'อีเมลนี้ถูกใช้แล้ว' },
+          { error: 'เบอร์โทรศัพท์นี้ถูกใช้แล้ว' },
           { status: 400 }
         );
       }

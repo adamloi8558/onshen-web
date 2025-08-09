@@ -11,9 +11,7 @@ export const transactionStatusEnum = pgEnum('transaction_status', ['pending', 'c
 // Users table
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
-  username: text('username').notNull().unique(),
-  email: text('email').notNull().unique(),
-  phone: text('phone').notNull(),
+  phone: text('phone').notNull().unique(),
   password_hash: text('password_hash').notNull(),
   avatar_url: text('avatar_url').default('/avatars/default.webp'),
   role: userRoleEnum('role').default('user').notNull(),
@@ -25,8 +23,7 @@ export const users = pgTable('users', {
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => ({
-  usernameIdx: uniqueIndex('users_username_idx').on(table.username),
-  emailIdx: uniqueIndex('users_email_idx').on(table.email),
+  phoneIdx: uniqueIndex('users_phone_idx').on(table.phone),
 }));
 
 // Categories table
