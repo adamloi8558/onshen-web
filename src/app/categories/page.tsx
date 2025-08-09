@@ -20,19 +20,24 @@ export const metadata: Metadata = {
 };
 
 export default async function CategoriesPage() {
-  // Skip database queries during build with placeholder database
-  if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
-    return (
-      <div className="min-h-screen">
-        <div className="container py-12">
-          <h1 className="text-4xl font-bold mb-8">หมวดหมู่</h1>
-          <div className="text-center py-16">
-            <p className="text-muted-foreground">เลือกดูตามหมวดหมู่ที่คุณสนใจ</p>
+  try {
+    console.log('Categories page: Starting...');
+
+    // Skip database queries during build with placeholder database
+    if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+      return (
+        <div className="min-h-screen">
+          <div className="container py-12">
+            <h1 className="text-4xl font-bold mb-8">หมวดหมู่</h1>
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">เลือกดูตามหมวดหมู่ที่คุณสนใจ</p>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
+
+    console.log('Categories page: About to execute database query');
 
   // Get all categories with content count
   const allCategories = await db
@@ -168,4 +173,23 @@ export default async function CategoriesPage() {
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('Categories page error:', error);
+    return (
+      <div className="min-h-screen">
+        <div className="container py-12">
+          <h1 className="text-4xl font-bold mb-8">หมวดหมู่</h1>
+          <div className="text-center py-16">
+            <h3 className="text-xl font-bold mb-2 text-red-600">เกิดข้อผิดพลาด</h3>
+            <p className="text-muted-foreground">
+              ไม่สามารถโหลดหมวดหมู่ได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Error: {error instanceof Error ? error.message : 'Unknown error'}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }

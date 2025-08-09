@@ -25,9 +25,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PopularPage({ searchParams }: PopularPageProps) {
-  const typeFilter = searchParams.type;
+  try {
+    const typeFilter = searchParams.type;
 
-      // Skip database queries during build with placeholder database
+    // Skip database queries during build with placeholder database
     if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
       return (
         <div className="min-h-screen">
@@ -41,16 +42,20 @@ export default async function PopularPage({ searchParams }: PopularPageProps) {
       );
     }
 
-  // Build where clause
-  const baseClause = eq(content.status, 'published');
-  
-  // Add type filter
-  const whereClause = typeFilter && (typeFilter === 'movie' || typeFilter === 'series')
-    ? and(baseClause, eq(content.type, typeFilter))!
-    : baseClause;
+    console.log('Popular page: Starting query with typeFilter:', typeFilter);
 
-  // Get popular content (sorted by views)
-  const popularContent = await db
+    // Build where clause
+    const baseClause = eq(content.status, 'published');
+    
+    // Add type filter
+    const whereClause = typeFilter && (typeFilter === 'movie' || typeFilter === 'series')
+      ? and(baseClause, eq(content.type, typeFilter))!
+      : baseClause;
+
+    console.log('Popular page: About to execute database query');
+
+    // Get popular content (sorted by views)
+    const popularContent = await db
     .select({
       id: content.id,
       title: content.title,
@@ -76,7 +81,9 @@ export default async function PopularPage({ searchParams }: PopularPageProps) {
     .orderBy(desc(content.views))
     .limit(50);
 
-  return (
+    console.log('Popular page: Query completed, found', popularContent.length, 'items');
+
+    return (
     <div className="min-h-screen">
       <div className="container py-12">
         {/* Header */}
@@ -129,4 +136,23 @@ export default async function PopularPage({ searchParams }: PopularPageProps) {
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('Popular page error:', error);
+    return (
+      <div className="min-h-screen">
+        <div className="container py-12">
+          <h1 className="text-4xl font-bold mb-8">ยอดนิยม</h1>
+          <div className="text-center py-16">
+            <h3 className="text-xl font-bold mb-2 text-red-600">เกิดข้อผิดพลาด</h3>
+            <p className="text-muted-foreground">
+              ไม่สามารถโหลดข้อมูลได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Error: {error instanceof Error ? error.message : 'Unknown error'}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
