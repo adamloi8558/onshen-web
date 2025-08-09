@@ -50,7 +50,7 @@ export default async function ProfilePage() {
                     {user.avatar_url ? (
                       <Image
                         src={user.avatar_url}
-                        alt={user.username}
+                        alt={user.phone}
                         width={80}
                         height={80}
                         className="rounded-full"
@@ -62,8 +62,8 @@ export default async function ProfilePage() {
                     )}
                   </div>
                   <div className="space-y-1">
-                    <h3 className="text-xl font-semibold">{user.username}</h3>
-                    <p className="text-muted-foreground">{user.email}</p>
+                    <h3 className="text-xl font-semibold">{user.phone}</h3>
+                    <p className="text-muted-foreground">สมาชิก {user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'ผู้ใช้ทั่วไป'}</p>
                     {user.is_vip && (
                       <div className="flex items-center gap-1 text-yellow-600">
                         <Crown className="h-4 w-4" />
@@ -75,12 +75,12 @@ export default async function ProfilePage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">ชื่อผู้ใช้</label>
-                    <p className="font-medium">{user.username}</p>
+                    <label className="text-sm font-medium text-muted-foreground">เบอร์โทรศัพท์</label>
+                    <p className="font-medium">{user.phone}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">อีเมล</label>
-                    <p className="font-medium">{user.email}</p>
+                    <label className="text-sm font-medium text-muted-foreground">สถานะ</label>
+                    <p className="font-medium">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'ผู้ใช้ทั่วไป'}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">บทบาท</label>

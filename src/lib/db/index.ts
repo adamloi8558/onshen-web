@@ -20,7 +20,7 @@ const client = isPlaceholderDb
 
 // Create the drizzle instance
 export const db = isPlaceholderDb 
-  ? null as any // This will be properly typed but won't actually run queries during build
+  ? null as unknown as ReturnType<typeof drizzle> // This will be properly typed but won't actually run queries during build
   : drizzle(client!, { 
       schema,
       logger: process.env.NODE_ENV === "development",

@@ -29,8 +29,7 @@ import { toast } from "sonner";
 interface NavbarProps {
   user: {
     id: string;
-    username: string;
-    email: string;
+    phone: string;
     role: 'user' | 'admin';
     avatar_url: string | null;
     coins: number;
@@ -139,7 +138,7 @@ export default function Navbar({ user }: NavbarProps) {
                       {user.avatar_url ? (
                         <Image
                           src={user.avatar_url}
-                          alt={user.username}
+                          alt={user.phone}
                           width={32}
                           height={32}
                           className="rounded-full"
@@ -152,8 +151,8 @@ export default function Navbar({ user }: NavbarProps) {
                   <DropdownMenuContent align="end" className="w-56">
                     <div className="flex items-center justify-start gap-2 p-2">
                       <div className="flex flex-col space-y-1 leading-none">
-                        <p className="font-medium">{user.username}</p>
-                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                        <p className="font-medium">{user.phone}</p>
+                        <p className="text-xs text-muted-foreground">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิก'}</p>
                         {user.is_vip && (
                           <div className="flex items-center gap-1 text-yellow-600">
                             <Crown className="h-3 w-3" />

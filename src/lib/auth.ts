@@ -133,8 +133,7 @@ export async function getCurrentUser(): Promise<{
 
 export async function requireAuth(): Promise<{
   id: string;
-  username: string;
-  email: string;
+  phone: string;
   role: 'user' | 'admin';
   avatar_url: string | null;
   coins: number;
@@ -151,8 +150,7 @@ export async function requireAuth(): Promise<{
 
 export async function requireAdmin(): Promise<{
   id: string;
-  username: string;
-  email: string;
+  phone: string;
   role: 'user' | 'admin';
   avatar_url: string | null;
   coins: number;
