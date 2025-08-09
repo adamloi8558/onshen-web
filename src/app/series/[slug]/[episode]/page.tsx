@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { db, content, episodes } from "@/lib/db";
-import { eq, and, asc, gt, lt } from "drizzle-orm";
+import { eq, and, asc, desc, gt, lt } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -150,29 +150,27 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
   // Get previous episode
   const [prevEpisode] = await db
     .select({
-      season_number: episodes.season_number,
       episode_number: episodes.episode_number,
     })
     .from(episodes)
     .where(and(
       eq(episodes.content_id, series.id),
-      lt(episodes.episode_number, episodeNum)
+      lt(episodes.episode_number, params.episode)
     ))
-    .orderBy(asc(episodes.season_number), asc(episodes.episode_number))
+    .orderBy(desc(episodes.episode_number))
     .limit(1);
 
   // Get next episode
   const [nextEpisode] = await db
     .select({
-      season_number: episodes.season_number,
       episode_number: episodes.episode_number,
     })
     .from(episodes)
     .where(and(
       eq(episodes.content_id, series.id),
-      gt(episodes.episode_number, episodeNum)
+      gt(episodes.episode_number, params.episode)
     ))
-    .orderBy(asc(episodes.season_number), asc(episodes.episode_number))
+    .orderBy(asc(episodes.episode_number))
     .limit(1);
 
   // Get all episodes for navigation
@@ -181,7 +179,6 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
       id: episodes.id,
       title: episodes.title,
       episode_number: episodes.episode_number,
-      season_number: episodes.season_number,
       thumbnail_url: episodes.thumbnail_url,
       duration_minutes: episodes.duration_minutes,
       is_vip_required: episodes.is_vip_required,
@@ -189,7 +186,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     })
     .from(episodes)
     .where(eq(episodes.content_id, series.id))
-    .orderBy(asc(episodes.season_number), asc(episodes.episode_number));
+    .orderBy(asc(episodes.episode_number));
 
   const canWatch = user && (!currentEpisode.is_vip_required || user.is_vip) && (!series.is_vip_required || user.is_vip);
 
