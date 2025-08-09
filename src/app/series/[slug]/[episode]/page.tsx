@@ -40,8 +40,6 @@ export async function generateMetadata({ params }: EpisodePageProps): Promise<Me
     };
   }
 
-  const { season, episode: episodeNum } = parseEpisodeNumber(params.episode);
-
   const [series] = await db
     .select({
       title: content.title,
