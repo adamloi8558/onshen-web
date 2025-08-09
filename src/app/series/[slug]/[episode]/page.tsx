@@ -29,13 +29,7 @@ interface EpisodePageProps {
 // Force dynamic rendering for real-time data
 export const dynamic = 'force-dynamic';
 
-function parseEpisodeNumber(episodeStr: string): { season: number; episode: number } {
-  const parts = episodeStr.split('.');
-  return {
-    season: parseInt(parts[0]) || 1,
-    episode: parseInt(parts[1]) || 1,
-  };
-}
+
 
 export async function generateMetadata({ params }: EpisodePageProps): Promise<Metadata> {
   // Skip database queries during build with placeholder database
@@ -77,17 +71,16 @@ export async function generateMetadata({ params }: EpisodePageProps): Promise<Me
     .innerJoin(content, eq(episodes.content_id, content.id))
     .where(and(
       eq(content.slug, params.slug),
-      eq(episodes.season_number, season),
-      eq(episodes.episode_number, episodeNum)
+      eq(episodes.episode_number, params.episode)
     ))
     .limit(1);
 
   return {
-    title: `${series.title} - ตอนที่ ${episodeNum}: ${episode?.title || 'ไม่มีชื่อ'} - MovieFlix`,
-    description: episode?.description || `ดู ${series.title} ตอนที่ ${episodeNum} ออนไลน์คุณภาพ HD`,
+    title: `${series.title} - ตอนที่ ${params.episode}: ${episode?.title || 'ไม่มีชื่อ'} - MovieFlix`,
+    description: episode?.description || `ดู ${series.title} ตอนที่ ${params.episode} ออนไลน์คุณภาพ HD`,
     openGraph: {
-      title: `${series.title} - ตอนที่ ${episodeNum}: ${episode?.title || 'ไม่มีชื่อ'}`,
-      description: episode?.description || `ดู ${series.title} ตอนที่ ${episodeNum} ออนไลน์คุณภาพ HD`,
+      title: `${series.title} - ตอนที่ ${params.episode}: ${episode?.title || 'ไม่มีชื่อ'}`,
+      description: episode?.description || `ดู ${series.title} ตอนที่ ${params.episode} ออนไลน์คุณภาพ HD`,
       images: [series.poster_url || "/og-episode-default.jpg"],
       type: "video.episode",
     },
@@ -96,7 +89,6 @@ export async function generateMetadata({ params }: EpisodePageProps): Promise<Me
 
 export default async function EpisodePage({ params }: EpisodePageProps) {
   const user = await getCurrentUser();
-  const { season, episode: episodeNum } = parseEpisodeNumber(params.episode);
 
   // Skip database queries during build with placeholder database
   if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
@@ -139,7 +131,6 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
       id: episodes.id,
       title: episodes.title,
       episode_number: episodes.episode_number,
-      season_number: episodes.season_number,
       description: episodes.description,
       thumbnail_url: episodes.thumbnail_url,
       video_url: episodes.video_url,
@@ -150,8 +141,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     .from(episodes)
     .where(and(
       eq(episodes.content_id, series.id),
-      eq(episodes.season_number, season),
-      eq(episodes.episode_number, episodeNum)
+      eq(episodes.episode_number, params.episode)
     ))
     .limit(1);
 
