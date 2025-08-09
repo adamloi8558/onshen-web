@@ -11,6 +11,24 @@ export async function GET() {
       return NextResponse.json({ error: 'Database not available' }, { status: 500 });
     }
 
+    // Create users table first
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        phone TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        avatar_url TEXT DEFAULT '/avatars/default.webp',
+        role TEXT DEFAULT 'user' NOT NULL,
+        coins INTEGER DEFAULT 0 NOT NULL,
+        balance DECIMAL(10,2) DEFAULT 0.00 NOT NULL,
+        is_vip BOOLEAN DEFAULT false NOT NULL,
+        vip_expires_at TIMESTAMP,
+        last_login_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
     // Create categories table
     await db.execute(`
       CREATE TABLE IF NOT EXISTS categories (
