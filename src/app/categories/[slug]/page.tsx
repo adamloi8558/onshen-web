@@ -90,11 +90,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   let whereClause = and(
     eq(content.status, 'published'),
     eq(content.category_id, category.id)
-  );
+  )!;
 
   // Add type filter
   if (typeFilter && (typeFilter === 'movie' || typeFilter === 'series')) {
-    whereClause = and(whereClause, eq(content.type, typeFilter));
+    whereClause = and(whereClause, eq(content.type, typeFilter))!;
   }
 
   // Get content in this category

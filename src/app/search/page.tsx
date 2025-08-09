@@ -75,16 +75,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     let whereClause = and(
       eq(content.status, 'published'),
       or(...searchConditions)
-    );
+    )!;
 
     // Add type filter
     if (typeFilter && (typeFilter === 'movie' || typeFilter === 'series')) {
-      whereClause = and(whereClause, eq(content.type, typeFilter));
+      whereClause = and(whereClause, eq(content.type, typeFilter))!;
     }
 
     // Add category filter
     if (categoryFilter) {
-      whereClause = and(whereClause, eq(content.category_id, categoryFilter));
+      whereClause = and(whereClause, eq(content.category_id, categoryFilter))!;
     }
 
     searchResults = await db

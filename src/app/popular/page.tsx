@@ -40,12 +40,12 @@ export default async function PopularPage({ searchParams }: PopularPageProps) {
   }
 
   // Build where clause
-  let whereClause = eq(content.status, 'published');
-
+  const baseClause = eq(content.status, 'published');
+  
   // Add type filter
-  if (typeFilter && (typeFilter === 'movie' || typeFilter === 'series')) {
-    whereClause = and(whereClause, eq(content.type, typeFilter));
-  }
+  const whereClause = typeFilter && (typeFilter === 'movie' || typeFilter === 'series')
+    ? and(baseClause, eq(content.type, typeFilter))!
+    : baseClause;
 
   // Get popular content (sorted by views)
   const popularContent = await db
