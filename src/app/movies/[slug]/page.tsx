@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { db, content, categories, episodes } from "@/lib/db";
+import { db, content, categories } from "@/lib/db";
 import { eq, and, desc } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { 
   Play, 
   Bookmark, 
-  BookmarkCheck, 
   Eye, 
   Calendar, 
   Clock, 
-  Star,
   Crown 
 } from "lucide-react";
 

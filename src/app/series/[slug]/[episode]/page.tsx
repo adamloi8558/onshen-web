@@ -242,11 +242,11 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                   {series.title}
                 </Link>
                 <span className="text-muted-foreground">•</span>
-                <span className="text-sm text-muted-foreground">ซีซั่น {season}</span>
+                <span className="text-sm text-muted-foreground">ตอนที่ {params.episode}</span>
               </div>
               
               <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                ตอนที่ {episodeNum}: {currentEpisode.title}
+                {currentEpisode.title}
               </h1>
               
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -291,7 +291,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
             <div>
               {prevEpisode ? (
                 <Button variant="outline" asChild>
-                  <Link href={`/series/${series.slug}/${prevEpisode.season_number}.${prevEpisode.episode_number}`}>
+                  <Link href={`/series/${series.slug}/${prevEpisode.episode_number}`}>
                     <SkipBack className="h-4 w-4 mr-2" />
                     ตอนก่อนหน้า
                   </Link>
@@ -307,7 +307,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
             <div>
               {nextEpisode ? (
                 <Button asChild>
-                  <Link href={`/series/${series.slug}/${nextEpisode.season_number}.${nextEpisode.episode_number}`}>
+                  <Link href={`/series/${series.slug}/${nextEpisode.episode_number}`}>
                     ตอนถัดไป
                     <SkipForward className="h-4 w-4 ml-2" />
                   </Link>
@@ -347,7 +347,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 <h3 className="text-lg font-bold mb-4">ตอนอื่นๆ</h3>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {allEpisodes.map((ep) => {
-                    const isCurrentEpisode = ep.season_number === season && ep.episode_number === episodeNum;
+                    const isCurrentEpisode = ep.episode_number === params.episode;
                     const episodeCanWatch = user && (!ep.is_vip_required || user.is_vip);
                     
                     return (
@@ -396,7 +396,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                           <div className="flex-shrink-0">
                             {episodeCanWatch ? (
                               <Button size="sm" variant="ghost" asChild>
-                                <Link href={`/series/${series.slug}/${ep.season_number}.${ep.episode_number}`}>
+                                <Link href={`/series/${series.slug}/${ep.episode_number}`}>
                                   <Play className="h-3 w-3" />
                                 </Link>
                               </Button>

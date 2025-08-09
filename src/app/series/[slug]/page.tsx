@@ -11,11 +11,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { 
   Play, 
   Bookmark, 
-  BookmarkCheck, 
   Eye, 
   Calendar, 
-  Clock, 
-  Star,
   Crown,
   List
 } from "lucide-react";
@@ -139,7 +136,6 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
       id: episodes.id,
       title: episodes.title,
       episode_number: episodes.episode_number,
-      season_number: episodes.season_number,
       description: episodes.description,
       thumbnail_url: episodes.thumbnail_url,
       video_url: episodes.video_url,
@@ -150,7 +146,7 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
     })
     .from(episodes)
     .where(eq(episodes.content_id, series.id))
-    .orderBy(asc(episodes.season_number), asc(episodes.episode_number));
+    .orderBy(asc(episodes.episode_number));
 
   // Get related series
   const relatedSeries = await db
@@ -175,13 +171,8 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
 
   const canWatch = user && (!series.is_vip_required || user.is_vip);
   
-  // Group episodes by season
-  const episodesBySeason = seriesEpisodes.reduce((acc, episode) => {
-    const season = episode.season_number || 1;
-    if (!acc[season]) acc[season] = [];
-    acc[season].push(episode);
-    return acc;
-  }, {} as Record<number, typeof seriesEpisodes>);
+  // All episodes (no grouping by season since we only store episode_number)
+  const allEpisodes = seriesEpisodes;
 
   return (
     <div className="min-h-screen">
@@ -259,7 +250,7 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
                 <div className="flex items-center gap-4">
                   {canWatch && seriesEpisodes.length > 0 ? (
                     <Button size="lg" className="gap-2" asChild>
-                      <Link href={`/series/${series.slug}/${seriesEpisodes[0].season_number || 1}.${seriesEpisodes[0].episode_number}`}>
+                      <Link href={`/series/${series.slug}/${seriesEpisodes[0].episode_number}`}>
                         <Play className="h-5 w-5" />
                         เริ่มดู
                       </Link>
@@ -305,16 +296,12 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
             )}
             
             {/* Episodes */}
-            {Object.keys(episodesBySeason).length > 0 && (
+            {allEpisodes.length > 0 && (
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-bold mb-4">ตอนทั้งหมด</h2>
-                  <div className="space-y-6">
-                    {Object.entries(episodesBySeason).map(([seasonNum, seasonEpisodes]) => (
-                      <div key={seasonNum}>
-                        <h3 className="text-lg font-semibold mb-3">ซีซั่น {seasonNum}</h3>
-                        <div className="grid gap-4">
-                          {seasonEpisodes.map((episode) => {
+                  <div className="grid gap-4">
+                    {allEpisodes.map((episode) => {
                             const episodeCanWatch = canWatch && (!episode.is_vip_required || user?.is_vip);
                             
                             return (
@@ -360,7 +347,7 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
                                     
                                     {episodeCanWatch ? (
                                       <Button size="sm" asChild>
-                                        <Link href={`/series/${series.slug}/${episode.season_number || 1}.${episode.episode_number}`}>
+                                        <Link href={`/series/${series.slug}/${episode.episode_number}`}>
                                           <Play className="h-4 w-4" />
                                         </Link>
                                       </Button>
@@ -373,10 +360,7 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
                                 </div>
                               </div>
                             );
-                          })}
-                        </div>
-                      </div>
-                    ))}
+                    })}
                   </div>
                 </CardContent>
               </Card>

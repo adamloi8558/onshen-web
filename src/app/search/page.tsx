@@ -64,7 +64,21 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     );
   }
 
-  let searchResults: any[] = [];
+  let searchResults: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    description: string | null;
+    type: 'movie' | 'series';
+    poster_url: string | null;
+    content_rating: string | null;
+    is_vip_required: boolean;
+    views: number;
+    saves: number;
+    total_episodes: number | null;
+    category: { id: string; name: string; slug: string; } | null;
+    created_at: Date;
+  }> = [];
   let totalResults = 0;
 
   if (query && query.length > 0) {
@@ -101,11 +115,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         is_vip_required: content.is_vip_required,
         views: content.views,
         saves: content.saves,
+        total_episodes: content.total_episodes,
         category: {
           id: categories.id,
           name: categories.name,
           slug: categories.slug,
-        }
+        },
+        created_at: content.created_at,
       })
       .from(content)
       .leftJoin(categories, eq(content.category_id, categories.id))
@@ -197,7 +213,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <div>
             <div className="mb-6">
               <h2 className="text-2xl font-bold">
-                ผลการค้นหา "{query}"
+                ผลการค้นหา &ldquo;{query}&rdquo;
               </h2>
               <p className="text-muted-foreground">
                 พบ {totalResults} รายการ

@@ -12,7 +12,7 @@ interface ContentGridProps {
     description: string | null;
     type: 'movie' | 'series';
     poster_url: string | null;
-    content_rating: string;
+    content_rating: string | null;
     is_vip_required: boolean;
     views: number;
     saves: number;

@@ -20,7 +20,6 @@ import {
   Settings,
   LogOut,
   Crown,
-  Coins,
   BookmarkIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";

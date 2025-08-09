@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getCurrentUser } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import { Crown, Check, Star, Zap } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
