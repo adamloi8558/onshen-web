@@ -5,6 +5,7 @@ import { eq, and, desc } from "drizzle-orm";
 import ContentGrid from "@/components/content-grid";
 import { Badge } from "@/components/ui/badge";
 import { Film, Tv } from "lucide-react";
+import Link from "next/link";
 
 interface CategoryPageProps {
   params: {
@@ -153,41 +154,23 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
           {/* Filters */}
           <div className="flex gap-2 flex-wrap">
-            <Badge 
-              variant={!typeFilter ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => {
-                const url = new URL(window.location.href);
-                url.searchParams.delete('type');
-                window.location.href = url.toString();
-              }}
-            >
-              ทั้งหมด ({movieCount + seriesCount})
-            </Badge>
-            <Badge 
-              variant={typeFilter === 'movie' ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => {
-                const url = new URL(window.location.href);
-                url.searchParams.set('type', 'movie');
-                window.location.href = url.toString();
-              }}
-            >
-              <Film className="h-3 w-3 mr-1" />
-              หนัง ({movieCount})
-            </Badge>
-            <Badge 
-              variant={typeFilter === 'series' ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => {
-                const url = new URL(window.location.href);
-                url.searchParams.set('type', 'series');
-                window.location.href = url.toString();
-              }}
-            >
-              <Tv className="h-3 w-3 mr-1" />
-              ซีรี่ย์ ({seriesCount})
-            </Badge>
+            <Link href={`/categories/${params.slug}`}>
+              <Badge variant={!typeFilter ? "default" : "outline"}>
+                ทั้งหมด ({movieCount + seriesCount})
+              </Badge>
+            </Link>
+            <Link href={`/categories/${params.slug}?type=movie`}>
+              <Badge variant={typeFilter === 'movie' ? "default" : "outline"}>
+                <Film className="h-3 w-3 mr-1" />
+                หนัง ({movieCount})
+              </Badge>
+            </Link>
+            <Link href={`/categories/${params.slug}?type=series`}>
+              <Badge variant={typeFilter === 'series' ? "default" : "outline"}>
+                <Tv className="h-3 w-3 mr-1" />
+                ซีรี่ย์ ({seriesCount})
+              </Badge>
+            </Link>
           </div>
         </div>
 

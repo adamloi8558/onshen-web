@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
+import Link from "next/link";
 
 interface SearchPageProps {
   searchParams: {
@@ -150,61 +151,39 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <div className="flex flex-wrap gap-4">
             {/* Type Filter */}
             <div className="flex gap-2">
-              <Badge 
-                variant={!typeFilter ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.delete('type');
-                  window.location.href = url.toString();
-                }}
-              >
-                ทั้งหมด
-              </Badge>
-              <Badge 
-                variant={typeFilter === 'movie' ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.set('type', 'movie');
-                  window.location.href = url.toString();
-                }}
-              >
-                หนัง
-              </Badge>
-              <Badge 
-                variant={typeFilter === 'series' ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.set('type', 'series');
-                  window.location.href = url.toString();
-                }}
-              >
-                ซีรี่ย์
-              </Badge>
+              <Link href={`/search${query ? `?q=${encodeURIComponent(query)}` : ''}`}>
+                <Badge variant={!typeFilter ? "default" : "outline"}>
+                  ทั้งหมด
+                </Badge>
+              </Link>
+              <Link href={`/search?${new URLSearchParams({ ...(query && { q: query }), type: 'movie' }).toString()}`}>
+                <Badge variant={typeFilter === 'movie' ? "default" : "outline"}>
+                  หนัง
+                </Badge>
+              </Link>
+              <Link href={`/search?${new URLSearchParams({ ...(query && { q: query }), type: 'series' }).toString()}`}>
+                <Badge variant={typeFilter === 'series' ? "default" : "outline"}>
+                  ซีรี่ย์
+                </Badge>
+              </Link>
             </div>
 
             {/* Category Filter */}
             {allCategories.length > 0 && (
               <div className="flex gap-2 flex-wrap">
                 {allCategories.map((category) => (
-                  <Badge 
+                  <Link 
                     key={category.id}
-                    variant={categoryFilter === category.id ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      const url = new URL(window.location.href);
-                      if (categoryFilter === category.id) {
-                        url.searchParams.delete('category');
-                      } else {
-                        url.searchParams.set('category', category.id);
-                      }
-                      window.location.href = url.toString();
-                    }}
+                    href={`/search?${new URLSearchParams({ 
+                      ...(query && { q: query }), 
+                      ...(typeFilter && { type: typeFilter }),
+                      ...(categoryFilter === category.id ? {} : { category: category.id })
+                    }).toString()}`}
                   >
-                    {category.name}
-                  </Badge>
+                    <Badge variant={categoryFilter === category.id ? "default" : "outline"}>
+                      {category.name}
+                    </Badge>
+                  </Link>
                 ))}
               </div>
             )}
