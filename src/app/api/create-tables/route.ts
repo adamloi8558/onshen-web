@@ -48,7 +48,7 @@ export async function GET() {
         title TEXT NOT NULL,
         slug TEXT NOT NULL UNIQUE,
         description TEXT,
-        cover_url TEXT,
+        poster_url TEXT,
         type TEXT DEFAULT 'movie' NOT NULL,
         status TEXT DEFAULT 'published' NOT NULL,
         content_rating TEXT,
