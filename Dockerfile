@@ -20,19 +20,19 @@ COPY src ./src
 COPY public ./public
 
 # Build the application (with placeholder for required env vars)
-ENV DATABASE_URL="placeholder://placeholder"
-ENV JWT_SECRET="placeholder-jwt-secret-for-build"
-ENV CLOUDFLARE_R2_ACCOUNT_ID="placeholder"
-ENV CLOUDFLARE_R2_ACCESS_KEY_ID="placeholder"
-ENV CLOUDFLARE_R2_SECRET_ACCESS_KEY="placeholder"
-ENV CLOUDFLARE_R2_BUCKET_NAME="placeholder"
-ENV CLOUDFLARE_R2_PUBLIC_URL="https://placeholder.r2.dev"
-ENV TURNSTILE_SITE_KEY="placeholder"
-ENV TURNSTILE_SECRET_KEY="placeholder"
-ENV REDIS_URL="redis://placeholder:6379/0"
+ENV DATABASE_URL="postgres://postgres:7q5Fc3THW88L73nd7pizr2nmmrfYsriUgFGGUvoBLdzXQUD287omXrjKzjNPc9Be@s4kcgg0kcw0c4wowoocsogk0:5432/postgres"
+ENV JWT_SECRET="development-jwt-secret-key-123456789"
+ENV CLOUDFLARE_R2_ACCOUNT_ID="006ec9fb36d37617efc47a9811cc37a1"
+ENV CLOUDFLARE_R2_ACCESS_KEY_ID="6e6790ddc7c1b21a8534798c687a2042"
+ENV CLOUDFLARE_R2_SECRET_ACCESS_KEY="166ebdd1490e9dedeceaa2b8068632db7642d8920070f2cc30aaaddcf0a9d640"
+ENV CLOUDFLARE_R2_BUCKET_NAME="movieflix"
+ENV CLOUDFLARE_R2_PUBLIC_URL="https://pub-b24c104618264932a27b9455988b0fae.r2.dev"
+ENV TURNSTILE_SITE_KEY="0x4AAAAABsXjXiK8Z15XV7m"
+ENV TURNSTILE_SECRET_KEY="0x4AAAAABsXjSITwbcy65L684ku_5wV4HU"
+ENV REDIS_URL="redis://default:G5iC4QtMVcz3rfoumgK9fZdrg1dCs3NRb5hydif816fkaJzMEibS5wuHqNDZVYbx@o8wkkoo88ks0ww8oko0ck448:6379/00"
 ENV NODE_ENV="production"
-ENV NEXT_PUBLIC_APP_URL="https://placeholder.com"
-ENV NEXT_PUBLIC_API_URL="https://placeholder.com/api"
+ENV NEXT_PUBLIC_APP_URL="https://ronglakorn.com/"
+ENV NEXT_PUBLIC_API_URL="https://ronglakorn.com/api"
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY="0x4AAAAABsXjXiK8Z15XV7m"
 RUN npm run build
 
