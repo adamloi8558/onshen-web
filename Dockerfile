@@ -33,7 +33,7 @@ ENV REDIS_URL="redis://placeholder:6379/0"
 ENV NODE_ENV="production"
 ENV NEXT_PUBLIC_APP_URL="https://placeholder.com"
 ENV NEXT_PUBLIC_API_URL="https://placeholder.com/api"
-ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY="placeholder"
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY="0x4AAAAABsXjXiK8Z15XV7m"
 RUN npm run build
 
 # Production stage
