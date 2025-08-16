@@ -196,7 +196,7 @@ export default function SignupForm() {
         <div className="flex justify-center">
           <div
             className="cf-turnstile"
-            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAABsXjXiK8Z15XV7m"}
             data-callback="onTurnstileSuccess"
           ></div>
         </div>
