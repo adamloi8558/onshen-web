@@ -71,7 +71,7 @@ export default async function RootLayout({
             __html: `
               // Cloudflare Turnstile script
               window.turnstileConfig = {
-                siteKey: "${process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}"
+                siteKey: "${process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAABsXjXiK8Z15XV7m"}"
               };
             `,
           }}
