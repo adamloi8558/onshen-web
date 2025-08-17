@@ -10,10 +10,10 @@ import { Bookmark } from "lucide-react";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "รายการที่บันทึก - MovieFlix",
+  title: "รายการที่บันทึก - โรงละคร",
   description: "หนังและซีรี่ย์ที่คุณบันทึกไว้",
   openGraph: {
-    title: "รายการที่บันทึก - MovieFlix",
+    title: "รายการที่บันทึก - โรงละคร",
     description: "หนังและซีรี่ย์ที่คุณบันทึกไว้",
   },
 };

@@ -24,21 +24,21 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
   
   if (query) {
     return {
-      title: `ค้นหา "${query}" - MovieFlix`,
-      description: `ผลการค้นหา "${query}" ใน MovieFlix - ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD`,
+      title: `ค้นหา "${query}" - โรงละคร`,
+      description: `ผลการค้นหา "${query}" ใน โรงละคร - ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD`,
       openGraph: {
-        title: `ค้นหา "${query}" - MovieFlix`,
-        description: `ผลการค้นหา "${query}" ใน MovieFlix`,
+        title: `ค้นหา "${query}" - โรงละคร`,
+        description: `ผลการค้นหา "${query}" ใน โรงละคร`,
         images: ["/og-search.jpg"],
       },
     };
   }
 
   return {
-    title: "ค้นหา - MovieFlix",
+    title: "ค้นหา - โรงละคร",
     description: "ค้นหาหนังและซีรี่ย์ที่คุณต้องการดู",
     openGraph: {
-      title: "ค้นหา - MovieFlix",
+      title: "ค้นหา - โรงละคร",
       description: "ค้นหาหนังและซีรี่ย์ที่คุณต้องการดู",
       images: ["/og-search.jpg"],
     },

@@ -13,32 +13,32 @@ const notoSansThai = Noto_Sans_Thai({
 
 export const metadata: Metadata = {
   title: {
-    default: "MovieFlix - ดูหนังออนไลน์ คุณภาพ HD",
-    template: "%s | MovieFlix",
+    default: "โรงละคร - ดูหนังออนไลน์ คุณภาพ HD",
+    template: "%s | โรงละคร",
   },
   description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
-  keywords: ["หนังออนไลน์", "ซีรี่ย์", "MovieFlix", "ดูหนัง", "HD", "VIP"],
-  authors: [{ name: "MovieFlix Team" }],
-  creator: "MovieFlix",
+  keywords: ["หนังออนไลน์", "ซีรี่ย์", "โรงละคร", "ดูหนัง", "HD", "VIP"],
+  authors: [{ name: "โรงละคร Team" }],
+  creator: "โรงละคร",
   openGraph: {
     type: "website",
     locale: "th_TH",
     url: process.env.NEXT_PUBLIC_APP_URL,
-    title: "MovieFlix - ดูหนังออนไลน์ คุณภาพ HD",
+    title: "โรงละคร - ดูหนังออนไลน์ คุณภาพ HD",
     description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
-    siteName: "MovieFlix",
+    siteName: "โรงละคร",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "MovieFlix",
+        alt: "โรงละคร",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MovieFlix - ดูหนังออนไลน์ คุณภาพ HD",
+    title: "โรงละคร - ดูหนังออนไลน์ คุณภาพ HD",
     description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
     images: ["/og-image.jpg"],
   },
@@ -69,9 +69,30 @@ export default async function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Cloudflare Turnstile script
+              // Cloudflare Turnstile Global Configuration
               window.turnstileConfig = {
-                siteKey: "${process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAABsXjXiK8Z15XV7m"}"
+                siteKey: "0x4AAAAABsXjXiK8Z15XV7m"
+              };
+              
+              // Global Turnstile Callbacks
+              window.onTurnstileSuccess = function(token) {
+                console.log('Turnstile success:', token);
+                document.dispatchEvent(new CustomEvent('turnstileSuccess', { detail: token }));
+              };
+              
+              window.onTurnstileError = function(error) {
+                console.error('Turnstile error:', error);
+                document.dispatchEvent(new CustomEvent('turnstileError', { detail: error }));
+              };
+              
+              window.onTurnstileExpired = function() {
+                console.warn('Turnstile expired');
+                document.dispatchEvent(new CustomEvent('turnstileExpired'));
+              };
+              
+              window.onTurnstileTimeout = function() {
+                console.warn('Turnstile timeout');
+                document.dispatchEvent(new CustomEvent('turnstileTimeout'));
               };
             `,
           }}

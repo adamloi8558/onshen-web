@@ -58,17 +58,17 @@ export async function generateMetadata({ params }: MoviePageProps): Promise<Meta
   }
 
   return {
-    title: `${movie.title} - MovieFlix`,
+    title: `${movie.title} - โรงละคร`,
     description: movie.description || `ดูหนัง ${movie.title} ออนไลน์คุณภาพ HD`,
     openGraph: {
-      title: `${movie.title} - MovieFlix`,
+      title: `${movie.title} - โรงละคร`,
       description: movie.description || `ดูหนัง ${movie.title} ออนไลน์คุณภาพ HD`,
       images: [movie.poster_url || "/og-movie-default.jpg"],
       type: "video.movie",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${movie.title} - MovieFlix`,
+      title: `${movie.title} - โรงละคร`,
       description: movie.description || `ดูหนัง ${movie.title} ออนไลน์คุณภาพ HD`,
       images: [movie.poster_url || "/og-movie-default.jpg"],
     },

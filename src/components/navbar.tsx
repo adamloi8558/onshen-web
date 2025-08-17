@@ -77,9 +77,9 @@ export default function Navbar({ user }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-              <span className="text-primary-foreground font-bold">M</span>
+              <span className="text-primary-foreground font-bold">ร</span>
             </div>
-            <span className="font-bold text-xl">MovieFlix</span>
+            <span className="font-bold text-xl">โรงละคร</span>
           </Link>
 
           {/* Desktop Navigation */}

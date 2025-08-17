@@ -11,10 +11,10 @@ import { redirect } from "next/navigation";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "สมาชิก VIP - MovieFlix",
+  title: "สมาชิก VIP - โรงละคร",
   description: "สมัครสมาชิก VIP เพียง 39 บาทต่อเดือน ดูหนังและซีรี่ย์พรีเมียมไม่จำกัด",
   openGraph: {
-    title: "สมาชิก VIP - MovieFlix",
+    title: "สมาชิก VIP - โรงละคร",
     description: "สมัครสมาชิก VIP เพียง 39 บาทต่อเดือน ดูหนังและซีรี่ย์พรีเมียมไม่จำกัด",
     images: ["/og-vip.jpg"],
   },

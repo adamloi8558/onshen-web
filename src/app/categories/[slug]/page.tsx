@@ -45,10 +45,10 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   }
 
   return {
-    title: `${category.name} - MovieFlix`,
+    title: `${category.name} - โรงละคร`,
     description: category.description || `ดูหนังและซีรี่ย์ในหมวดหมู่${category.name}`,
     openGraph: {
-      title: `${category.name} - MovieFlix`,
+      title: `${category.name} - โรงละคร`,
       description: category.description || `ดูหนังและซีรี่ย์ในหมวดหมู่${category.name}`,
       images: ["/og-category.jpg"],
     },

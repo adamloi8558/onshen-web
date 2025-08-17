@@ -74,7 +74,7 @@ export async function generateMetadata({ params }: EpisodePageProps): Promise<Me
     .limit(1);
 
   return {
-    title: `${series.title} - ตอนที่ ${params.episode}: ${episode?.title || 'ไม่มีชื่อ'} - MovieFlix`,
+    title: `${series.title} - ตอนที่ ${params.episode}: ${episode?.title || 'ไม่มีชื่อ'} - โรงละคร`,
     description: episode?.description || `ดู ${series.title} ตอนที่ ${params.episode} ออนไลน์คุณภาพ HD`,
     openGraph: {
       title: `${series.title} - ตอนที่ ${params.episode}: ${episode?.title || 'ไม่มีชื่อ'}`,

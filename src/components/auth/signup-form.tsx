@@ -50,16 +50,33 @@ export default function SignupForm() {
     },
   });
 
-  // Cloudflare Turnstile callback
+  // Cloudflare Turnstile callbacks
   useEffect(() => {
     const handleTurnstileSuccess = (event: CustomEvent) => {
+      console.log('Signup Turnstile success:', event.detail);
       setTurnstileToken(event.detail);
     };
 
+    const handleTurnstileError = (event: CustomEvent) => {
+      console.error('Signup Turnstile error:', event.detail);
+      toast.error("การยืนยันไม่สำเร็จ กรุณาลองใหม่");
+      setTurnstileToken("");
+    };
+
+    const handleTurnstileExpired = () => {
+      console.warn('Signup Turnstile expired');
+      toast.warning("การยืนยันหมดอายุ กรุณาลองใหม่");
+      setTurnstileToken("");
+    };
+
     document.addEventListener('turnstileSuccess', handleTurnstileSuccess as EventListener);
+    document.addEventListener('turnstileError', handleTurnstileError as EventListener);
+    document.addEventListener('turnstileExpired', handleTurnstileExpired as EventListener);
     
     return () => {
       document.removeEventListener('turnstileSuccess', handleTurnstileSuccess as EventListener);
+      document.removeEventListener('turnstileError', handleTurnstileError as EventListener);
+      document.removeEventListener('turnstileExpired', handleTurnstileExpired as EventListener);
     };
   }, []);
 
@@ -196,8 +213,11 @@ export default function SignupForm() {
         <div className="flex justify-center">
           <div
             className="cf-turnstile"
-            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAABsXjXiK8Z15XV7m"}
+            data-sitekey="0x4AAAAABsXjXiK8Z15XV7m"
             data-callback="onTurnstileSuccess"
+            data-error-callback="onTurnstileError"
+            data-expired-callback="onTurnstileExpired"
+            data-timeout-callback="onTurnstileTimeout"
           ></div>
         </div>
 
@@ -207,17 +227,7 @@ export default function SignupForm() {
         </Button>
       </form>
 
-      {typeof window !== 'undefined' && (
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.onTurnstileSuccess = function(token) {
-                document.dispatchEvent(new CustomEvent('turnstileSuccess', { detail: token }));
-              };
-            `,
-          }}
-        />
-      )}
+
     </Form>
   );
 }

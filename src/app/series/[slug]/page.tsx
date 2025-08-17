@@ -59,17 +59,17 @@ export async function generateMetadata({ params }: SeriesPageProps): Promise<Met
   }
 
   return {
-    title: `${series.title} - MovieFlix`,
+    title: `${series.title} - โรงละคร`,
     description: series.description || `ดูซีรี่ย์ ${series.title} ออนไลน์คุณภาพ HD`,
     openGraph: {
-      title: `${series.title} - MovieFlix`,
+      title: `${series.title} - โรงละคร`,
       description: series.description || `ดูซีรี่ย์ ${series.title} ออนไลน์คุณภาพ HD`,
       images: [series.poster_url || "/og-series-default.jpg"],
       type: "video.tv_show",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${series.title} - MovieFlix`,
+      title: `${series.title} - โรงละคร`,
       description: series.description || `ดูซีรี่ย์ ${series.title} ออนไลน์คุณภาพ HD`,
       images: [series.poster_url || "/og-series-default.jpg"],
     },
