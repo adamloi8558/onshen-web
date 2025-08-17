@@ -84,6 +84,9 @@ export default function Navbar({ user }: NavbarProps) {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
+            <Link href="/latest" className="text-muted-foreground hover:text-foreground transition-colors">
+              ล่าสุด
+            </Link>
             <Link href="/movies" className="text-muted-foreground hover:text-foreground transition-colors">
               หนัง
             </Link>
@@ -239,6 +242,13 @@ export default function Navbar({ user }: NavbarProps) {
               </form>
 
               {/* Mobile Navigation Links */}
+              <Link
+                href="/latest"
+                className="block px-4 py-3 text-foreground hover:bg-muted/50 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                ล่าสุด
+              </Link>
               <Link
                 href="/movies"
                 className="block px-4 py-3 text-foreground hover:bg-muted/50 transition-colors"

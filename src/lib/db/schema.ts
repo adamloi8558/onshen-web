@@ -19,6 +19,8 @@ export const users = pgTable('users', {
   balance: decimal('balance', { precision: 10, scale: 2 }).default('0.00').notNull(),
   is_vip: boolean('is_vip').default(false).notNull(),
   vip_expires_at: timestamp('vip_expires_at'),
+  reset_otp: text('reset_otp'),
+  reset_otp_expires: timestamp('reset_otp_expires'),
   last_login_at: timestamp('last_login_at'),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),

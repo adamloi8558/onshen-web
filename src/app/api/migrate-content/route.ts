@@ -68,10 +68,10 @@ export async function GET() {
       message: 'Content table migration completed successfully',
       timestamp: new Date().toISOString() 
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error migrating content table:', error);
     return NextResponse.json({ 
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
       timestamp: new Date().toISOString() 
     }, { status: 500 });
   }
