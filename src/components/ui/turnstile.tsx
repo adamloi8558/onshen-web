@@ -22,7 +22,7 @@ export default function TurnstileWidget({ onSuccess, onError }: TurnstileWidgetP
   return (
     <div className="flex justify-center">
       <Turnstile
-        sitekey="0x4AAAAABsXjXiK8Z15XV7m"
+        sitekey="1x00000000000000000000AA"
         onVerify={onSuccess}
         onError={onError}
         onExpire={() => {
