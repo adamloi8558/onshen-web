@@ -12,17 +12,24 @@ export default function TurnstileWidget({ onSuccess, onError }: TurnstileWidgetP
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    console.log('TurnstileWidget mounting...');
     setIsClient(true);
   }, []);
 
+  console.log('TurnstileWidget render - isClient:', isClient);
+
   if (!isClient) {
-    return <div className="h-16 w-full bg-muted animate-pulse rounded" />;
+    return (
+      <div className="h-16 w-full bg-muted animate-pulse rounded flex items-center justify-center">
+        <span className="text-sm text-muted-foreground">Loading Turnstile...</span>
+      </div>
+    );
   }
 
   return (
     <div className="flex justify-center">
       <Turnstile
-        sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+        sitekey="1x00000000000000000000AA"
         onVerify={onSuccess}
         onError={onError}
         onExpire={() => {
