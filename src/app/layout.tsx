@@ -66,38 +66,7 @@ export default async function RootLayout({
           {children}
         </main>
         <Toaster position="bottom-right" richColors />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Cloudflare Turnstile Global Configuration
-              window.turnstileConfig = {
-                siteKey: "0x4AAAAABsXjXiK8Z15XV7m"
-              };
-              
-              // Global Turnstile Callbacks
-              window.onTurnstileSuccess = function(token) {
-                console.log('Turnstile success:', token);
-                document.dispatchEvent(new CustomEvent('turnstileSuccess', { detail: token }));
-              };
-              
-              window.onTurnstileError = function(error) {
-                console.error('Turnstile error:', error);
-                document.dispatchEvent(new CustomEvent('turnstileError', { detail: error }));
-              };
-              
-              window.onTurnstileExpired = function() {
-                console.warn('Turnstile expired');
-                document.dispatchEvent(new CustomEvent('turnstileExpired'));
-              };
-              
-              window.onTurnstileTimeout = function() {
-                console.warn('Turnstile timeout');
-                document.dispatchEvent(new CustomEvent('turnstileTimeout'));
-              };
-            `,
-          }}
-        />
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        {/* Turnstile is now handled by react-turnstile library */}
       </body>
     </html>
   );

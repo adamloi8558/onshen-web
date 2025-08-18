@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import TurnstileWidget from "@/components/ui/turnstile";
 
 const loginSchema = z.object({
   phone: z.string().min(1, "กรุณาใส่เบอร์โทรศัพท์"),
@@ -40,35 +41,17 @@ export default function LoginForm() {
     },
   });
 
-  // Cloudflare Turnstile callbacks
-  useEffect(() => {
-    const handleTurnstileSuccess = (event: CustomEvent) => {
-      console.log('Login Turnstile success:', event.detail);
-      setTurnstileToken(event.detail);
-    };
+  // Turnstile handlers
+  const handleTurnstileSuccess = (token: string) => {
+    console.log('Login Turnstile success:', token);
+    setTurnstileToken(token);
+  };
 
-    const handleTurnstileError = (event: CustomEvent) => {
-      console.error('Login Turnstile error:', event.detail);
-      toast.error("การยืนยันไม่สำเร็จ กรุณาลองใหม่");
-      setTurnstileToken("");
-    };
-
-    const handleTurnstileExpired = () => {
-      console.warn('Login Turnstile expired');
-      toast.warning("การยืนยันหมดอายุ กรุณาลองใหม่");
-      setTurnstileToken("");
-    };
-
-    document.addEventListener('turnstileSuccess', handleTurnstileSuccess as EventListener);
-    document.addEventListener('turnstileError', handleTurnstileError as EventListener);
-    document.addEventListener('turnstileExpired', handleTurnstileExpired as EventListener);
-    
-    return () => {
-      document.removeEventListener('turnstileSuccess', handleTurnstileSuccess as EventListener);
-      document.removeEventListener('turnstileError', handleTurnstileError as EventListener);
-      document.removeEventListener('turnstileExpired', handleTurnstileExpired as EventListener);
-    };
-  }, []);
+  const handleTurnstileError = () => {
+    console.error('Login Turnstile error');
+    toast.error("การยืนยันไม่สำเร็จ กรุณาลองใหม่");
+    setTurnstileToken("");
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     if (!turnstileToken) {
@@ -167,16 +150,10 @@ export default function LoginForm() {
         />
 
         {/* Cloudflare Turnstile */}
-        <div className="flex justify-center">
-          <div
-            className="cf-turnstile"
-            data-sitekey="0x4AAAAABsXjXiK8Z15XV7m"
-            data-callback="onTurnstileSuccess"
-            data-error-callback="onTurnstileError"
-            data-expired-callback="onTurnstileExpired"
-            data-timeout-callback="onTurnstileTimeout"
-          ></div>
-        </div>
+        <TurnstileWidget 
+          onSuccess={handleTurnstileSuccess}
+          onError={handleTurnstileError}
+        />
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

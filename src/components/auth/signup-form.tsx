@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { isValidPhone } from "@/lib/utils";
+import TurnstileWidget from "@/components/ui/turnstile";
 
 const signupSchema = z.object({
   phone: z.string()
