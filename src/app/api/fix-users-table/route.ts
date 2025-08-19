@@ -15,7 +15,7 @@ export async function GET() {
     await db.execute(`
       ALTER TABLE users 
       ADD COLUMN IF NOT EXISTS reset_otp TEXT,
-      ADD COLUMN IF NOT EXISTS reset_otp_expires_at TIMESTAMP;
+      ADD COLUMN IF NOT EXISTS reset_otp_expires TIMESTAMP;
     `);
 
     console.log('Users table updated successfully');
