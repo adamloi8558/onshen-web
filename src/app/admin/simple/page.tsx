@@ -56,11 +56,16 @@ export default async function SimpleAdminPage() {
               <p className="text-muted-foreground mb-4">
                 ดูรายการผู้ใช้ทั้งหมดในระบบ
               </p>
-              <div className="space-y-2">
+              <div className="space-y-2 mb-4">
                 <p className="text-sm">• ดูรายการผู้ใช้</p>
                 <p className="text-sm">• ตรวจสอบสถานะ VIP</p>
                 <p className="text-sm">• ดูยอดเงินและเหรียญ</p>
               </div>
+              <Button className="w-full" asChild>
+                <Link href="/admin/users/simple">
+                  เข้าจัดการ
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
@@ -76,11 +81,16 @@ export default async function SimpleAdminPage() {
               <p className="text-muted-foreground mb-4">
                 เพิ่มหนังและซีรี่ย์ใหม่
               </p>
-              <div className="space-y-2">
+              <div className="space-y-2 mb-4">
                 <p className="text-sm">• เพิ่มหนังใหม่</p>
                 <p className="text-sm">• เพิ่มซีรี่ย์ใหม่</p>
                 <p className="text-sm">• จัดการ episodes</p>
               </div>
+              <Button className="w-full" asChild>
+                <Link href="/admin/content/simple">
+                  เข้าจัดการ
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
@@ -96,11 +106,16 @@ export default async function SimpleAdminPage() {
               <p className="text-muted-foreground mb-4">
                 อัพโหลดไฟล์วีดีโอและติดตามความคืบหน้า
               </p>
-              <div className="space-y-2">
+              <div className="space-y-2 mb-4">
                 <p className="text-sm">• อัพโหลดวีดีโอ</p>
                 <p className="text-sm">• ติดตาม progress</p>
                 <p className="text-sm">• จัดการไฟล์</p>
               </div>
+              <Button className="w-full" asChild>
+                <Link href="/admin/upload/simple">
+                  เข้าจัดการ
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
@@ -141,11 +156,16 @@ export default async function SimpleAdminPage() {
               <p className="text-muted-foreground mb-4">
                 ตั้งค่าและคอนฟิกระบบ
               </p>
-              <div className="space-y-2">
+              <div className="space-y-2 mb-4">
                 <p className="text-sm">• ข้อมูลระบบ</p>
                 <p className="text-sm">• การตั้งค่า</p>
                 <p className="text-sm">• สถานะเซิร์ฟเวอร์</p>
               </div>
+              <Button className="w-full" asChild>
+                <Link href="/admin/settings/simple">
+                  เข้าจัดการ
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
