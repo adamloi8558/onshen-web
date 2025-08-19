@@ -36,6 +36,8 @@ export async function GET() {
       balance: '100.00',
       is_vip: true,
       vip_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+      reset_otp: null,
+      reset_otp_expires: null,
       created_at: new Date(),
       updated_at: new Date(),
     });
