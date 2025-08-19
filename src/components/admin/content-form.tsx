@@ -400,7 +400,7 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">ไม่มีหมวดหมู่</SelectItem>
+                          <SelectItem value="none">ไม่มีหมวดหมู่</SelectItem>
                           {Array.isArray(categories) && categories.length > 0 && categories.map((category) => (
                             <SelectItem key={category.id} value={category.id || ""}>
                               {category.name || "ไม่มีชื่อ"}

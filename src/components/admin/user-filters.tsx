@@ -66,7 +66,7 @@ export function UserFilters({ initialFilters }: UserFiltersProps) {
               <SelectValue placeholder="บทบาท" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">ทั้งหมด</SelectItem>
+              <SelectItem value="all">ทั้งหมด</SelectItem>
               <SelectItem value="user">ผู้ใช้</SelectItem>
               <SelectItem value="admin">แอดมิน</SelectItem>
             </SelectContent>
@@ -77,7 +77,7 @@ export function UserFilters({ initialFilters }: UserFiltersProps) {
               <SelectValue placeholder="สมาชิก VIP" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">ทั้งหมด</SelectItem>
+              <SelectItem value="all">ทั้งหมด</SelectItem>
               <SelectItem value="true">VIP</SelectItem>
               <SelectItem value="false">ไม่ VIP</SelectItem>
             </SelectContent>

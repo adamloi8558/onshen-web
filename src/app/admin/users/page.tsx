@@ -54,18 +54,20 @@ async function getUsers(filters: UserFilters = {}) {
     // Apply filters
     const whereConditions = [];
 
-    if (filters.search) {
+    if (filters.search && filters.search.trim() !== "") {
       whereConditions.push(like(users.phone, `%${filters.search}%`));
     }
 
-    if (filters.role && (filters.role === 'user' || filters.role === 'admin')) {
+    if (filters.role && filters.role !== "all" && (filters.role === 'user' || filters.role === 'admin')) {
       whereConditions.push(eq(users.role, filters.role));
     }
 
-    if (filters.vip === 'true') {
-      whereConditions.push(eq(users.is_vip, true));
-    } else if (filters.vip === 'false') {
-      whereConditions.push(eq(users.is_vip, false));
+    if (filters.vip && filters.vip !== "all") {
+      if (filters.vip === 'true') {
+        whereConditions.push(eq(users.is_vip, true));
+      } else if (filters.vip === 'false') {
+        whereConditions.push(eq(users.is_vip, false));
+      }
     }
 
     // Execute query with or without filters
@@ -98,9 +100,9 @@ export default async function UsersManagement({ searchParams }: UsersPageProps) 
   await requireAdmin();
   
   const filters: UserFilters = {
-    search: searchParams.search,
-    role: searchParams.role,
-    vip: searchParams.vip,
+    search: searchParams.search || "",
+    role: searchParams.role || "all",
+    vip: searchParams.vip || "all",
   };
 
   const usersList = await getUsers(filters);
