@@ -17,7 +17,14 @@ export const metadata: Metadata = {
 };
 
 export default async function ProfilePage() {
-  const user = await getCurrentUser();
+  let user;
+  
+  try {
+    user = await getCurrentUser();
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    redirect("/auth/login");
+  }
 
   if (!user) {
     redirect("/auth/login");

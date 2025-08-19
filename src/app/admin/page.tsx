@@ -163,6 +163,11 @@ export default async function AdminDashboard() {
                 อัพโหลด
               </Link>
             </Button>
+            <Button variant="outline" asChild>
+              <Link href="/admin/simple">
+                Simple Mode
+              </Link>
+            </Button>
           </div>
         </div>
 
