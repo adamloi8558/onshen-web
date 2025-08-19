@@ -152,15 +152,15 @@ export default async function AdminDashboard() {
           </div>
           <div className="flex gap-2">
             <Button asChild>
-              <Link href="/admin/content/new">
+              <Link href="/admin/content/simple">
                 <Plus className="h-4 w-4 mr-2" />
-                เพิ่มเนื้อหา
+                เพิ่มเนื้อหา (Simple)
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/admin/upload">
+              <Link href="/admin/upload/simple">
                 <Upload className="h-4 w-4 mr-2" />
-                อัพโหลด
+                อัพโหลด (Simple)
               </Link>
             </Button>
             <Button variant="outline" asChild>
