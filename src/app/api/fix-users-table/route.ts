@@ -24,10 +24,10 @@ export async function GET() {
       message: 'Users table updated successfully',
       timestamp: new Date().toISOString() 
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating users table:', error);
     return NextResponse.json({ 
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString() 
     }, { status: 500 });
   }

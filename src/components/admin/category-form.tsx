@@ -86,9 +86,9 @@ export default function CategoryForm({ initialData, isEditing = false }: Categor
       router.push('/admin/categories');
       router.refresh();
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error submitting form:', error);
-      toast.error(error.message || 'เกิดข้อผิดพลาดในการสร้างหมวดหมู่');
+      toast.error(error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการสร้างหมวดหมู่');
     } finally {
       setIsSubmitting(false);
     }

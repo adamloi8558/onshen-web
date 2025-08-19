@@ -51,12 +51,12 @@ export async function POST(request: NextRequest) {
       category: newCategory,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating category:', error);
     
-    if (error.name === 'ZodError') {
+    if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
-        { error: 'ข้อมูลไม่ถูกต้อง', details: error.errors },
+        { error: 'ข้อมูลไม่ถูกต้อง', details: 'Invalid data format' },
         { status: 400 }
       );
     }

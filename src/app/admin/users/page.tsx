@@ -3,15 +3,14 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { desc, like, eq, and } from "drizzle-orm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { UserFilters } from "@/components/admin/user-filters";
 import Link from "next/link";
 import Image from "next/image";
 import { 
-  Search,
   User,
   Crown,
   Edit3,

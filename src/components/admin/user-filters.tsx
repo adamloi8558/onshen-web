@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ interface UserFiltersProps {
 
 export function UserFilters({ initialFilters }: UserFiltersProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   
   const [search, setSearch] = useState(initialFilters.search || "");
   const [role, setRole] = useState(initialFilters.role || "");

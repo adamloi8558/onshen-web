@@ -49,7 +49,11 @@ export default async function EditCategoryPage({ params }: EditCategoryPageProps
   return (
     <div className="container py-8">
       <CategoryForm 
-        initialData={category}
+        initialData={{
+          name: category.name,
+          slug: category.slug,
+          description: category.description || undefined,
+        }}
         isEditing={true}
       />
     </div>
