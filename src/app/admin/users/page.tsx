@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserFilters } from "@/components/admin/user-filters";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -164,50 +164,7 @@ export default async function UsersManagement({ searchParams }: UsersPageProps) 
         </div>
 
         {/* Filters */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg">ค้นหาและกรอง</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    name="search"
-                    placeholder="ค้นหาเบอร์โทรศัพท์..."
-                    defaultValue={filters.search}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <Select name="role" defaultValue={filters.role}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="บทบาท" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">ทั้งหมด</SelectItem>
-                  <SelectItem value="user">ผู้ใช้</SelectItem>
-                  <SelectItem value="admin">แอดมิน</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select name="vip" defaultValue={filters.vip}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="สมาชิก VIP" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">ทั้งหมด</SelectItem>
-                  <SelectItem value="true">VIP</SelectItem>
-                  <SelectItem value="false">ธรรมดา</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button type="submit">
-                <Search className="h-4 w-4 mr-2" />
-                ค้นหา
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+        <UserFilters initialFilters={filters} />
 
         {/* Users List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

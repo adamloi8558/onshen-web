@@ -43,7 +43,14 @@ async function getSystemInfo() {
 
 export default async function SettingsPage() {
   await requireAdmin();
-  const systemInfo = await getSystemInfo();
+  
+  let systemInfo;
+  try {
+    systemInfo = await getSystemInfo();
+  } catch (error) {
+    console.error('Error in SettingsPage:', error);
+    systemInfo = null;
+  }
 
   const formatUptime = (seconds: number) => {
     const days = Math.floor(seconds / 86400);
