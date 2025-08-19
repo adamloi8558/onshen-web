@@ -24,6 +24,8 @@ export async function GET() {
         is_vip BOOLEAN DEFAULT false NOT NULL,
         vip_expires_at TIMESTAMP,
         last_login_at TIMESTAMP,
+        reset_otp TEXT,
+        reset_otp_expires_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT NOW() NOT NULL,
         updated_at TIMESTAMP DEFAULT NOW() NOT NULL
       );
