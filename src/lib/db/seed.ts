@@ -7,7 +7,7 @@ async function seed() {
 
   try {
     // Create admin user
-    const adminPassword = await hashPassword('admin123456');
+    const adminPassword = await hashPassword('@@GGRocker123zazaza!');
     
     await db.insert(users).values({
       phone: '0800000000',
