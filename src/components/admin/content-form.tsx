@@ -401,11 +401,17 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="">ไม่มีหมวดหมู่</SelectItem>
-                          {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
-                              {category.name}
+                          {categories && categories.length > 0 ? (
+                            categories.map((category) => (
+                              <SelectItem key={category.id} value={category.id}>
+                                {category.name}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="no-categories" disabled>
+                              ไม่มีหมวดหมู่ในระบบ
                             </SelectItem>
-                          ))}
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />
