@@ -169,6 +169,11 @@ export default function LoginForm() {
           เข้าสู่ระบบ
         </Button>
 
+        <Button type="button" variant="outline" className="w-full" asChild>
+          <Link href="/auth/signup">
+            สร้างบัญชี
+          </Link>
+        </Button>
 
       </form>
 
