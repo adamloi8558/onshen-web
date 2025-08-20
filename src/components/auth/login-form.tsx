@@ -169,14 +169,7 @@ export default function LoginForm() {
           เข้าสู่ระบบ
         </Button>
 
-        <div className="text-center">
-          <Link
-            href="/auth/signup"
-            className="text-sm text-muted-foreground hover:text-primary"
-          >
-            สร้างบัญชี
-          </Link>
-        </div>
+
       </form>
 
 

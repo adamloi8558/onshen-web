@@ -22,15 +22,7 @@ export default function LoginPage() {
           <LoginForm />
         </div>
 
-        <div className="text-center text-sm text-slate-600">
-          ยังไม่มีบัญชี?{" "}
-          <Link 
-            href="/auth/signup" 
-            className="font-medium text-primary hover:underline"
-          >
-            สมัครสมาชิก
-          </Link>
-        </div>
+
       </div>
     </div>
   );
