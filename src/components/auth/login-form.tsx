@@ -145,6 +145,15 @@ export default function LoginForm() {
                 </div>
               </FormControl>
               <FormMessage />
+              {/* ลืมรหัสผ่าน ย้ายมาอยู่ข้างใต้ช่องรหัสผ่าน */}
+              <div className="text-right">
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm text-muted-foreground hover:text-primary"
+                >
+                  ลืมรหัสผ่าน?
+                </Link>
+              </div>
             </FormItem>
           )}
         />
@@ -162,10 +171,10 @@ export default function LoginForm() {
 
         <div className="text-center">
           <Link
-            href="/auth/forgot-password"
+            href="/auth/signup"
             className="text-sm text-muted-foreground hover:text-primary"
           >
-            ลืมรหัสผ่าน?
+            ยังไม่มีบัญชี? สมัครสมาชิก
           </Link>
         </div>
       </form>
