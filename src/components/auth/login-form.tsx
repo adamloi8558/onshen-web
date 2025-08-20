@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -174,7 +174,7 @@ export default function LoginForm() {
             href="/auth/signup"
             className="text-sm text-muted-foreground hover:text-primary"
           >
-            ยังไม่มีบัญชี? สมัครสมาชิก
+            สร้างบัญชี
           </Link>
         </div>
       </form>
