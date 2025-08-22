@@ -21,6 +21,7 @@ import {
   LogOut,
   Crown,
   BookmarkIcon,
+  Coins,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -136,17 +137,30 @@ export default function Navbar({ user }: NavbarProps) {
                       )}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <div className="flex items-center justify-start gap-2 p-2">
+                  <DropdownMenuContent align="end" className="w-64">
+                    <div className="flex items-center justify-start gap-2 p-3">
                       <div className="flex flex-col space-y-1 leading-none">
                         <p className="font-medium">{user.phone}</p>
-                        <p className="text-xs text-muted-foreground">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิก'}</p>
-                        {user.is_vip && (
-                          <div className="flex items-center gap-1 text-yellow-600">
-                            <Crown className="h-3 w-3" />
-                            <span className="text-xs">สมาชิก VIP</span>
-                          </div>
-                        )}
+                        
+                        {/* ยศ */}
+                        <div className="flex items-center gap-1">
+                          {user.role === 'admin' ? (
+                            <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full font-medium">ผู้ดูแลระบบ</span>
+                          ) : user.is_vip ? (
+                            <div className="flex items-center gap-1">
+                              <Crown className="h-3 w-3 text-yellow-600" />
+                              <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full font-medium">VIP</span>
+                            </div>
+                          ) : (
+                            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full font-medium">Member</span>
+                          )}
+                        </div>
+
+                        {/* จำนวนเหรียญ */}
+                        <div className="flex items-center gap-1 text-amber-600">
+                          <Coins className="h-3 w-3" />
+                          <span className="text-xs font-medium">{user.coins?.toLocaleString() || 0} เหรียญ</span>
+                        </div>
                       </div>
                     </div>
                     <DropdownMenuSeparator />
