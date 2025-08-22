@@ -79,7 +79,7 @@ export default function Navbar({ user }: NavbarProps) {
             <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
               <span className="text-primary-foreground font-bold">ร</span>
             </div>
-            <span className="font-bold text-xl">โรงละคร</span>
+            <span className="font-bold text-xl">Ronglakorn</span>
           </Link>
 
           {/* Desktop Navigation */}

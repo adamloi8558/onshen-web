@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "ซีรี่ย์",
   description: "ดูซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่",
   openGraph: {
-    title: "ซีรี่ย์ - โรงละคร",
+    title: "ซีรี่ย์ - Ronglakorn",
     description: "ดูซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่",
     images: ["/og-series.jpg"],
   },

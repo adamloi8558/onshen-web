@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "เข้าสู่ระบบ",
-  description: "เข้าสู่ระบบ โรงละคร เพื่อดูหนังและซีรี่ย์คุณภาพ HD",
+  description: "เข้าสู่ระบบ Ronglakorn เพื่อดูหนังและซีรี่ย์คุณภาพ HD",
 };
 
 export default function LoginPage() {
@@ -14,7 +14,7 @@ export default function LoginPage() {
         <div className="text-center">
           <h1 className="text-3xl font-bold text-slate-900">เข้าสู่ระบบ</h1>
           <p className="mt-2 text-slate-600">
-            ยินดีต้อนรับกลับสู่ โรงละคร
+            ยินดีต้อนรับกลับสู่ Ronglakorn
           </p>
         </div>
 

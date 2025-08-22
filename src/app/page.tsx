@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "หน้าแรก",
   description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
   openGraph: {
-    title: "โรงละคร - ดูหนังออนไลน์ คุณภาพ HD",
+    title: "Ronglakorn - ดูหนังออนไลน์ คุณภาพ HD",
     description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
     images: ["/og-home.jpg"],
   },
@@ -28,7 +28,7 @@ export default async function HomePage() {
         <div className="min-h-screen">
           <div className="container py-12">
             <div className="text-center">
-              <h1 className="text-4xl font-bold mb-4">โรงละคร</h1>
+              <h1 className="text-4xl font-bold mb-4">Ronglakorn</h1>
               <p className="text-muted-foreground">ดูหนังและซีรี่ย์ออนไลน์คุณภาพสูง</p>
             </div>
           </div>
@@ -208,7 +208,7 @@ export default async function HomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">โรงละคร</h1>
+          <h1 className="text-4xl font-bold mb-4">Ronglakorn</h1>
           <p className="text-muted-foreground mb-4">
             ระบบกำลังเตรียมพร้อม กรุณารอสักครู่...
           </p>

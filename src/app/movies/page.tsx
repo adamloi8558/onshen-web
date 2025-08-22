@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "หนัง",
   description: "ดูหนังออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่",
   openGraph: {
-    title: "หนัง - โรงละคร",
+    title: "หนัง - Ronglakorn",
     description: "ดูหนังออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่",
     images: ["/og-movies.jpg"],
   },

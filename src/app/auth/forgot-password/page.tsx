@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "ลืมรหัสผ่าน",
-  description: "รีเซ็ตรหัสผ่าน โรงละคร ของคุณ",
+  description: "รีเซ็ตรหัสผ่าน Ronglakorn ของคุณ",
 };
 
 export default function ForgotPasswordPage() {

@@ -13,32 +13,32 @@ const notoSansThai = Noto_Sans_Thai({
 
 export const metadata: Metadata = {
   title: {
-    default: "โรงละคร - ดูหนังออนไลน์ คุณภาพ HD",
-    template: "%s | โรงละคร",
+    default: "Ronglakorn - ดูหนังออนไลน์ คุณภาพ HD",
+    template: "%s | Ronglakorn",
   },
   description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
-  keywords: ["หนังออนไลน์", "ซีรี่ย์", "โรงละคร", "ดูหนัง", "HD", "VIP"],
-  authors: [{ name: "โรงละคร Team" }],
-  creator: "โรงละคร",
+  keywords: ["หนังออนไลน์", "ซีรี่ย์", "Ronglakorn", "ดูหนัง", "HD", "VIP"],
+  authors: [{ name: "Ronglakorn Team" }],
+  creator: "Ronglakorn",
   openGraph: {
     type: "website",
     locale: "th_TH",
     url: process.env.NEXT_PUBLIC_APP_URL,
-    title: "โรงละคร - ดูหนังออนไลน์ คุณภาพ HD",
+    title: "Ronglakorn - ดูหนังออนไลน์ คุณภาพ HD",
     description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
-    siteName: "โรงละคร",
+    siteName: "Ronglakorn",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "โรงละคร",
+        alt: "Ronglakorn",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "โรงละคร - ดูหนังออนไลน์ คุณภาพ HD",
+    title: "Ronglakorn - ดูหนังออนไลน์ คุณภาพ HD",
     description: "ดูหนังและซีรี่ย์ออนไลน์คุณภาพ HD ครบครันทุกหมวดหมู่ สมาชิก VIP เพียง 39 บาทต่อเดือน",
     images: ["/og-image.jpg"],
   },

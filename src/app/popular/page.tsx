@@ -15,10 +15,10 @@ interface PopularPageProps {
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "ยอดนิยม - โรงละคร",
+  title: "ยอดนิยม - Ronglakorn",
   description: "หนังและซีรี่ย์ยอดนิยมที่คนดูมากที่สุด",
   openGraph: {
-    title: "ยอดนิยม - โรงละคร",
+    title: "ยอดนิยม - Ronglakorn",
     description: "หนังและซีรี่ย์ยอดนิยมที่คนดูมากที่สุด",
     images: ["/og-popular.jpg"],
   },

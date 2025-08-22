@@ -10,10 +10,10 @@ import { Film, Tv } from "lucide-react";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "หมวดหมู่ - โรงละคร",
+  title: "หมวดหมู่ - Ronglakorn",
   description: "เลือกดูหนังและซีรี่ย์ตามหมวดหมู่ที่คุณชื่นชอบ",
   openGraph: {
-    title: "หมวดหมู่ - โรงละคร",
+    title: "หมวดหมู่ - Ronglakorn",
     description: "เลือกดูหนังและซีรี่ย์ตามหมวดหมู่ที่คุณชื่นชอบ",
     images: ["/og-categories.jpg"],
   },
