@@ -5,7 +5,7 @@ export const userRoleEnum = pgEnum('user_role', ['user', 'admin']);
 export const contentTypeEnum = pgEnum('content_type', ['movie', 'series']);
 export const contentStatusEnum = pgEnum('content_status', ['draft', 'published', 'archived']);
 export const contentRatingEnum = pgEnum('content_rating', ['G', 'PG', 'PG-13', 'R', 'NC-17']);
-export const transactionTypeEnum = pgEnum('transaction_type', ['deposit', 'withdraw', 'vip_purchase', 'coin_purchase']);
+export const transactionTypeEnum = pgEnum('transaction_type', ['deposit', 'withdraw', 'vip_purchase', 'coin_purchase', 'topup']);
 export const transactionStatusEnum = pgEnum('transaction_status', ['pending', 'completed', 'failed', 'cancelled']);
 
 // Users table

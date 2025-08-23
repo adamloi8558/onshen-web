@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import LoginForm from "@/components/auth/login-form";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "เข้าสู่ระบบ",

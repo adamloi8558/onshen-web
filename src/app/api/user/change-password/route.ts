@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const user = await requireAuth();
     
     const body = await req.json();
-    const { currentPassword, newPassword, confirmPassword } = changePasswordSchema.parse(body);
+    const { currentPassword, newPassword } = changePasswordSchema.parse(body);
 
     // ตรวจสอบรหัสผ่านปัจจุบัน
     const [dbUser] = await db

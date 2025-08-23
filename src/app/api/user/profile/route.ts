@@ -18,7 +18,7 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const { avatar_url } = updateProfileSchema.parse(body);
 
-    const updateData: any = {
+    const updateData: { updated_at: Date; avatar_url?: string } = {
       updated_at: new Date(),
     };
 

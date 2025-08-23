@@ -22,7 +22,7 @@ interface TopupFormProps {
 
 const QUICK_AMOUNTS = [50, 100, 200, 500, 1000, 2000];
 
-export default function TopupForm({ user }: TopupFormProps) {
+export default function TopupForm({ }: TopupFormProps) {
   const [amount, setAmount] = useState<number>(100);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<'credit' | 'wallet' | 'qr'>('credit');

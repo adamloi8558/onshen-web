@@ -71,6 +71,8 @@ export async function getCurrentUser(): Promise<{
   balance: string;
   is_vip: boolean;
   vip_expires_at: Date | null;
+  last_login_at: Date | null;
+  created_at: Date;
 } | null> {
   try {
     // Skip during build with placeholder database
@@ -100,6 +102,8 @@ export async function getCurrentUser(): Promise<{
         balance: users.balance,
         is_vip: users.is_vip,
         vip_expires_at: users.vip_expires_at,
+        last_login_at: users.last_login_at,
+        created_at: users.created_at,
       })
       .from(users)
       .where(eq(users.id, payload.userId))
