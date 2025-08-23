@@ -157,10 +157,10 @@ export default function Navbar({ user }: NavbarProps) {
                         </div>
 
                         {/* จำนวนเหรียญ */}
-                        <div className="flex items-center gap-1 text-amber-600">
+                        <Link href="/topup" className="flex items-center gap-1 text-amber-600 hover:text-amber-700 transition-colors">
                           <Coins className="h-3 w-3" />
                           <span className="text-xs font-medium">{user.coins?.toLocaleString() || 0} เหรียญ</span>
-                        </div>
+                        </Link>
                       </div>
                     </div>
                     <DropdownMenuSeparator />
