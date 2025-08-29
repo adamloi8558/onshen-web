@@ -33,10 +33,10 @@ export default function UploadForm({ contentId }: UploadFormProps) {
       return;
     }
 
-    // Validate file size (100MB)
-    const maxSize = 100 * 1024 * 1024; // 100MB
+    // Validate file size (5GB)
+    const maxSize = 5 * 1024 * 1024 * 1024; // 5GB
     if (file.size > maxSize) {
-      toast.error("ขนาดไฟล์เกิน 100MB");
+      toast.error("ขนาดไฟล์เกิน 5GB");
       return;
     }
 
@@ -177,7 +177,7 @@ export default function UploadForm({ contentId }: UploadFormProps) {
       <Alert>
         <Upload className="h-4 w-4" />
         <AlertDescription>
-          รองรับไฟล์ MP4, WebM, MKV ขนาดสูงสุด 100MB
+          รองรับไฟล์ MP4, WebM, MKV ขนาดสูงสุด 5GB
           <br />
           ระบบจะแปลงเป็น HLS (.m3u8) อัตโนมัติหลังอัปโหลด
         </AlertDescription>
@@ -286,7 +286,7 @@ export default function UploadForm({ contentId }: UploadFormProps) {
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <p>📹 <strong>ไฟล์ที่รองรับ:</strong> MP4, WebM, MKV</p>
-          <p>📏 <strong>ขนาดสูงสุด:</strong> 100MB ต่อไฟล์</p>
+          <p>📏 <strong>ขนาดสูงสุด:</strong> 5GB ต่อไฟล์</p>
           <p>🎬 <strong>คุณภาพแนะนำ:</strong> 1080p หรือ 720p</p>
           <p>⚡ <strong>การประมวลผล:</strong> แปลงเป็น HLS อัตโนมัติ</p>
           <p>🔒 <strong>ความปลอดภัย:</strong> ไฟล์จะถูกเก็บใน Cloudflare R2</p>

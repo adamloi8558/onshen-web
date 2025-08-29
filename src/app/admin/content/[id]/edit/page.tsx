@@ -106,6 +106,7 @@ export default async function EditContentPage({ params }: PageProps) {
     release_date: contentItem.release_date 
       ? new Date(contentItem.release_date).toISOString().split('T')[0]
       : '',
+    poster_url: contentItem.poster_url || '',
   };
 
   return (

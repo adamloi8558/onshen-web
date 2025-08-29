@@ -20,6 +20,7 @@ const createContentSchema = z.object({
   duration_minutes: z.number().nullable().optional(),
   total_episodes: z.number().nullable().optional(),
   release_date: z.string().nullable().optional().transform(val => val === "" ? null : val),
+  poster_url: z.string().nullable().optional().transform(val => val === "" ? null : val),
 });
 
 export async function POST(request: NextRequest) {
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
         duration_minutes: validatedData.duration_minutes || null,
         total_episodes: validatedData.total_episodes || null,
         release_date: validatedData.release_date ? new Date(validatedData.release_date) : null,
+        poster_url: validatedData.poster_url || null,
         views: 0,
         saves: 0,
       })

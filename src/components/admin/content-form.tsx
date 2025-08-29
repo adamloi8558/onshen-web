@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload } from "lucide-react";
+import PosterUpload from "./poster-upload";
 
 const contentSchema = z.object({
   title: z.string().min(1, "กรุณาใส่ชื่อเรื่อง"),
@@ -30,6 +31,7 @@ const contentSchema = z.object({
   duration_minutes: z.number().optional(),
   total_episodes: z.number().optional(),
   release_date: z.string().optional(),
+  poster_url: z.string().optional(),
 });
 
 type ContentFormData = z.infer<typeof contentSchema>;
@@ -63,6 +65,7 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
       duration_minutes: initialData?.duration_minutes,
       total_episodes: initialData?.total_episodes,
       release_date: initialData?.release_date || "",
+      poster_url: initialData?.poster_url || "",
     },
   });
 
@@ -171,7 +174,15 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Poster Upload */}
+          <div className="lg:col-span-1">
+            <PosterUpload 
+              currentPosterUrl={form.watch("poster_url")}
+              onPosterChange={(url) => form.setValue("poster_url", url)}
+            />
+          </div>
+
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             <Card>
@@ -443,6 +454,26 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="poster_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL ภาพปก</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://example.com/poster.jpg"
+                          {...field}
+                        />
+                      </FormControl>
+                      <p className="text-xs text-muted-foreground">
+                        ใส่ URL ภาพปก หรืออัปโหลดภาพผ่านระบบ
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}

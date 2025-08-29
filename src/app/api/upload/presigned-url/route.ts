@@ -49,8 +49,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = presignedUrlSchema.parse(body);
 
-    // Validate file type
-    const allowedTypes = ['video/mp4', 'video/webm', 'video/mkv'];
+    // Validate file type based on upload type
+    let allowedTypes: string[];
+    let maxSize: number;
+    
+    if (validatedData.fileType === 'poster') {
+      allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      maxSize = parseFileSize('10MB');
+    } else if (validatedData.fileType === 'avatar') {
+      allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      maxSize = parseFileSize('5MB');
+    } else {
+      allowedTypes = ['video/mp4', 'video/webm', 'video/mkv'];
+      maxSize = parseFileSize('5GB');
+    }
+    
     if (!validateFileType(validatedData.filename, allowedTypes)) {
       return NextResponse.json(
         { error: 'ประเภทไฟล์ไม่ได้รับอนุญาต' },
@@ -62,10 +75,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file size
-    const maxSize = parseFileSize('100MB');
     if (validatedData.fileSize > maxSize) {
+      const maxSizeText = validatedData.fileType === 'poster' ? '10MB' : 
+                          validatedData.fileType === 'avatar' ? '5MB' : '5GB';
       return NextResponse.json(
-        { error: 'ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 100MB)' },
+        { error: `ไฟล์มีขนาดใหญ่เกินไป (สูงสุด ${maxSizeText})` },
         { 
           status: 400,
           headers: rateLimitHeaders,
