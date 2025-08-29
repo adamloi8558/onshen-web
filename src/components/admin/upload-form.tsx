@@ -16,7 +16,7 @@ interface UploadFormProps {
   contentTitle: string;
 }
 
-export default function UploadForm({ contentId, contentType, contentTitle }: UploadFormProps) {
+export default function UploadForm({ contentId }: UploadFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);

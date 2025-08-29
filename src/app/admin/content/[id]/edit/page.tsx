@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Film, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { ContentForm } from "@/components/admin/content-form";
 
 export const dynamic = 'force-dynamic';
@@ -139,9 +140,11 @@ export default async function EditContentPage({ params }: PageProps) {
               <CardContent className="space-y-4">
                 <div className="aspect-[2/3] bg-muted rounded-lg flex items-center justify-center overflow-hidden">
                   {contentItem.poster_url ? (
-                    <img 
+                    <Image 
                       src={contentItem.poster_url} 
                       alt={contentItem.title}
+                      width={200}
+                      height={300}
                       className="w-full h-full object-cover"
                     />
                   ) : (
