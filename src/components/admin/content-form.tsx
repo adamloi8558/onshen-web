@@ -100,15 +100,26 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
         },
         body: JSON.stringify({
           ...data,
+          category_id: data.category_id === "" ? null : data.category_id,
           duration_minutes: data.duration_minutes || null,
           total_episodes: data.total_episodes || null,
-          release_date: data.release_date || null,
+          release_date: data.release_date === "" ? null : data.release_date,
         }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'เกิดข้อผิดพลาด');
+        console.error('API Error:', error);
+        
+        if (error.details && Array.isArray(error.details)) {
+          // Show validation errors
+          error.details.forEach((detail: any) => {
+            toast.error(`${detail.field}: ${detail.message}`);
+          });
+        } else {
+          toast.error(error.error || 'เกิดข้อผิดพลาด');
+        }
+        return;
       }
 
       const result = await response.json();

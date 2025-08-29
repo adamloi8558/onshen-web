@@ -15,11 +15,11 @@ const createContentSchema = z.object({
   type: z.enum(['movie', 'series']),
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
   content_rating: z.enum(['G', 'PG', 'PG-13', 'R', 'NC-17']).default('PG'),
-  category_id: z.string().optional(),
+  category_id: z.string().nullable().optional().transform(val => val === "" ? null : val),
   is_vip_required: z.boolean().default(false),
-  duration_minutes: z.number().optional(),
-  total_episodes: z.number().optional(),
-  release_date: z.string().optional(),
+  duration_minutes: z.number().nullable().optional(),
+  total_episodes: z.number().nullable().optional(),
+  release_date: z.string().nullable().optional().transform(val => val === "" ? null : val),
 });
 
 export async function POST(request: NextRequest) {
@@ -29,7 +29,10 @@ export async function POST(request: NextRequest) {
 
     // Parse and validate request body
     const body = await request.json();
+    console.log('Received body:', JSON.stringify(body, null, 2));
+    
     const validatedData = createContentSchema.parse(body);
+    console.log('Validated data:', JSON.stringify(validatedData, null, 2));
 
     // Check if slug already exists
     const existingContent = await db
@@ -56,14 +59,12 @@ export async function POST(request: NextRequest) {
         status: validatedData.status,
         content_rating: validatedData.content_rating,
         category_id: validatedData.category_id || null,
-        is_vip_required: validatedData.is_vip_required,
+        is_vip_required: validatedData.is_vip_required || false,
         duration_minutes: validatedData.duration_minutes || null,
         total_episodes: validatedData.total_episodes || null,
         release_date: validatedData.release_date ? new Date(validatedData.release_date) : null,
         views: 0,
         saves: 0,
-        created_at: new Date(),
-        updated_at: new Date(),
       })
       .returning({
         id: content.id,
@@ -83,8 +84,15 @@ export async function POST(request: NextRequest) {
     console.error('Create content error:', error);
     
     if (error instanceof z.ZodError) {
+      console.error('Validation errors:', error.errors);
       return NextResponse.json(
-        { error: 'ข้อมูลไม่ถูกต้อง', details: error.errors },
+        { 
+          error: 'ข้อมูลไม่ถูกต้อง', 
+          details: error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        },
         { status: 400 }
       );
     }
