@@ -14,6 +14,7 @@ import {
   Plus,
   Edit3,
   Eye,
+  Upload,
   Play,
   Film,
   Tv
@@ -254,6 +255,11 @@ export default async function ContentManagement({ searchParams }: ContentPagePro
                     <Link href={`/admin/content/${item.id}/edit`}>
                       <Edit3 className="h-3 w-3 mr-1" />
                       แก้ไข
+                    </Link>
+                  </Button>
+                  <Button size="sm" variant="outline" asChild>
+                    <Link href={`/admin/content/${item.id}/upload`}>
+                      <Upload className="h-3 w-3" />
                     </Link>
                   </Button>
                   <Button size="sm" variant="outline" asChild>
