@@ -6,8 +6,7 @@ import { desc, eq, like, and } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ContentFilters from "@/components/admin/content-filters";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -69,15 +68,15 @@ async function getContent(filters: ContentFilters = {}) {
       whereConditions.push(like(content.title, `%${filters.search}%`));
     }
 
-    if (filters.type && (filters.type === 'movie' || filters.type === 'series')) {
+    if (filters.type && filters.type !== 'all' && (filters.type === 'movie' || filters.type === 'series')) {
       whereConditions.push(eq(content.type, filters.type));
     }
 
-    if (filters.status && ['draft', 'published', 'archived'].includes(filters.status)) {
+    if (filters.status && filters.status !== 'all' && ['draft', 'published', 'archived'].includes(filters.status)) {
       whereConditions.push(eq(content.status, filters.status as 'draft' | 'published' | 'archived'));
     }
 
-    if (filters.category) {
+    if (filters.category && filters.category !== 'all') {
       whereConditions.push(eq(content.category_id, filters.category));
     }
 
@@ -189,57 +188,7 @@ export default async function ContentManagement({ searchParams }: ContentPagePro
             <CardTitle className="text-lg">ค้นหาและกรอง</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    name="search"
-                    placeholder="ค้นหาชื่อเรื่อง..."
-                    defaultValue={filters.search}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <Select name="type" defaultValue={filters.type}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="ประเภท" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">ทั้งหมด</SelectItem>
-                  <SelectItem value="movie">หนัง</SelectItem>
-                  <SelectItem value="series">ซีรี่ย์</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select name="status" defaultValue={filters.status}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="สถานะ" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">ทั้งหมด</SelectItem>
-                  <SelectItem value="published">เผยแพร่</SelectItem>
-                  <SelectItem value="draft">ร่าง</SelectItem>
-                  <SelectItem value="archived">เก็บ</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select name="category" defaultValue={filters.category}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="หมวดหมู่" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">ทั้งหมด</SelectItem>
-                  {categoriesList.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button type="submit">
-                <Search className="h-4 w-4 mr-2" />
-                ค้นหา
-              </Button>
-            </form>
+            <ContentFilters categories={categoriesList} />
           </CardContent>
         </Card>
 
