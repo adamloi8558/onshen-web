@@ -7,12 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ContentFilters from "@/components/admin/content-filters";
+import DeleteContentButton from "@/components/admin/delete-content-button";
 import Link from "next/link";
 import Image from "next/image";
 import { 
   Plus,
   Edit3,
-  Trash2,
   Eye,
   Play,
   Film,
@@ -261,9 +261,10 @@ export default async function ContentManagement({ searchParams }: ContentPagePro
                       <Eye className="h-3 w-3" />
                     </Link>
                   </Button>
-                  <Button size="sm" variant="destructive">
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+                  <DeleteContentButton 
+                    contentId={item.id} 
+                    contentTitle={item.title} 
+                  />
                 </div>
               </CardContent>
             </Card>
