@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Crown, Coins, DollarSign, Shield, Calendar, Save } from "lucide-react";
+import { Crown, Coins, DollarSign, Shield, Save } from "lucide-react";
 import { toast } from "sonner";
 
 interface User {
@@ -43,7 +43,7 @@ export default function UserEditForm({ user }: UserEditFormProps) {
       : '',
   });
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     setFormData(prev => ({
       ...prev,
       [field]: value

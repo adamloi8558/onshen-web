@@ -72,7 +72,7 @@ export async function PATCH(
     const validatedData = updateUserSchema.parse(body);
 
     // Build update object
-    const updateData: Record<string, any> = {
+    const updateData: Record<string, unknown> = {
       updated_at: new Date(),
     };
 

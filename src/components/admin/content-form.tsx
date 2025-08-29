@@ -113,7 +113,7 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
         
         if (error.details && Array.isArray(error.details)) {
           // Show validation errors
-          error.details.forEach((detail: any) => {
+          error.details.forEach((detail: { field: string; message: string }) => {
             toast.error(`${detail.field}: ${detail.message}`);
           });
         } else {

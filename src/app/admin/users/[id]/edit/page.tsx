@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import UserEditForm from "@/components/admin/user-edit-form";
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,7 @@ interface PageProps {
   };
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `แก้ไขผู้ใช้ - แอดมิน`,
     description: "แก้ไขข้อมูลผู้ใช้และจัดการสิทธิ์",
@@ -94,9 +95,11 @@ export default async function EditUserPage({ params }: PageProps) {
                 <div className="text-center space-y-3">
                   <div className="w-20 h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
                     {user.avatar_url ? (
-                      <img 
+                      <Image 
                         src={user.avatar_url} 
                         alt="Avatar" 
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover rounded-full"
                       />
                     ) : (

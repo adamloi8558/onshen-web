@@ -18,7 +18,7 @@ interface PageProps {
   };
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `ประวัติการเงิน - แอดมิน`,
     description: "ดูประวัติการทำธุรกรรมของผู้ใช้",

@@ -10,7 +10,6 @@ import ContentFilters from "@/components/admin/content-filters";
 import Link from "next/link";
 import Image from "next/image";
 import { 
-  Search,
   Plus,
   Edit3,
   Trash2,
