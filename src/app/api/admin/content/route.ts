@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create content
+    console.log('Attempting to insert content...');
     const [newContent] = await db
       .insert(content)
       .values({
@@ -73,11 +74,13 @@ export async function POST(request: NextRequest) {
         type: content.type,
         status: content.status,
       });
+    
+    console.log('Content created successfully:', newContent);
 
     return NextResponse.json({
       success: true,
       message: 'เพิ่มเนื้อหาสำเร็จ',
-      content: newContent,
+      data: newContent,
     });
 
   } catch (error) {
@@ -98,7 +101,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'เกิดข้อผิดพลาดในการเพิ่มเนื้อหา' },
+      { 
+        error: 'เกิดข้อผิดพลาดในการเพิ่มเนื้อหา',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
+      },
       { status: 500 }
     );
   }

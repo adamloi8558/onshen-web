@@ -123,6 +123,7 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
       }
 
       const result = await response.json();
+      console.log('API Response:', result);
       
       toast.success(initialData?.id ? 'อัปเดตเนื้อหาสำเร็จ' : 'เพิ่มเนื้อหาสำเร็จ');
       
@@ -130,7 +131,8 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
       if (initialData?.id) {
         router.refresh();
       } else {
-        router.push(`/admin/content/${result.content.id}/edit`);
+        // Redirect to content list instead of edit page
+        router.push('/admin/content');
       }
       
     } catch (error) {
