@@ -47,7 +47,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log('Upload request body:', JSON.stringify(body, null, 2));
+    
     const validatedData = presignedUrlSchema.parse(body);
+    console.log('Validated data:', JSON.stringify(validatedData, null, 2));
 
     // Validate file type based on upload type
     let allowedTypes: string[];
@@ -60,13 +63,24 @@ export async function POST(request: NextRequest) {
       allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       maxSize = parseFileSize('5MB');
     } else {
-      allowedTypes = ['video/mp4', 'video/webm', 'video/mkv'];
+      allowedTypes = ['video/mp4', 'video/webm', 'video/mkv', 'video/x-matroska', 'application/x-matroska'];
       maxSize = parseFileSize('5GB');
     }
     
+    console.log('File validation:', {
+      filename: validatedData.filename,
+      fileType: validatedData.fileType,
+      allowedTypes,
+      maxSize: `${maxSize / 1024 / 1024 / 1024}GB`
+    });
+    
     if (!validateFileType(validatedData.filename, allowedTypes)) {
+      console.log('File type validation failed');
       return NextResponse.json(
-        { error: 'ประเภทไฟล์ไม่ได้รับอนุญาต' },
+        { 
+          error: 'ประเภทไฟล์ไม่ได้รับอนุญาต',
+          details: `ไฟล์ ${validatedData.filename} ไม่ตรงกับประเภทที่รองรับ: ${allowedTypes.join(', ')}`
+        },
         { 
           status: 400,
           headers: rateLimitHeaders,

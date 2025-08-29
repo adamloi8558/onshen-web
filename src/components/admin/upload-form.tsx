@@ -27,9 +27,15 @@ export default function UploadForm({ contentId }: UploadFormProps) {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['video/mp4', 'video/webm', 'video/mkv'];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error("รองรับเฉพาะไฟล์ MP4, WebM, MKV เท่านั้น");
+    const allowedTypes = ['video/mp4', 'video/webm', 'video/mkv', 'video/x-matroska', 'application/x-matroska'];
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    
+    // Check by MIME type or extension
+    const isValidType = allowedTypes.includes(file.type) || 
+                       (fileExtension && ['mp4', 'webm', 'mkv'].includes(fileExtension));
+    
+    if (!isValidType) {
+      toast.error(`รองรับเฉพาะไฟล์ MP4, WebM, MKV เท่านั้น (ไฟล์ของคุณ: ${file.type || 'unknown'})`);
       return;
     }
 
@@ -65,8 +71,9 @@ export default function UploadForm({ contentId }: UploadFormProps) {
         },
         body: JSON.stringify({
           filename: selectedFile.name,
-          fileType: selectedFile.type,
+          contentType: selectedFile.type,
           fileSize: selectedFile.size,
+          fileType: 'video',
           contentId: contentId,
         }),
       });

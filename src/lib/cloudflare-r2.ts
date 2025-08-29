@@ -91,6 +91,8 @@ export function validateFileType(filename: string, allowedTypes: string[]): bool
       'video/mp4': ['mp4'],
       'video/webm': ['webm'],
       'video/mkv': ['mkv'],
+      'video/x-matroska': ['mkv'], // Additional MIME type for MKV
+      'application/x-matroska': ['mkv'], // Another MKV MIME type
       'image/jpeg': ['jpg', 'jpeg'],
       'image/png': ['png'],
       'image/webp': ['webp'],
