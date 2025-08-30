@@ -115,14 +115,17 @@ export async function POST(request: NextRequest) {
 
     // Generate upload key
     const uploadKey = generateUploadKey(user.id, validatedData.fileType, validatedData.filename);
+    console.log('Generated upload key:', uploadKey);
     
     // Generate presigned URL
+    console.log('Generating presigned URL...');
     const { uploadUrl, fileUrl } = await generatePresignedUploadUrl({
       key: uploadKey,
       contentType: validatedData.contentType,
       maxSize: validatedData.fileSize,
       expiresIn: 3600, // 1 hour
     });
+    console.log('Presigned URL generated successfully');
 
     // Create upload job record
     const jobId = uuidv4();
