@@ -16,6 +16,7 @@ import {
   Clock, 
   Crown 
 } from "lucide-react";
+import MovieViewer from "@/components/movie-viewer";
 
 interface MoviePageProps {
   params: {
@@ -228,24 +229,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
                 )}
                 
                 <div className="flex items-center gap-4">
-                  {canWatch ? (
-                    <Button size="lg" className="gap-2">
-                      <Play className="h-5 w-5" />
-                      ดูหนัง
-                    </Button>
-                  ) : (
-                    <Button size="lg" variant="secondary" asChild>
-                      <Link href={movie.is_vip_required ? "/vip" : "/auth/login"}>
-                        {movie.is_vip_required ? "สมัครสมาชิก VIP" : "เข้าสู่ระบบเพื่อดู"}
-                      </Link>
-                    </Button>
-                  )}
-                  
-                  {movie.trailer_url && (
-                    <Button size="lg" variant="outline">
-                      ดูตัวอย่าง
-                    </Button>
-                  )}
+                  <MovieViewer movie={movie} user={user} />
                   
                   <Button size="lg" variant="ghost">
                     <Bookmark className="h-5 w-5" />

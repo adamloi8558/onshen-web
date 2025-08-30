@@ -18,6 +18,7 @@ import {
   Eye,
   Clock
 } from "lucide-react";
+import SeriesViewer from "@/components/series-viewer";
 
 interface EpisodePageProps {
   params: {
@@ -269,7 +270,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-6">
               <Button variant="outline" size="sm" asChild>
                 <Link href={`/series/${series.slug}`}>
                   <List className="h-4 w-4 mr-2" />
@@ -284,6 +285,13 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 </Link>
               </Button>
             </div>
+
+            {/* Video Player */}
+            <SeriesViewer 
+              series={series} 
+              episode={currentEpisode} 
+              user={user} 
+            />
           </div>
           
           {/* Navigation */}
