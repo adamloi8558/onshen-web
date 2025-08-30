@@ -64,7 +64,7 @@ export default function UploadForm({ contentId }: UploadFormProps) {
       // Step 1: Get presigned URL
       toast.info("กำลังเตรียมการอัปโหลด...");
       
-      const presignedResponse = await fetch('/api/upload/presigned-url', {
+      const presignedResponse = await fetch('/api/test-upload-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +83,8 @@ export default function UploadForm({ contentId }: UploadFormProps) {
         throw new Error(error.error || 'ไม่สามารถเตรียมการอัปโหลดได้');
       }
 
-      const { uploadUrl, jobId } = await presignedResponse.json();
+      const responseData = await presignedResponse.json();
+      const { uploadUrl, fileUrl } = responseData.data || responseData;
 
       // Step 2: Upload file to R2
       toast.info("กำลังอัปโหลดไฟล์...");
@@ -101,43 +102,16 @@ export default function UploadForm({ contentId }: UploadFormProps) {
         throw new Error('การอัปโหลดไฟล์ล้มเหลว');
       }
 
-      setUploadProgress(50);
-      toast.info("อัปโหลดสำเร็จ! กำลังประมวลผล...");
-      setUploadStatus('processing');
-
-      // Step 3: Monitor processing status
-      const checkStatus = async () => {
-        try {
-          const statusResponse = await fetch(`/api/upload/status/${jobId}`);
-          const statusData = await statusResponse.json();
-
-          if (statusData.status === 'completed') {
-            setUploadProgress(100);
-            setUploadStatus('completed');
-            toast.success("ประมวลผลเสร็จสิ้น! วิดีโอพร้อมใช้งาน");
-            
-            // Reset form
-            setTimeout(() => {
-              setSelectedFile(null);
-              setUploadStatus('idle');
-              setUploadProgress(0);
-            }, 3000);
-
-          } else if (statusData.status === 'failed') {
-            throw new Error(statusData.error || 'ประมวลผลล้มเหลว');
-          } else {
-            // Still processing
-            setUploadProgress(Math.min(75, uploadProgress + 5));
-            setTimeout(checkStatus, 2000);
-          }
-        } catch (error) {
-          console.error('Status check error:', error);
-          setTimeout(checkStatus, 5000); // Retry after 5 seconds
-        }
-      };
-
-      // Start status monitoring
-      setTimeout(checkStatus, 2000);
+      setUploadProgress(100);
+      setUploadStatus('completed');
+      toast.success("อัปโหลดสำเร็จ! ไฟล์พร้อมใช้งาน");
+      
+      // Reset form
+      setTimeout(() => {
+        setSelectedFile(null);
+        setUploadStatus('idle');
+        setUploadProgress(0);
+      }, 3000);
 
     } catch (error) {
       console.error('Upload error:', error);
