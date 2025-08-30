@@ -8,7 +8,8 @@ import {
   parseFileSize, 
   generateUploadKey 
 } from '@/lib/cloudflare-r2';
-import { db, upload_jobs } from '@/lib/db';
+import { db } from '@/lib/db';
+import { upload_jobs } from '@/lib/db/schema';
 import { v4 as uuidv4 } from 'uuid';
 
 const presignedUrlSchema = z.object({
@@ -125,20 +126,33 @@ export async function POST(request: NextRequest) {
 
     // Create upload job record
     const jobId = uuidv4();
-    await db.insert(upload_jobs).values({
-      job_id: jobId,
-      user_id: user.id,
-      content_id: validatedData.contentId,
-      episode_id: validatedData.episodeId,
-      file_type: validatedData.fileType,
-      original_filename: validatedData.filename,
-      file_size: validatedData.fileSize,
-      upload_url: fileUrl,
-      status: 'pending',
-      progress: 0,
-      created_at: new Date(),
-      updated_at: new Date(),
+    console.log('Creating upload job:', {
+      jobId,
+      userId: user.id,
+      contentId: validatedData.contentId,
+      fileType: validatedData.fileType,
+      filename: validatedData.filename,
+      fileSize: validatedData.fileSize
     });
+    
+    try {
+      await db.insert(upload_jobs).values({
+        job_id: jobId,
+        user_id: user.id,
+        content_id: validatedData.contentId || null,
+        episode_id: validatedData.episodeId || null,
+        file_type: validatedData.fileType,
+        original_filename: validatedData.filename,
+        file_size: validatedData.fileSize,
+        upload_url: fileUrl,
+        status: 'pending',
+        progress: 0,
+      });
+      console.log('Upload job created successfully');
+    } catch (dbError) {
+      console.error('Database insert error:', dbError);
+      throw new Error('ไม่สามารถสร้างงานอัปโหลดได้');
+    }
 
     const responseHeaders = new Headers(rateLimitHeaders);
     return NextResponse.json(
@@ -181,7 +195,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'เกิดข้อผิดพลาดในระบบ กรุณาลองใหม่อีกครั้ง' },
+      { 
+        error: 'เกิดข้อผิดพลาดในระบบ กรุณาลองใหม่อีกครั้ง',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
+      },
       { status: 500 }
     );
   }
