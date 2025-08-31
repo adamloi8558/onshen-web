@@ -19,10 +19,10 @@ const updateContentSchema = z.object({
   duration_minutes: z.number().nullable().optional(),
   total_episodes: z.number().nullable().optional(),
   release_date: z.string().nullable().optional().transform(val => val === "" ? null : val),
-  poster_url: z.string().nullable().optional(),
-  backdrop_url: z.string().nullable().optional(),
-  trailer_url: z.string().nullable().optional(),
-  video_url: z.string().nullable().optional(),
+  poster_url: z.string().nullable().optional().transform(val => val === "" ? null : val),
+  backdrop_url: z.string().nullable().optional().transform(val => val === "" ? null : val),
+  trailer_url: z.string().nullable().optional().transform(val => val === "" ? null : val),
+  video_url: z.string().nullable().optional().transform(val => val === "" ? null : val),
 });
 
 export async function GET(

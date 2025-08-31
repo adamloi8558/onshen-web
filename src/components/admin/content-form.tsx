@@ -182,6 +182,7 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
             <PosterUpload 
               currentPosterUrl={form.watch("poster_url")}
               onPosterChange={(url) => form.setValue("poster_url", url)}
+              contentId={initialData?.id}
             />
           </div>
 

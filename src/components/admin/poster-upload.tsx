@@ -14,9 +14,10 @@ import Image from "next/image";
 interface PosterUploadProps {
   currentPosterUrl?: string;
   onPosterChange: (url: string) => void;
+  contentId?: string;
 }
 
-export default function PosterUpload({ currentPosterUrl, onPosterChange }: PosterUploadProps) {
+export default function PosterUpload({ currentPosterUrl, onPosterChange, contentId }: PosterUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -101,11 +102,39 @@ export default function PosterUpload({ currentPosterUrl, onPosterChange }: Poste
         throw new Error('การอัปโหลดภาพล้มเหลว');
       }
 
-      setUploadProgress(100);
-      toast.success("อัปโหลดภาพปกสำเร็จ!");
+      setUploadProgress(75);
+      toast.info("อัปโหลดสำเร็จ! กำลังอัพเดตฐานข้อมูล...");
 
-      // Update parent component
+      // Update parent component first
       onPosterChange(fileUrl);
+
+      // Step 3: Update database if contentId is provided
+      if (contentId) {
+        try {
+          const updateResponse = await fetch(`/api/admin/content/${contentId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              poster_url: fileUrl
+            }),
+          });
+
+          if (updateResponse.ok) {
+            setUploadProgress(100);
+            toast.success("อัปโหลดและอัพเดตฐานข้อมูลสำเร็จ! ภาพปกพร้อมแสดงผล");
+          } else {
+            toast.warning("อัปโหลดสำเร็จ แต่ไม่สามารถอัพเดตฐานข้อมูลได้ กรุณาบันทึกฟอร์มด้วยตนเอง");
+          }
+        } catch (dbError) {
+          console.error('Database update error:', dbError);
+          toast.warning("อัปโหลดสำเร็จ แต่ไม่สามารถอัพเดตฐานข้อมูลได้ กรุณาบันทึกฟอร์มด้วยตนเอง");
+        }
+      } else {
+        setUploadProgress(100);
+        toast.success("อัปโหลดภาพปกสำเร็จ!");
+      }
       
       // Reset form
       setTimeout(() => {
