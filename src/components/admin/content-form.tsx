@@ -32,6 +32,7 @@ const contentSchema = z.object({
   total_episodes: z.number().optional(),
   release_date: z.string().optional(),
   poster_url: z.string().optional(),
+  video_url: z.string().optional(),
 });
 
 type ContentFormData = z.infer<typeof contentSchema>;
@@ -66,6 +67,7 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
       total_episodes: initialData?.total_episodes,
       release_date: initialData?.release_date || "",
       poster_url: initialData?.poster_url || "",
+      video_url: initialData?.video_url || "",
     },
   });
 
@@ -473,6 +475,26 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
                       </FormControl>
                       <p className="text-xs text-muted-foreground">
                         ใส่ URL ภาพปก หรืออัปโหลดภาพผ่านระบบ
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="video_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL วิดีโอ</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://pub-b24c104618264932a27b9455988b0fae.r2.dev/uploads/videos/..."
+                          {...field}
+                        />
+                      </FormControl>
+                      <p className="text-xs text-muted-foreground">
+                        ใส่ URL วิดีโอที่อัปโหลดแล้ว หรือจะอัปโหลดใหม่ในหน้าอัปโหลด
                       </p>
                       <FormMessage />
                     </FormItem>

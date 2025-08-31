@@ -102,9 +102,32 @@ export default function UploadForm({ contentId }: UploadFormProps) {
         throw new Error('การอัปโหลดไฟล์ล้มเหลว');
       }
 
-      setUploadProgress(100);
-      setUploadStatus('completed');
-      toast.success("อัปโหลดสำเร็จ! ไฟล์พร้อมใช้งาน");
+      setUploadProgress(75);
+      toast.info("อัปโหลดสำเร็จ! กำลังอัพเดตฐานข้อมูล...");
+
+      // Step 3: Update content video_url in database
+      try {
+        const updateResponse = await fetch(`/api/admin/content/${contentId}/set-video`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            video_url: responseData.data?.fileUrl || responseData.fileUrl
+          }),
+        });
+
+        if (updateResponse.ok) {
+          setUploadProgress(100);
+          setUploadStatus('completed');
+          toast.success("อัปโหลดและอัพเดตฐานข้อมูลสำเร็จ! วิดีโอพร้อมดูได้แล้ว");
+        } else {
+          toast.warning("อัปโหลดสำเร็จ แต่ไม่สามารถอัพเดตฐานข้อมูลได้ กรุณาอัพเดต URL ด้วยตนเอง");
+        }
+      } catch (dbError) {
+        console.error('Database update error:', dbError);
+        toast.warning("อัปโหลดสำเร็จ แต่ไม่สามารถอัพเดตฐานข้อมูลได้ กรุณาอัพเดต URL ด้วยตนเอง");
+      }
       
       // Reset form
       setTimeout(() => {

@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
         total_episodes: validatedData.total_episodes || null,
         release_date: validatedData.release_date ? new Date(validatedData.release_date) : null,
         poster_url: validatedData.poster_url || null,
+        video_url: validatedData.video_url || null,
         views: 0,
         saves: 0,
       })
