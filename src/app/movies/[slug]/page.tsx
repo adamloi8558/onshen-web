@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Play, 
   Bookmark, 
   Eye, 
   Calendar, 
@@ -151,7 +150,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
     .orderBy(desc(content.views))
     .limit(6);
 
-  const canWatch = user && (!movie.is_vip_required || user.is_vip);
+
 
   return (
     <div className="min-h-screen">

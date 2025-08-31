@@ -84,7 +84,7 @@ export default function UploadForm({ contentId }: UploadFormProps) {
       }
 
       const responseData = await presignedResponse.json();
-      const { uploadUrl, fileUrl } = responseData.data || responseData;
+      const { uploadUrl } = responseData.data || responseData;
 
       // Step 2: Upload file to R2
       toast.info("กำลังอัปโหลดไฟล์...");

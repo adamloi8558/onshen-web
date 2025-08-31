@@ -110,6 +110,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
       title: content.title,
       slug: content.slug,
       poster_url: content.poster_url,
+      trailer_url: content.trailer_url,
       is_vip_required: content.is_vip_required,
     })
     .from(content)
