@@ -93,62 +93,74 @@ export default async function MoviePage({ params }: MoviePageProps) {
   }
 
   // Get movie details
-  const [movie] = await db
-    .select({
-      id: content.id,
-      title: content.title,
-      slug: content.slug,
-      description: content.description,
-      type: content.type,
-      poster_url: content.poster_url,
-      backdrop_url: content.backdrop_url,
-      trailer_url: content.trailer_url,
-      video_url: content.video_url,
-      content_rating: content.content_rating,
-      is_vip_required: content.is_vip_required,
-      views: content.views,
-      saves: content.saves,
-      release_date: content.release_date,
-      duration_minutes: content.duration_minutes,
-      category: {
-        id: categories.id,
-        name: categories.name,
-        slug: categories.slug,
-      },
-      created_at: content.created_at,
-    })
-    .from(content)
-    .leftJoin(categories, eq(content.category_id, categories.id))
-    .where(and(
-      eq(content.slug, params.slug),
-      eq(content.type, 'movie'),
-      eq(content.status, 'published')
-    ))
-    .limit(1);
+  let movie;
+  try {
+    [movie] = await db
+      .select({
+        id: content.id,
+        title: content.title,
+        slug: content.slug,
+        description: content.description,
+        type: content.type,
+        poster_url: content.poster_url,
+        backdrop_url: content.backdrop_url,
+        trailer_url: content.trailer_url,
+        video_url: content.video_url,
+        content_rating: content.content_rating,
+        is_vip_required: content.is_vip_required,
+        views: content.views,
+        saves: content.saves,
+        release_date: content.release_date,
+        duration_minutes: content.duration_minutes,
+        category: {
+          id: categories.id,
+          name: categories.name,
+          slug: categories.slug,
+        },
+        created_at: content.created_at,
+      })
+      .from(content)
+      .leftJoin(categories, eq(content.category_id, categories.id))
+      .where(and(
+        eq(content.slug, params.slug),
+        eq(content.type, 'movie'),
+        eq(content.status, 'published')
+      ))
+      .limit(1);
+  } catch (error) {
+    console.error('Error fetching movie:', error);
+    notFound();
+  }
 
   if (!movie) {
     notFound();
   }
 
   // Get related movies
-  const relatedMovies = await db
-    .select({
-      id: content.id,
-      title: content.title,
-      slug: content.slug,
-      poster_url: content.poster_url,
-      content_rating: content.content_rating,
-      is_vip_required: content.is_vip_required,
-      views: content.views,
-    })
-    .from(content)
-    .where(and(
-      eq(content.type, 'movie'),
-      eq(content.status, 'published'),
-      eq(content.category_id, movie.category?.id || '')
-    ))
-    .orderBy(desc(content.views))
-    .limit(6);
+  let relatedMovies = [];
+  try {
+    relatedMovies = await db
+      .select({
+        id: content.id,
+        title: content.title,
+        slug: content.slug,
+        poster_url: content.poster_url,
+        content_rating: content.content_rating,
+        is_vip_required: content.is_vip_required,
+        views: content.views,
+      })
+      .from(content)
+      .where(and(
+        eq(content.type, 'movie'),
+        eq(content.status, 'published'),
+        eq(content.category_id, movie.category?.id || '')
+      ))
+      .orderBy(desc(content.views))
+      .limit(6);
+  } catch (error) {
+    console.error('Error fetching related movies:', error);
+    relatedMovies = [];
+  }
 
 
 
