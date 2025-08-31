@@ -115,7 +115,23 @@ export default async function ProfilePage() {
                       แก้ไขโปรไฟล์
                     </Link>
                   </Button>
-                  {!user.is_vip && (
+                  {user.is_vip ? (
+                    <div className="text-center p-4 bg-gradient-to-r from-yellow-100 to-yellow-50 rounded-lg border border-yellow-200">
+                      <div className="flex items-center justify-center gap-2 text-yellow-700 mb-2">
+                        <Crown className="h-5 w-5" />
+                        <span className="font-bold">สมาชิก VIP</span>
+                      </div>
+                      {user.vip_expires_at && (
+                        <p className="text-sm text-yellow-600">
+                          หมดอายุ: {new Date(user.vip_expires_at).toLocaleDateString('th-TH', {
+                            year: 'numeric',
+                            month: 'long', 
+                            day: 'numeric'
+                          })}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
                     <Button variant="outline" asChild>
                       <Link href="/vip">
                         <Crown className="h-4 w-4 mr-2" />

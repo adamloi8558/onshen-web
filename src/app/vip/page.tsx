@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Crown, Check, Star, Zap } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import VIPPurchaseButton from "@/components/vip/purchase-button";
 
 // Force dynamic rendering for user state
 export const dynamic = 'force-dynamic';
@@ -141,18 +142,7 @@ export default async function VIPPage() {
                 </div>
               </div>
               
-              {user ? (
-                <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
-                  <Crown className="h-4 w-4 mr-2" />
-                  สมัครสมาชิก VIP
-                </Button>
-              ) : (
-                <Button className="w-full" asChild>
-                  <Link href="/auth/login">
-                    เข้าสู่ระบบเพื่อสมัคร
-                  </Link>
-                </Button>
-              )}
+              <VIPPurchaseButton user={user} />
             </CardContent>
           </Card>
         </div>
