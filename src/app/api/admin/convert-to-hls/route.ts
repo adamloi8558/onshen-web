@@ -48,11 +48,12 @@ export async function POST(req: NextRequest) {
     // Mock HLS URL (replace .mp4 with .m3u8)
     const hlsUrl = mp4Url.replace('.mp4', '.m3u8').replace('/videos/', '/hls/');
     
-    // Update content with HLS URL
+    // For now, keep the original MP4 URL since we don't have real HLS files
+    // In production, this would update to the actual HLS URL after ffmpeg conversion
     await db
       .update(content)
       .set({
-        video_url: hlsUrl,
+        video_url: mp4Url, // Keep MP4 URL for now
         updated_at: new Date(),
       })
       .where(eq(content.id, contentId));
@@ -61,14 +62,15 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'แปลงเป็น HLS สำเร็จ (Mock)',
+      message: 'เตรียมพร้อมสำหรับ HLS แล้ว (ยังคงใช้ MP4 ชั่วคราว)',
       data: {
         contentId,
         title: existingContent.title,
         originalUrl: mp4Url,
-        hlsUrl: hlsUrl,
+        plannedHlsUrl: hlsUrl,
+        currentUrl: mp4Url,
         conversionTime: '2 seconds (mock)',
-        note: 'นี่คือการจำลอง - ในระบบจริงจะใช้ ffmpeg แปลงไฟล์จริง'
+        note: 'ตอนนี้ยังคงใช้ MP4 - ในระบบจริงจะใช้ ffmpeg แปลงเป็น HLS จริง'
       }
     });
 

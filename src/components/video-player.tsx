@@ -71,13 +71,20 @@ export default function VideoPlayer({
         console.error('HLS error:', data);
         if (data.fatal) {
           console.log('Fatal HLS error, trying MP4 fallback...');
-          // Try MP4 fallback
+          // Try MP4 fallback - convert HLS URL back to MP4
           hls.destroy();
           hlsRef.current = null;
-          video.src = src;
+          
+          const mp4Url = src.replace('/hls/', '/videos/').replace('.m3u8', '.mp4');
+          console.log('Trying MP4 fallback:', mp4Url);
+          
+          video.src = mp4Url;
           setIsLoading(false);
           if (autoplay) {
-            video.play().catch(console.error);
+            video.play().catch((playError) => {
+              console.error('MP4 playback failed:', playError);
+              setError('ไม่สามารถเล่นวิดีโอได้ กรุณาลองใหม่อีกครั้ง');
+            });
           }
         }
       });
