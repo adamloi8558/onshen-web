@@ -37,8 +37,17 @@ export default function VideoPlayer({
     setIsLoading(true);
     setError(null);
 
-    // Check if HLS is supported
-    if (Hls.isSupported()) {
+    console.log('Loading video:', src);
+
+    // Detect file type from URL
+    const isHLS = src.includes('.m3u8') || src.includes('/hls/');
+    const isMP4 = src.includes('.mp4') || src.includes('.webm') || src.includes('.mkv');
+
+    console.log('Video type detection:', { isHLS, isMP4, src });
+
+    // Try HLS first if it's an HLS file or HLS is supported
+    if (isHLS && Hls.isSupported()) {
+      console.log('Using HLS.js for:', src);
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: true,
@@ -51,7 +60,7 @@ export default function VideoPlayer({
       hls.attachMedia(video);
       
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        console.log('HLS manifest loaded');
+        console.log('HLS manifest loaded successfully');
         setIsLoading(false);
         if (autoplay) {
           video.play().catch(console.error);
@@ -61,32 +70,30 @@ export default function VideoPlayer({
       hls.on(Hls.Events.ERROR, (event, data) => {
         console.error('HLS error:', data);
         if (data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              setError('เกิดข้อผิดพลาดในการโหลดวิดีโอ กรุณาลองใหม่');
-              hls.startLoad();
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              setError('ไฟล์วิดีโอเสียหาย');
-              hls.recoverMediaError();
-              break;
-            default:
-              setError('ไม่สามารถเล่นวิดีโอได้');
-              break;
+          console.log('Fatal HLS error, trying MP4 fallback...');
+          // Try MP4 fallback
+          hls.destroy();
+          hlsRef.current = null;
+          video.src = src;
+          setIsLoading(false);
+          if (autoplay) {
+            video.play().catch(console.error);
           }
         }
       });
     } 
-    // Check if video can play HLS natively (Safari)
-    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    // Safari native HLS support
+    else if (isHLS && video.canPlayType('application/vnd.apple.mpegurl')) {
+      console.log('Using Safari native HLS for:', src);
       video.src = src;
       setIsLoading(false);
       if (autoplay) {
         video.play().catch(console.error);
       }
     } 
-    // Fallback for direct MP4
+    // Direct MP4/WebM/MKV playback
     else {
+      console.log('Using direct video playback for:', src);
       video.src = src;
       setIsLoading(false);
       if (autoplay) {
