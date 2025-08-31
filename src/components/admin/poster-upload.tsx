@@ -64,7 +64,7 @@ export default function PosterUpload({ currentPosterUrl, onPosterChange }: Poste
       // Step 1: Get presigned URL
       toast.info("กำลังเตรียมการอัปโหลด...");
       
-      const presignedResponse = await fetch('/api/upload/presigned-url', {
+      const presignedResponse = await fetch('/api/test-poster-upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,8 @@ export default function PosterUpload({ currentPosterUrl, onPosterChange }: Poste
         throw new Error(error.error || 'ไม่สามารถเตรียมการอัปโหลดได้');
       }
 
-      const { uploadUrl, publicUrl } = await presignedResponse.json();
+      const responseData = await presignedResponse.json();
+      const { uploadUrl, fileUrl } = responseData.data || responseData;
       setUploadProgress(25);
 
       // Step 2: Upload file to R2
@@ -104,7 +105,7 @@ export default function PosterUpload({ currentPosterUrl, onPosterChange }: Poste
       toast.success("อัปโหลดภาพปกสำเร็จ!");
 
       // Update parent component
-      onPosterChange(publicUrl);
+      onPosterChange(fileUrl);
       
       // Reset form
       setTimeout(() => {
