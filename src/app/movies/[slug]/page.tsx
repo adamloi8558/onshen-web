@@ -137,7 +137,15 @@ export default async function MoviePage({ params }: MoviePageProps) {
   }
 
   // Get related movies
-  let relatedMovies = [];
+  let relatedMovies: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    poster_url: string | null;
+    content_rating: string | null;
+    is_vip_required: boolean;
+    views: number;
+  }> = [];
   try {
     relatedMovies = await db
       .select({
