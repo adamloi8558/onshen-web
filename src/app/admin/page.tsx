@@ -504,8 +504,8 @@ export default async function AdminDashboard() {
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground">Worker</div>
                   <div className="flex items-center justify-center mt-1">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                    <span className="text-sm">รอ</span>
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-sm">ปกติ</span>
                   </div>
                 </div>
                 <div className="text-center">
