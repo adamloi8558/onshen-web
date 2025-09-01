@@ -31,11 +31,11 @@ export default function Hero({ content, user }: HeroProps) {
     : `/series/${content.slug}`;
 
   return (
-    <div className="relative h-[70vh] min-h-[500px] overflow-hidden">
-      {/* Background Image */}
-      {content.backdrop_url && (
+    <div className="relative h-[70vh] overflow-hidden">
+      {/* Background Image - Use poster if no backdrop */}
+      {(content.backdrop_url || content.poster_url) && (
         <Image
-          src={content.backdrop_url}
+          src={(content.backdrop_url || content.poster_url)!}
           alt={content.title}
           fill
           className="object-cover"
