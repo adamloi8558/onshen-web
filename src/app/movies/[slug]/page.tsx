@@ -188,22 +188,9 @@ export default async function MoviePage({ params }: MoviePageProps) {
         
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="container">
-            <div className="flex flex-col md:flex-row gap-8 items-end">
-              {/* Poster */}
-              <div className="flex-shrink-0">
-                {movie.poster_url && (
-                  <Image
-                    src={movie.poster_url}
-                    alt={movie.title}
-                    width={200}
-                    height={300}
-                    className="rounded-lg shadow-2xl"
-                  />
-                )}
-              </div>
-              
+            <div className="max-w-4xl">
               {/* Info */}
-              <div className="flex-1 space-y-4">
+              <div className="space-y-4">
                 <div className="flex items-center gap-2 flex-wrap">
                   <Badge variant="secondary">{movie.content_rating}</Badge>
                   {movie.category && (
