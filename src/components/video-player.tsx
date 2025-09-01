@@ -1,10 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Hls from 'hls.js';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Play, Pause, Volume2, VolumeX, Maximize, RotateCcw } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { 
+  Play, 
+  Pause, 
+  Volume2, 
+  VolumeX, 
+  Volume1,
+  Maximize, 
+  RotateCcw,
+  SkipBack,
+  SkipForward,
+  Settings
+} from "lucide-react";
 
 interface VideoPlayerProps {
   src: string;
@@ -17,19 +29,43 @@ interface VideoPlayerProps {
 export default function VideoPlayer({ 
   src, 
   poster, 
-  title, 
   autoplay = false,
   className = ""
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  
+  // Video states
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolume] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [buffered, setBuffered] = useState(0);
+  const [, setIsFullscreen] = useState(false);
+  
+  // UI states
+  const [showControls, setShowControls] = useState(true);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
+  // Format time helper
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Initialize video
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !src) return;
@@ -37,30 +73,22 @@ export default function VideoPlayer({
     setIsLoading(true);
     setError(null);
 
-    console.log('Loading video:', src);
-
-    // Detect file type from URL
+    // Detect file type
     const isHLS = src.includes('.m3u8') || src.includes('/hls/');
     const isMP4 = src.includes('.mp4') || src.includes('.webm') || src.includes('.mkv');
 
-    console.log('Video type detection:', { isHLS, isMP4, src });
-
-    // Try HLS first if it's an HLS file or HLS is supported
+    // HLS setup
     if (isHLS && Hls.isSupported()) {
-      console.log('Using HLS.js for:', src);
       const hls = new Hls({
-        enableWorker: true,
+        enableWorker: false,
         lowLatencyMode: true,
-        backBufferLength: 90,
       });
       
       hlsRef.current = hls;
-      
       hls.loadSource(src);
       hls.attachMedia(video);
       
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        console.log('HLS manifest loaded successfully');
         setIsLoading(false);
         if (autoplay) {
           video.play().catch(console.error);
@@ -70,78 +98,142 @@ export default function VideoPlayer({
       hls.on(Hls.Events.ERROR, (event, data) => {
         console.error('HLS error:', data);
         if (data.fatal) {
-          console.log('Fatal HLS error, trying MP4 fallback...');
-          // Try MP4 fallback - convert HLS URL back to MP4
-          hls.destroy();
-          hlsRef.current = null;
-          
-          const mp4Url = src.replace('/hls/', '/videos/').replace('.m3u8', '.mp4');
-          console.log('Trying MP4 fallback:', mp4Url);
-          
-          video.src = mp4Url;
+          setError('Failed to load video');
           setIsLoading(false);
-          if (autoplay) {
-            video.play().catch((playError) => {
-              console.error('MP4 playback failed:', playError);
-              setError('ไม่สามารถเล่นวิดีโอได้ กรุณาลองใหม่อีกครั้ง');
-            });
-          }
         }
       });
     } 
-    // Safari native HLS support
+    // Native HLS (Safari)
     else if (isHLS && video.canPlayType('application/vnd.apple.mpegurl')) {
-      console.log('Using Safari native HLS for:', src);
       video.src = src;
-      setIsLoading(false);
-      if (autoplay) {
-        video.play().catch(console.error);
-      }
-    } 
-    // Direct MP4/WebM/MKV playback
-    else {
-      console.log('Using direct video playback for:', src);
-      video.src = src;
-      setIsLoading(false);
-      if (autoplay) {
-        video.play().catch(console.error);
-      }
+      video.addEventListener('loadedmetadata', () => {
+        setIsLoading(false);
+        if (autoplay) {
+          video.play().catch(console.error);
+        }
+      });
     }
-
-    // Video event listeners
-    const handleLoadedMetadata = () => {
-      setDuration(video.duration);
-    };
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(video.currentTime);
-    };
-
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-    const handleVolumeChange = () => setIsMuted(video.muted);
-
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-    video.addEventListener('volumechange', handleVolumeChange);
+    // Direct MP4/WebM
+    else if (isMP4) {
+      video.src = src;
+      video.addEventListener('loadedmetadata', () => {
+        setIsLoading(false);
+        if (autoplay) {
+          video.play().catch(console.error);
+        }
+      });
+    } else {
+      setError('Unsupported video format');
+      setIsLoading(false);
+    }
 
     return () => {
       if (hlsRef.current) {
         hlsRef.current.destroy();
         hlsRef.current = null;
       }
-      
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
-      video.removeEventListener('volumechange', handleVolumeChange);
     };
   }, [src, autoplay]);
 
-  const togglePlay = () => {
+  // Video event listeners
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleTimeUpdate = () => {
+      if (!isDragging) {
+        setCurrentTime(video.currentTime);
+      }
+    };
+
+    const handleDurationChange = () => {
+      setDuration(video.duration);
+    };
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    
+    const handleVolumeChange = () => {
+      setVolume(video.volume);
+      setIsMuted(video.muted);
+    };
+
+    const handleProgress = () => {
+      if (video.buffered.length > 0) {
+        const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+        const bufferedPercent = (bufferedEnd / video.duration) * 100;
+        setBuffered(bufferedPercent);
+      }
+    };
+
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+      setVolume(video.volume);
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('durationchange', handleDurationChange);
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+    video.addEventListener('volumechange', handleVolumeChange);
+    video.addEventListener('progress', handleProgress);
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('durationchange', handleDurationChange);
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+      video.removeEventListener('volumechange', handleVolumeChange);
+      video.removeEventListener('progress', handleProgress);
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    };
+  }, [isDragging]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const video = videoRef.current;
+      if (!video || !containerRef.current?.contains(document.activeElement)) return;
+
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          togglePlay();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          skipBackward();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          skipForward();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          adjustVolume(0.1);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          adjustVolume(-0.1);
+          break;
+        case 'm':
+          e.preventDefault();
+          toggleMute();
+          break;
+        case 'f':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [togglePlay, skipBackward, skipForward, adjustVolume, toggleMute, toggleFullscreen]);
+
+  // Control functions
+  const togglePlay = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
 
@@ -150,69 +242,155 @@ export default function VideoPlayer({
     } else {
       video.play().catch(console.error);
     }
-  };
+  }, [isPlaying]);
 
-  const toggleMute = () => {
+  const skipForward = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
+    video.currentTime = Math.min(video.currentTime + 10, video.duration);
+  }, []);
 
+  const skipBackward = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = Math.max(video.currentTime - 10, 0);
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
     video.muted = !video.muted;
-  };
+  }, []);
 
-  const toggleFullscreen = () => {
+  const adjustVolume = useCallback((delta: number) => {
     const video = videoRef.current;
     if (!video) return;
+    const newVolume = Math.max(0, Math.min(1, video.volume + delta));
+    video.volume = newVolume;
+    if (newVolume > 0) video.muted = false;
+  }, []);
 
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(console.error);
-    } else {
-      video.requestFullscreen().catch(console.error);
-    }
-  };
-
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleVolumeChange = useCallback((value: number[]) => {
     const video = videoRef.current;
-    if (!video || !duration) return;
+    if (!video) return;
+    const newVolume = value[0] / 100;
+    video.volume = newVolume;
+    if (newVolume > 0) video.muted = false;
+  }, []);
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    video.currentTime = percent * duration;
-  };
+  const handleProgressClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const video = videoRef.current;
+    const progressBar = progressRef.current;
+    if (!video || !progressBar) return;
 
-  const formatTime = (time: number) => {
-    const hours = Math.floor(time / 3600);
-    const minutes = Math.floor((time % 3600) / 60);
-    const seconds = Math.floor(time % 60);
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickPercent = clickX / rect.width;
+    const newTime = clickPercent * video.duration;
     
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    video.currentTime = newTime;
+    setCurrentTime(newTime);
+  }, []);
+
+  const handleProgressDrag = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    
+    const video = videoRef.current;
+    const progressBar = progressRef.current;
+    if (!video || !progressBar) return;
+
+    const rect = progressBar.getBoundingClientRect();
+    const dragX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    const dragPercent = dragX / rect.width;
+    const newTime = dragPercent * video.duration;
+    
+    setCurrentTime(newTime);
+  }, [isDragging]);
+
+  const handleMouseDown = useCallback(() => {
+    setIsDragging(true);
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    if (isDragging) {
+      const video = videoRef.current;
+      if (video) {
+        video.currentTime = currentTime;
+      }
+      setIsDragging(false);
     }
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }, [isDragging, currentTime]);
+
+  const toggleFullscreen = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(console.error);
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen().catch(console.error);
+      setIsFullscreen(false);
+    }
+  }, []);
+
+  // Auto-hide controls
+  useEffect(() => {
+    let hideTimer: NodeJS.Timeout;
+
+    const showControlsTemporarily = () => {
+      setShowControls(true);
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        if (isPlaying) {
+          setShowControls(false);
+        }
+      }, 3000);
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('mousemove', showControlsTemporarily);
+      container.addEventListener('click', showControlsTemporarily);
+    }
+
+    return () => {
+      clearTimeout(hideTimer);
+      if (container) {
+        container.removeEventListener('mousemove', showControlsTemporarily);
+        container.removeEventListener('click', showControlsTemporarily);
+      }
+    };
+  }, [isPlaying]);
+
+  // Volume icon based on level
+  const getVolumeIcon = () => {
+    if (isMuted || volume === 0) return VolumeX;
+    if (volume < 0.5) return Volume1;
+    return Volume2;
   };
 
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const VolumeIcon = getVolumeIcon();
 
   if (error) {
     return (
       <Card className={className}>
         <CardContent className="p-8 text-center">
-          <div className="text-red-600 mb-4">
-            <RotateCcw className="h-12 w-12 mx-auto mb-2" />
-            <p className="font-medium">{error}</p>
-          </div>
-          <Button 
-            onClick={() => window.location.reload()}
-            variant="outline"
-          >
-            ลองใหม่
-          </Button>
+          <RotateCcw className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+          <p className="text-muted-foreground">{error}</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className={`relative bg-black rounded-lg overflow-hidden ${className}`}>
+    <div 
+      ref={containerRef}
+      className={`relative bg-black rounded-lg overflow-hidden ${className}`}
+      tabIndex={0}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleProgressDrag}
+    >
       <video
         ref={videoRef}
         className="w-full h-full"
@@ -221,69 +399,150 @@ export default function VideoPlayer({
         preload="metadata"
         onClick={togglePlay}
       />
-      
-      {/* Loading Overlay */}
+
       {isLoading && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-          <div className="text-white text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p>กำลังโหลดวิดีโอ...</p>
-          </div>
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
         </div>
       )}
 
       {/* Controls Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-        {/* Progress Bar */}
-        <div 
-          className="w-full h-2 bg-white/20 rounded-full mb-4 cursor-pointer"
-          onClick={handleSeek}
-        >
-          <div 
-            className="h-full bg-red-600 rounded-full transition-all"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-
-        {/* Control Buttons */}
-        <div className="flex items-center justify-between text-white">
-          <div className="flex items-center gap-4">
+      <div 
+        className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
+          showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        {/* Center Play Button */}
+        {!isPlaying && !isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center">
             <Button
-              variant="ghost"
-              size="sm"
+              size="lg"
+              className="w-16 h-16 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm"
               onClick={togglePlay}
-              className="text-white hover:bg-white/20"
             >
-              {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+              <Play className="w-8 h-8 text-white ml-1" />
             </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleMute}
-              className="text-white hover:bg-white/20"
-            >
-              {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-            </Button>
+          </div>
+        )}
 
-            <div className="text-sm">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </div>
+        {/* Bottom Controls */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
+          {/* Progress Bar */}
+          <div 
+            ref={progressRef}
+            className="relative h-1 bg-white/30 rounded-full cursor-pointer group"
+            onClick={handleProgressClick}
+            onMouseDown={handleMouseDown}
+          >
+            {/* Buffered */}
+            <div 
+              className="absolute h-full bg-white/50 rounded-full"
+              style={{ width: `${buffered}%` }}
+            />
+            
+            {/* Progress */}
+            <div 
+              className="absolute h-full bg-red-500 rounded-full"
+              style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+            />
+            
+            {/* Scrubber */}
+            <div 
+              className="absolute w-3 h-3 bg-red-500 rounded-full -top-1 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ left: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+            />
           </div>
 
-          <div className="flex items-center gap-2">
-            {title && (
-              <span className="text-sm font-medium mr-4">{title}</span>
-            )}
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleFullscreen}
-              className="text-white hover:bg-white/20"
-            >
-              <Maximize className="h-5 w-5" />
-            </Button>
+          {/* Control Buttons */}
+          <div className="flex items-center justify-between text-white">
+            <div className="flex items-center space-x-2">
+              {/* Play/Pause */}
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-white hover:bg-white/20 p-2"
+                onClick={togglePlay}
+              >
+                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              </Button>
+
+              {/* Skip Buttons */}
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-white hover:bg-white/20 p-2"
+                onClick={skipBackward}
+                title="ย้อนกลับ 10 วินาที"
+              >
+                <SkipBack className="w-4 h-4" />
+                <span className="text-xs ml-1">10</span>
+              </Button>
+
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-white hover:bg-white/20 p-2"
+                onClick={skipForward}
+                title="ข้ามไป 10 วินาที"
+              >
+                <SkipForward className="w-4 h-4" />
+                <span className="text-xs ml-1">10</span>
+              </Button>
+
+              {/* Volume */}
+              <div 
+                className="flex items-center space-x-2"
+                onMouseEnter={() => setShowVolumeSlider(true)}
+                onMouseLeave={() => setShowVolumeSlider(false)}
+              >
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-white hover:bg-white/20 p-2"
+                  onClick={toggleMute}
+                >
+                  <VolumeIcon className="w-4 h-4" />
+                </Button>
+
+                {showVolumeSlider && (
+                  <div className="w-20">
+                    <Slider
+                      value={[isMuted ? 0 : volume * 100]}
+                      onValueChange={handleVolumeChange}
+                      max={100}
+                      step={1}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Time */}
+              <span className="text-sm text-white/80">
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </span>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              {/* Settings */}
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-white hover:bg-white/20 p-2"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+
+              {/* Fullscreen */}
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-white hover:bg-white/20 p-2"
+                onClick={toggleFullscreen}
+              >
+                <Maximize className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
