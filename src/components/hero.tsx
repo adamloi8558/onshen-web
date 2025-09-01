@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Play, Crown, Star } from "lucide-react";
-import BookmarkButton from "@/components/bookmark-button";
 
 interface HeroProps {
   content: {
@@ -109,13 +108,7 @@ export default function Hero({ content, user }: HeroProps) {
                 </Button>
               )}
 
-              <BookmarkButton
-                contentId={content.id}
-                user={user}
-                variant="outline"
-                size="lg"
-                className="border-white text-white hover:bg-white hover:text-black"
-              />
+
             </div>
 
             {/* VIP Notice */}

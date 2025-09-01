@@ -14,7 +14,6 @@ import {
   Crown 
 } from "lucide-react";
 import MovieViewer from "@/components/movie-viewer";
-import BookmarkButton from "@/components/bookmark-button";
 
 interface MoviePageProps {
   params: {
@@ -249,14 +248,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
                 
                 <div className="flex items-center gap-4">
                   <MovieViewer movie={movie} user={user} />
-                  
-                  <BookmarkButton
-                    contentId={movie.id}
-                    user={user}
-                    variant="ghost"
-                    size="lg"
-                    className="text-white hover:bg-white/20"
-                  />
                 </div>
               </div>
             </div>
