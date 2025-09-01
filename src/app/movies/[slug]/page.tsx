@@ -176,16 +176,17 @@ export default async function MoviePage({ params }: MoviePageProps) {
     <div className="min-h-screen">
       {/* Hero Section */}
       <div className="relative h-[70vh] overflow-hidden">
-        {movie.backdrop_url && (
+        {/* Background Image - Use poster if no backdrop */}
+        {(movie.backdrop_url || movie.poster_url) && (
           <Image
-            src={movie.backdrop_url}
+            src={movie.backdrop_url || movie.poster_url}
             alt={movie.title}
             fill
             className="object-cover"
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
         
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="container">
