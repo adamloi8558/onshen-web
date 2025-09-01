@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { content, users, upload_jobs } from "@/lib/db/schema";
-import { eq, desc, count } from "drizzle-orm";
+import { eq, desc, count, sql } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,12 @@ import {
   Users, 
   Film, 
   Upload, 
-  TrendingUp, 
   Plus,
   Settings,
   Folder,
-  Play
+  Play,
+  Eye,
+  Coins
 } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -37,11 +38,38 @@ async function getDashboardStats() {
       .select({ count: count() })
       .from(content);
 
+    // Get published content
+    const [publishedCount] = await db
+      .select({ count: count() })
+      .from(content)
+      .where(eq(content.status, 'published'));
+
     // Get VIP users
     const [vipUserCount] = await db
       .select({ count: count() })
       .from(users)
       .where(eq(users.is_vip, true));
+
+    // Get total views
+    const [totalViews] = await db
+      .select({ 
+        total: sql<number>`COALESCE(SUM(${content.views}), 0)` 
+      })
+      .from(content);
+
+    // Get total saves
+    const [totalSaves] = await db
+      .select({ 
+        total: sql<number>`COALESCE(SUM(${content.saves}), 0)` 
+      })
+      .from(content);
+
+    // Get total coins in system
+    const [totalCoins] = await db
+      .select({ 
+        total: sql<number>`COALESCE(SUM(${users.coins}), 0)` 
+      })
+      .from(users);
 
     // Get recent uploads
     const [uploadCount] = await db
@@ -54,21 +82,39 @@ async function getDashboardStats() {
       .from(upload_jobs)
       .where(eq(upload_jobs.status, 'processing'));
 
+    // Get new users today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [newUsersToday] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(sql`${users.created_at} >= ${today}`);
+
     return {
       totalUsers: userCount?.count || 0,
       totalContent: contentCount?.count || 0,
+      publishedContent: publishedCount?.count || 0,
       vipUsers: vipUserCount?.count || 0,
+      totalViews: totalViews?.total || 0,
+      totalSaves: totalSaves?.total || 0,
+      totalCoins: totalCoins?.total || 0,
       totalUploads: uploadCount?.count || 0,
       processingUploads: processingCount?.count || 0,
+      newUsersToday: newUsersToday?.count || 0,
     };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
     return {
       totalUsers: 0,
       totalContent: 0,
+      publishedContent: 0,
       vipUsers: 0,
+      totalViews: 0,
+      totalSaves: 0,
+      totalCoins: 0,
       totalUploads: 0,
       processingUploads: 0,
+      newUsersToday: 0,
     };
   }
 }
@@ -90,6 +136,26 @@ async function getRecentContent() {
       .limit(5);
   } catch (error) {
     console.error('Error fetching recent content:', error);
+    return [];
+  }
+}
+
+async function getRecentUsers() {
+  try {
+    return await db
+      .select({
+        id: users.id,
+        phone: users.phone,
+        is_vip: users.is_vip,
+        coins: users.coins,
+        created_at: users.created_at,
+        last_login_at: users.last_login_at,
+      })
+      .from(users)
+      .orderBy(desc(users.created_at))
+      .limit(5);
+  } catch (error) {
+    console.error('Error fetching recent users:', error);
     return [];
   }
 }
@@ -118,6 +184,7 @@ export default async function AdminDashboard() {
   const user = await requireAdmin();
   const stats = await getDashboardStats();
   const recentContent = await getRecentContent();
+  const recentUsers = await getRecentUsers();
   const recentUploads = await getRecentUploads();
 
   const getStatusColor = (status: string) => {
@@ -167,68 +234,55 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">ผู้ใช้ทั้งหมด</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalUsers}</div>
+              <div className="text-2xl font-bold">{stats.totalUsers.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
-                VIP: {stats.vipUsers} คน
+                VIP: {stats.vipUsers} | วันนี้: +{stats.newUsersToday}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">เนื้อหาทั้งหมด</CardTitle>
+              <CardTitle className="text-sm font-medium">เนื้อหา</CardTitle>
               <Film className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalContent}</div>
+              <div className="text-2xl font-bold">{stats.totalContent.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
-                หนัง และ ซีรี่ย์
+                เผยแพร่: {stats.publishedContent}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">การอัพโหลด</CardTitle>
-              <Upload className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">ยอดชม</CardTitle>
+              <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalUploads}</div>
+              <div className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
-                กำลังประมวลผล: {stats.processingUploads}
+                บันทึก: {stats.totalSaves.toLocaleString()}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">ยอดเข้าชม</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">เหรียญในระบบ</CardTitle>
+              <Coins className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
+              <div className="text-2xl font-bold">{stats.totalCoins.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
-                วันนี้
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">รายได้</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground">
-                เดือนนี้
+                อัพโหลด: {stats.processingUploads}/{stats.totalUploads}
               </p>
             </CardContent>
           </Card>
@@ -262,8 +316,8 @@ export default async function AdminDashboard() {
           </Button>
         </div>
 
-        {/* Recent Content & Uploads */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Content */}
           <Card>
             <CardHeader>
@@ -306,6 +360,62 @@ export default async function AdminDashboard() {
                   <Button asChild variant="outline" className="w-full">
                     <Link href="/admin/content">
                       ดูเนื้อหาทั้งหมด
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent Users */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                ผู้ใช้ใหม่ล่าสุด
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentUsers.length > 0 ? recentUsers.map((user) => (
+                  <div key={user.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{user.phone}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {user.is_vip ? (
+                          <Badge className="text-xs bg-yellow-500 text-black">
+                            VIP
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">
+                            Member
+                          </Badge>
+                        )}
+                        <span className="text-xs text-muted-foreground">
+                          {user.coins} เหรียญ
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right text-sm text-muted-foreground">
+                      <p>{new Date(user.created_at).toLocaleDateString('th-TH')}</p>
+                      {user.last_login_at && (
+                        <p className="text-xs">
+                          เข้าล่าสุด: {new Date(user.last_login_at).toLocaleDateString('th-TH')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )) : (
+                  <p className="text-muted-foreground text-center py-4">
+                    ยังไม่มีผู้ใช้ใหม่
+                  </p>
+                )}
+              </div>
+              {recentUsers.length > 0 && (
+                <div className="mt-4">
+                  <Button asChild variant="outline" className="w-full">
+                    <Link href="/admin/users">
+                      ดูผู้ใช้ทั้งหมด
                     </Link>
                   </Button>
                 </div>
@@ -362,6 +472,50 @@ export default async function AdminDashboard() {
                   </Button>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* System Health */}
+        <div className="mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                สถานะระบบ
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="text-sm text-muted-foreground">Database</div>
+                  <div className="flex items-center justify-center mt-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-sm">ปกติ</span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-muted-foreground">Storage</div>
+                  <div className="flex items-center justify-center mt-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-sm">ปกติ</span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-muted-foreground">Worker</div>
+                  <div className="flex items-center justify-center mt-1">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                    <span className="text-sm">รอ</span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-muted-foreground">CDN</div>
+                  <div className="flex items-center justify-center mt-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-sm">ปกติ</span>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
