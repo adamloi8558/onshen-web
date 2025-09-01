@@ -19,6 +19,7 @@ import {
   Clock
 } from "lucide-react";
 import SeriesViewer from "@/components/series-viewer";
+import BookmarkButton from "@/components/bookmark-button";
 
 interface EpisodePageProps {
   params: {
@@ -293,6 +294,16 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
               episode={currentEpisode} 
               user={user} 
             />
+            
+            {/* Additional Actions */}
+            <div className="flex items-center gap-4 mt-4">
+              <BookmarkButton
+                contentId={series.id}
+                user={user}
+                variant="outline"
+                size="default"
+              />
+            </div>
           </div>
           
           {/* Navigation */}

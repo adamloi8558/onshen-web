@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Play, X } from "lucide-react";
 import VideoPlayer from "./video-player";
+import BookmarkButton from "@/components/bookmark-button";
+import { useViewTracker } from "@/hooks/use-view-tracker";
 import Link from "next/link";
 
 interface Episode {
@@ -36,6 +38,13 @@ interface SeriesViewerProps {
 export default function SeriesViewer({ series, episode, user }: SeriesViewerProps) {
   const [isWatching, setIsWatching] = useState(false);
   const [isWatchingTrailer, setIsWatchingTrailer] = useState(false);
+
+  // Track views when component mounts
+  useViewTracker({ 
+    contentId: series.id,
+    episodeId: episode?.id,
+    enabled: true 
+  });
 
   const canWatchEpisode = user && episode && (!episode.is_vip_required || user.is_vip);
   const canWatchTrailer = series.trailer_url;
@@ -136,6 +145,14 @@ export default function SeriesViewer({ series, episode, user }: SeriesViewerProp
           ดูตัวอย่าง
         </Button>
       )}
+      
+      {/* Bookmark Button */}
+      <BookmarkButton
+        contentId={series.id}
+        user={user}
+        variant="outline"
+        size="lg"
+      />
     </div>
   );
 }

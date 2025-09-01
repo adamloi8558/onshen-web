@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Play, X } from "lucide-react";
 import VideoPlayer from "./video-player";
+import BookmarkButton from "@/components/bookmark-button";
+import { useViewTracker } from "@/hooks/use-view-tracker";
 import Link from "next/link";
 
 interface Movie {
@@ -28,6 +30,12 @@ interface MovieViewerProps {
 export default function MovieViewer({ movie, user }: MovieViewerProps) {
   const [isWatching, setIsWatching] = useState(false);
   const [isWatchingTrailer, setIsWatchingTrailer] = useState(false);
+
+  // Track views when component mounts
+  useViewTracker({ 
+    contentId: movie.id,
+    enabled: true 
+  });
 
   const canWatch = user && (!movie.is_vip_required || user.is_vip);
 
@@ -127,6 +135,14 @@ export default function MovieViewer({ movie, user }: MovieViewerProps) {
           ดูตัวอย่าง
         </Button>
       )}
+      
+      {/* Bookmark Button */}
+      <BookmarkButton
+        contentId={movie.id}
+        user={user}
+        variant="outline"
+        size="lg"
+      />
     </div>
   );
 }
