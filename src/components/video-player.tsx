@@ -190,48 +190,6 @@ export default function VideoPlayer({
     };
   }, [isDragging]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const video = videoRef.current;
-      if (!video || !containerRef.current?.contains(document.activeElement)) return;
-
-      switch (e.key) {
-        case ' ':
-          e.preventDefault();
-          togglePlay();
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          skipBackward();
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          skipForward();
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          adjustVolume(0.1);
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          adjustVolume(-0.1);
-          break;
-        case 'm':
-          e.preventDefault();
-          toggleMute();
-          break;
-        case 'f':
-          e.preventDefault();
-          toggleFullscreen();
-          break;
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlay, skipBackward, skipForward, adjustVolume, toggleMute, toggleFullscreen]);
-
   // Control functions
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
@@ -333,6 +291,48 @@ export default function VideoPlayer({
       setIsFullscreen(false);
     }
   }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const video = videoRef.current;
+      if (!video || !containerRef.current?.contains(document.activeElement)) return;
+
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          togglePlay();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          skipBackward();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          skipForward();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          adjustVolume(0.1);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          adjustVolume(-0.1);
+          break;
+        case 'm':
+          e.preventDefault();
+          toggleMute();
+          break;
+        case 'f':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [togglePlay, skipBackward, skipForward, adjustVolume, toggleMute, toggleFullscreen]);
 
   // Auto-hide controls
   useEffect(() => {
