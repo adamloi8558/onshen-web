@@ -179,7 +179,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
         {/* Background Image - Use poster if no backdrop */}
         {(movie.backdrop_url || movie.poster_url) && (
           <Image
-            src={movie.backdrop_url || movie.poster_url}
+            src={(movie.backdrop_url || movie.poster_url)!}
             alt={movie.title}
             fill
             className="object-cover"

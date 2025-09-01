@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users, transactions } from '@/lib/db/schema';
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 const VIP_PRICE_COINS = 39; // 39 เหรียญ = 39 บาท
 const VIP_DURATION_DAYS = 30; // 30 วัน
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     const user = await requireAuth();
 
