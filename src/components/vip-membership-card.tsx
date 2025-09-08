@@ -61,19 +61,7 @@ export default function VIPMembershipCard({ user }: VIPMembershipCardProps) {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-xs opacity-80 uppercase tracking-wide">
-                Current Value
-              </p>
-              <p className="text-xl font-bold">
-                {user.coins.toLocaleString()}
-              </p>
-              <p className="text-xs opacity-80">
-                เหรียญ
-              </p>
-            </div>
-            
+          <div className="grid grid-cols-1 gap-4">
             {isVipActive ? (
               <div>
                 <p className="text-xs opacity-80 uppercase tracking-wide">
@@ -141,9 +129,9 @@ export default function VIPMembershipCard({ user }: VIPMembershipCardProps) {
                   : ''
               }`}
             >
-              <Link href="/topup">
+              <Link href="/vip">
                 <CoinsIcon className="h-4 w-4 mr-2" />
-                Unlock more
+                ต่ออายุ
               </Link>
             </Button>
           </div>

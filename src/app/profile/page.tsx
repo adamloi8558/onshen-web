@@ -10,6 +10,7 @@ import { Crown, Coins, User, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import VIPMembershipCard from "@/components/vip-membership-card";
 
 export const metadata: Metadata = {
   title: "โปรไฟล์",
@@ -44,6 +45,8 @@ export default async function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Profile Info */}
           <div className="md:col-span-2 space-y-6">
+            {/* VIP Membership Card */}
+            <VIPMembershipCard user={user} />
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -170,28 +173,6 @@ export default async function ProfilePage() {
               </CardContent>
             </Card>
 
-            {user.is_vip && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-yellow-600">
-                    <Crown className="h-5 w-5" />
-                    สมาชิก VIP
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">สถานะ</p>
-                    <p className="font-medium text-yellow-600">เปิดใช้งาน</p>
-                    {user.vip_expires_at && (
-                      <>
-                        <p className="text-sm text-muted-foreground">วันหมดอายุ</p>
-                        <p className="font-medium">{formatDate(user.vip_expires_at)}</p>
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </div>

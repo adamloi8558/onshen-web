@@ -102,42 +102,42 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
       );
     }
 
-  // Get series details
-  const [series] = await db
-    .select({
-      id: content.id,
-      title: content.title,
-      slug: content.slug,
-      description: content.description,
-      type: content.type,
-      poster_url: content.poster_url,
-      backdrop_url: content.backdrop_url,
-      trailer_url: content.trailer_url,
-      content_rating: content.content_rating,
-      is_vip_required: content.is_vip_required,
-      views: content.views,
-      saves: content.saves,
-      release_date: content.release_date,
-      total_episodes: content.total_episodes,
-      category: {
-        id: categories.id,
-        name: categories.name,
-        slug: categories.slug,
-      },
-      created_at: content.created_at,
-    })
-    .from(content)
-    .leftJoin(categories, eq(content.category_id, categories.id))
-    .where(and(
-      eq(content.slug, params.slug),
-      eq(content.type, 'series'),
-      eq(content.status, 'published')
-    ))
-    .limit(1);
+    // Get series details
+    const [series] = await db
+      .select({
+        id: content.id,
+        title: content.title,
+        slug: content.slug,
+        description: content.description,
+        type: content.type,
+        poster_url: content.poster_url,
+        backdrop_url: content.backdrop_url,
+        trailer_url: content.trailer_url,
+        content_rating: content.content_rating,
+        is_vip_required: content.is_vip_required,
+        views: content.views,
+        saves: content.saves,
+        release_date: content.release_date,
+        total_episodes: content.total_episodes,
+        category: {
+          id: categories.id,
+          name: categories.name,
+          slug: categories.slug,
+        },
+        created_at: content.created_at,
+      })
+      .from(content)
+      .leftJoin(categories, eq(content.category_id, categories.id))
+      .where(and(
+        eq(content.slug, params.slug),
+        eq(content.type, 'series'),
+        eq(content.status, 'published')
+      )!)
+      .limit(1);
 
-  if (!series) {
-    notFound();
-  }
+    if (!series) {
+      notFound();
+    }
 
   // Get episodes
   const seriesEpisodes = await db

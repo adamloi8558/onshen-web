@@ -8,7 +8,6 @@ import { Settings, User, Lock, Bell } from "lucide-react";
 import Link from "next/link";
 import ProfileForm from "@/components/settings/profile-form";
 import ChangePasswordForm from "@/components/settings/change-password-form";
-import VIPMembershipCard from "@/components/vip-membership-card";
 
 export const dynamic = 'force-dynamic';
 
@@ -82,9 +81,6 @@ export default async function SettingsPage() {
 
           {/* Right content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* VIP Membership Card */}
-            <VIPMembershipCard user={user} />
-
             {/* Profile Settings */}
             <Card id="profile">
               <CardHeader>
