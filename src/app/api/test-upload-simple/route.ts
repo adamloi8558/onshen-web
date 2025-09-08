@@ -15,6 +15,8 @@ const testUploadSchema = z.object({
   fileSize: z.number().min(1, 'ขนาดไฟล์ไม่ถูกต้อง'),
   fileType: z.enum(['video', 'avatar', 'poster']),
   contentType: z.string().min(1, 'กรุณาระบุ Content Type'),
+  contentId: z.string().optional(),
+  episodeId: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
