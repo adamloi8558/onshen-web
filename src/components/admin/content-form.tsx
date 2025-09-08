@@ -29,7 +29,6 @@ const contentSchema = z.object({
   category_id: z.string().optional(),
   is_vip_required: z.boolean().default(false),
   duration_minutes: z.number().optional(),
-  total_episodes: z.number().optional(),
   release_date: z.string().optional(),
   poster_url: z.string().optional(),
   video_url: z.string().optional(),
@@ -64,7 +63,6 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
       category_id: initialData?.category_id || "",
       is_vip_required: initialData?.is_vip_required || false,
       duration_minutes: initialData?.duration_minutes,
-      total_episodes: initialData?.total_episodes,
       release_date: initialData?.release_date || "",
       poster_url: initialData?.poster_url || "",
       video_url: initialData?.video_url || "",
@@ -107,7 +105,6 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
           ...data,
           category_id: data.category_id === "" ? null : data.category_id,
           duration_minutes: data.duration_minutes || null,
-          total_episodes: data.total_episodes || null,
           release_date: data.release_date === "" ? null : data.release_date,
         }),
       });
@@ -286,24 +283,11 @@ export function ContentForm({ categories, initialData }: ContentFormProps) {
                   <CardTitle>ข้อมูลซีรี่ย์</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="total_episodes"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>จำนวนตอนทั้งหมด</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="12"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value) || undefined)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="bg-muted p-4 rounded-lg">
+                    <p className="text-sm text-muted-foreground">
+                      💡 จำนวนตอนจะอัปเดตอัตโนมัติเมื่อเพิ่มตอนใหม่
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}

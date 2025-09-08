@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Settings, User, Lock, Bell } from "lucide-react";
 import Link from "next/link";
@@ -81,6 +82,74 @@ export default async function SettingsPage() {
 
           {/* Right content */}
           <div className="lg:col-span-2 space-y-8">
+            {/* VIP Membership Card */}
+            <Card className={`${user.is_vip ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200' : 'bg-muted'}`}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${user.is_vip ? 'bg-yellow-500' : 'bg-gray-400'}`}></div>
+                  {user.is_vip ? 'สมาชิก VIP' : 'สมาชิกธรรมดา'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">สถานะสมาชิก</p>
+                      <p className="text-sm text-muted-foreground">
+                        {user.is_vip ? 'VIP Member' : 'Member'}
+                      </p>
+                    </div>
+                    <Badge className={user.is_vip ? 'bg-yellow-500 text-black' : 'bg-gray-500'}>
+                      {user.is_vip ? 'VIP' : 'Member'}
+                    </Badge>
+                  </div>
+
+                  {user.is_vip && user.vip_expires_at && (
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">วันหมดอายุ</p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(user.vip_expires_at).toLocaleDateString('th-TH', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">เหรียญ</p>
+                      <p className="text-sm text-muted-foreground">
+                        ยอดคงเหลือ
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold">{user.coins.toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">เหรียญ</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    {!user.is_vip && (
+                      <Button asChild className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700">
+                        <Link href="/vip">
+                          อัปเกรดเป็น VIP
+                        </Link>
+                      </Button>
+                    )}
+                    <Button asChild variant="outline" className="flex-1">
+                      <Link href="/topup">
+                        เติมเหรียญ
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Profile Settings */}
             <Card id="profile">
               <CardHeader>

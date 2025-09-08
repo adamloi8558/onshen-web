@@ -35,32 +35,32 @@ export default async function SeriesPage() {
 
     // Get all published series
     const series = await db
-    .select({
-      id: content.id,
-      title: content.title,
-      slug: content.slug,
-      description: content.description,
-      type: content.type,
-      poster_url: content.poster_url,
-      content_rating: content.content_rating,
-      is_vip_required: content.is_vip_required,
-      views: content.views,
-      saves: content.saves,
-      total_episodes: content.total_episodes,
-      category: {
-        id: categories.id,
-        name: categories.name,
-        slug: categories.slug,
-      }
-    })
-    .from(content)
-    .leftJoin(categories, eq(content.category_id, categories.id))
-    .where(and(
-      eq(content.status, 'published'),
-      eq(content.type, 'series')
-    ))
-    .orderBy(desc(content.created_at))
-    .limit(50);
+      .select({
+        id: content.id,
+        title: content.title,
+        slug: content.slug,
+        description: content.description,
+        type: content.type,
+        poster_url: content.poster_url,
+        content_rating: content.content_rating,
+        is_vip_required: content.is_vip_required,
+        views: content.views,
+        saves: content.saves,
+        total_episodes: content.total_episodes,
+        category: {
+          id: categories.id,
+          name: categories.name,
+          slug: categories.slug,
+        }
+      })
+      .from(content)
+      .leftJoin(categories, eq(content.category_id, categories.id))
+      .where(and(
+        eq(content.status, 'published'),
+        eq(content.type, 'series')
+      )!)
+      .orderBy(desc(content.created_at))
+      .limit(50);
 
   return (
     <div className="min-h-screen">

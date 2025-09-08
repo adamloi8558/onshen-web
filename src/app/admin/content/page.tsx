@@ -257,11 +257,19 @@ export default async function ContentManagement({ searchParams }: ContentPagePro
                       แก้ไข
                     </Link>
                   </Button>
-                  <Button size="sm" variant="outline" asChild>
-                    <Link href={`/admin/content/${item.id}/upload`}>
-                      <Upload className="h-3 w-3" />
-                    </Link>
-                  </Button>
+                  {item.type === 'series' ? (
+                    <Button size="sm" variant="outline" asChild>
+                      <Link href={`/admin/series/${item.id}/episodes`}>
+                        <Play className="h-3 w-3" />
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button size="sm" variant="outline" asChild>
+                      <Link href={`/admin/content/${item.id}/upload`}>
+                        <Upload className="h-3 w-3" />
+                      </Link>
+                    </Button>
+                  )}
                   <Button size="sm" variant="outline" asChild>
                     <Link href={`/${item.type === 'movie' ? 'movies' : 'series'}/${item.slug}`}>
                       <Eye className="h-3 w-3" />

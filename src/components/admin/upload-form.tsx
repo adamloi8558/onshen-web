@@ -125,17 +125,36 @@ export default function UploadForm({ contentId }: UploadFormProps) {
       toast.info("กำลังอัปโหลดไฟล์...");
       setUploadProgress(25);
 
-      const uploadResponse = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: selectedFile,
-        headers: {
-          'Content-Type': selectedFile.type,
-        },
+      // Create XMLHttpRequest for progress tracking
+      const xhr = new XMLHttpRequest();
+      
+      const uploadPromise = new Promise<void>((resolve, reject) => {
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const percentComplete = Math.round((e.loaded / e.total) * 100);
+            setUploadProgress(percentComplete);
+          }
+        });
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status === 200) {
+            resolve();
+          } else {
+            reject(new Error(`Upload failed with status ${xhr.status}`));
+          }
+        });
+
+        xhr.addEventListener('error', () => {
+          reject(new Error('Upload failed'));
+        });
+
+        xhr.open('PUT', uploadUrl);
+        xhr.send(selectedFile);
       });
 
-      if (!uploadResponse.ok) {
-        throw new Error('การอัปโหลดไฟล์ล้มเหลว');
-      }
+      await uploadPromise;
+      
+      toast.success("อัปโหลดไฟล์สำเร็จ!");
 
       setUploadProgress(75);
       toast.info("อัปโหลดสำเร็จ! กำลังอัพเดตฐานข้อมูล...");
