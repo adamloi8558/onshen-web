@@ -176,7 +176,9 @@ export async function DELETE(
     const [existingContent] = await db
       .select({ 
         id: content.id, 
-        title: content.title 
+        title: content.title,
+        poster_url: content.poster_url,
+        video_url: content.video_url 
       })
       .from(content)
       .where(eq(content.id, params.id))
@@ -187,6 +189,15 @@ export async function DELETE(
         { error: 'ไม่พบเนื้อหา' },
         { status: 404 }
       );
+    }
+
+    // Delete files from R2 first
+    try {
+      const { deleteContentFilesFromR2 } = await import('@/lib/r2-cleanup');
+      await deleteContentFilesFromR2(existingContent.title);
+    } catch (error) {
+      console.error('Error deleting R2 files:', error);
+      // Continue with database deletion even if R2 cleanup fails
     }
 
     // Delete content (cascade will handle related records like episodes)

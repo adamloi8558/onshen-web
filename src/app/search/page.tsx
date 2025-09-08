@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { db, content, categories } from "@/lib/db";
 import { eq, and, ilike, or } from "drizzle-orm";
 import ContentGrid from "@/components/content-grid";
+import RecommendedContent from "@/components/recommended-content";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -233,12 +234,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             )}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-bold mb-2">ค้นหาเนื้อหาที่คุณต้องการ</h3>
-            <p className="text-muted-foreground">
-              ใส่ชื่อหนัง ซีรี่ย์ หรือคำที่เกี่ยวข้องในช่องค้นหาด้านบน
-            </p>
+          <div>
+            {/* Search Instructions */}
+            <div className="text-center py-8 mb-8">
+              <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-xl font-bold mb-2">ค้นหาเนื้อหาที่คุณต้องการ</h3>
+              <p className="text-muted-foreground">
+                ใส่ชื่อหนัง ซีรี่ย์ หรือคำที่เกี่ยวข้องในช่องค้นหาด้านบน
+              </p>
+            </div>
+
+            {/* Recommended Content */}
+            <RecommendedContent />
           </div>
         )}
       </div>
