@@ -41,43 +41,40 @@ export async function deleteFileFromR2(fileUrl: string): Promise<boolean> {
   }
 }
 
-export async function deleteContentFilesFromR2(contentTitle: string): Promise<boolean> {
+export async function deleteContentFilesFromR2(contentId: string): Promise<boolean> {
   try {
-    const sanitizedTitle = contentTitle.replace(/[^a-zA-Z0-9\u0E00-\u0E7F.-]/g, '_');
-    
-    // List all files for this content
+    // List all files for this content ID
     const listCommand = new ListObjectsV2Command({
       Bucket: BUCKET_NAME,
-      Prefix: `uploads/videos/${sanitizedTitle}/`,
+      Prefix: `uploads/videos/${contentId}/`,
     });
 
     const listResult = await s3Client.send(listCommand);
     
     if (!listResult.Contents || listResult.Contents.length === 0) {
-      console.log('No files found for content:', sanitizedTitle);
-      return true;
-    }
+      console.log('No video files found for content:', contentId);
+    } else {
+      // Delete all video files
+      const deletePromises = listResult.Contents.map(async (object) => {
+        if (!object.Key) return;
+        
+        const deleteCommand = new DeleteObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: object.Key,
+        });
 
-    // Delete all files
-    const deletePromises = listResult.Contents.map(async (object) => {
-      if (!object.Key) return;
-      
-      const deleteCommand = new DeleteObjectCommand({
-        Bucket: BUCKET_NAME,
-        Key: object.Key,
+        await s3Client.send(deleteCommand);
+        console.log('Deleted video file:', object.Key);
       });
 
-      await s3Client.send(deleteCommand);
-      console.log('Deleted file:', object.Key);
-    });
-
-    await Promise.all(deletePromises);
-    console.log(`Deleted ${deletePromises.length} files for content: ${sanitizedTitle}`);
+      await Promise.all(deletePromises);
+      console.log(`Deleted ${deletePromises.length} video files for content: ${contentId}`);
+    }
     
     // Also delete poster files
     const posterListCommand = new ListObjectsV2Command({
       Bucket: BUCKET_NAME,
-      Prefix: `uploads/posters/${sanitizedTitle}/`,
+      Prefix: `uploads/posters/${contentId}/`,
     });
 
     const posterListResult = await s3Client.send(posterListCommand);
@@ -96,12 +93,52 @@ export async function deleteContentFilesFromR2(contentTitle: string): Promise<bo
       });
 
       await Promise.all(posterDeletePromises);
+      console.log(`Deleted ${posterDeletePromises.length} poster files for content: ${contentId}`);
     }
 
     return true;
 
   } catch (error) {
     console.error('Error deleting content files from R2:', error);
+    return false;
+  }
+}
+
+export async function deleteVideoFromR2(contentId: string): Promise<boolean> {
+  try {
+    // List all video files for this content ID
+    const listCommand = new ListObjectsV2Command({
+      Bucket: BUCKET_NAME,
+      Prefix: `uploads/videos/${contentId}/`,
+    });
+
+    const listResult = await s3Client.send(listCommand);
+    
+    if (!listResult.Contents || listResult.Contents.length === 0) {
+      console.log('No video files found for content:', contentId);
+      return true;
+    }
+
+    // Delete all video files only
+    const deletePromises = listResult.Contents.map(async (object) => {
+      if (!object.Key) return;
+      
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: object.Key,
+      });
+
+      await s3Client.send(deleteCommand);
+      console.log('Deleted video file:', object.Key);
+    });
+
+    await Promise.all(deletePromises);
+    console.log(`Deleted ${deletePromises.length} video files for content: ${contentId}`);
+
+    return true;
+
+  } catch (error) {
+    console.error('Error deleting video files from R2:', error);
     return false;
   }
 }

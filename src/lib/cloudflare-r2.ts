@@ -106,7 +106,7 @@ export function generateUploadKey(
   userId: string, 
   fileType: 'video' | 'avatar' | 'poster', 
   filename: string,
-  contentTitle?: string
+  contentId?: string
 ): string {
   const timestamp = Date.now();
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
@@ -115,15 +115,13 @@ export function generateUploadKey(
     case 'avatar':
       return `uploads/avatars/${userId}/${timestamp}_${sanitizedFilename}`;
     case 'poster':
-      if (contentTitle) {
-        const sanitizedTitle = contentTitle.replace(/[^a-zA-Z0-9\u0E00-\u0E7F.-]/g, '_');
-        return `uploads/posters/${sanitizedTitle}/${timestamp}_${sanitizedFilename}`;
+      if (contentId) {
+        return `uploads/posters/${contentId}/${timestamp}_${sanitizedFilename}`;
       }
       return `uploads/posters/${userId}/${timestamp}_${sanitizedFilename}`;
     case 'video':
-      if (contentTitle) {
-        const sanitizedTitle = contentTitle.replace(/[^a-zA-Z0-9\u0E00-\u0E7F.-]/g, '_');
-        return `uploads/videos/${sanitizedTitle}/${timestamp}_${sanitizedFilename}`;
+      if (contentId) {
+        return `uploads/videos/${contentId}/${timestamp}_${sanitizedFilename}`;
       }
       return `uploads/videos/${userId}/${timestamp}_${sanitizedFilename}`;
     default:

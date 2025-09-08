@@ -16,12 +16,11 @@ interface UploadFormProps {
   contentTitle: string;
 }
 
-export default function UploadForm({ contentId, contentTitle }: UploadFormProps) {
+export default function UploadForm({ contentId }: UploadFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'processing' | 'completed' | 'error'>('idle');
-  const [isConverting, setIsConverting] = useState(false);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,39 +50,6 @@ export default function UploadForm({ contentId, contentTitle }: UploadFormProps)
     setUploadStatus('idle');
   };
 
-  const handleConvertToHLS = async (mp4Url: string) => {
-    try {
-      setIsConverting(true);
-      toast.info("กำลังแปลงเป็น HLS... (ใช้เวลา 2-5 นาที)");
-
-      const response = await fetch('/api/admin/convert-to-hls', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contentId,
-          mp4Url
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("แปลงเป็น HLS สำเร็จ! วิดีโอจะเล่นได้เร็วขึ้น");
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      } else {
-        toast.error(data.error || "เกิดข้อผิดพลาดในการแปลง HLS");
-      }
-    } catch (error) {
-      console.error('HLS conversion error:', error);
-      toast.error("เกิดข้อผิดพลาดในการแปลง HLS");
-    } finally {
-      setIsConverting(false);
-    }
-  };
 
   const handleUpload = async () => {
     if (!selectedFile) {
@@ -110,7 +76,6 @@ export default function UploadForm({ contentId, contentTitle }: UploadFormProps)
           fileSize: selectedFile.size,
           fileType: 'video',
           contentId: contentId,
-          contentTitle: contentTitle,
         }),
       });
 
@@ -177,11 +142,9 @@ export default function UploadForm({ contentId, contentTitle }: UploadFormProps)
           setUploadStatus('completed');
           toast.success("อัปโหลดและอัพเดตฐานข้อมูลสำเร็จ! วิดีโอพร้อมดูได้แล้ว");
           
-          // Offer HLS conversion
+          // Upload completed
           setTimeout(() => {
-            if (window.confirm('ต้องการแปลงเป็น HLS (.m3u8) เพื่อประสิทธิภาพที่ดีขึ้นหรือไม่?\n\n✅ ข้อดี: เล่นเร็วขึ้น, ปรับคุณภาพอัตโนมัติ, ประหยัด bandwidth\n⏱️ ใช้เวลา: 2-5 นาที')) {
-              handleConvertToHLS(responseData.data?.fileUrl || responseData.fileUrl);
-            }
+            window.location.reload();
           }, 2000);
         } else {
           toast.warning("อัปโหลดสำเร็จ แต่ไม่สามารถอัพเดตฐานข้อมูลได้ กรุณาอัพเดต URL ด้วยตนเอง");
@@ -324,14 +287,14 @@ export default function UploadForm({ contentId, contentTitle }: UploadFormProps)
       <div className="flex gap-4">
         <Button 
           onClick={handleUpload}
-          disabled={!selectedFile || isUploading || isConverting}
+          disabled={!selectedFile || isUploading}
           className="flex-1"
         >
           <Upload className="h-4 w-4 mr-2" />
           {isUploading ? "กำลังอัปโหลด..." : "เริ่มอัปโหลด"}
         </Button>
 
-        {selectedFile && !isUploading && !isConverting && (
+        {selectedFile && !isUploading && (
           <Button 
             variant="outline"
             onClick={() => {
@@ -345,22 +308,6 @@ export default function UploadForm({ contentId, contentTitle }: UploadFormProps)
         )}
       </div>
 
-      {/* HLS Conversion Status */}
-      {isConverting && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-              <div>
-                <p className="font-medium">กำลังแปลงเป็น HLS...</p>
-                <p className="text-sm text-muted-foreground">
-                  ระบบกำลังแปลงไฟล์เป็น .m3u8 เพื่อประสิทธิภาพที่ดีขึ้น
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Upload Guidelines */}
       <Card>
@@ -371,7 +318,7 @@ export default function UploadForm({ contentId, contentTitle }: UploadFormProps)
           <p>📹 <strong>ไฟล์ที่รองรับ:</strong> MP4, WebM, MKV</p>
           <p>📏 <strong>ขนาดสูงสุด:</strong> 5GB ต่อไฟล์</p>
           <p>🎬 <strong>คุณภาพแนะนำ:</strong> 1080p หรือ 720p</p>
-          <p>⚡ <strong>การประมวลผล:</strong> แปลงเป็น HLS อัตโนมัติ</p>
+          <p>⚡ <strong>การประมวลผล:</strong> อัปโหลดตรงไป R2</p>
           <p>🔒 <strong>ความปลอดภัย:</strong> ไฟล์จะถูกเก็บใน Cloudflare R2</p>
           <p>📱 <strong>การเล่น:</strong> รองรับทุกอุปกรณ์และเบราว์เซอร์</p>
         </CardContent>

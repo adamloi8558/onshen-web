@@ -27,29 +27,30 @@ interface SeriesPageProps {
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: SeriesPageProps): Promise<Metadata> {
-  // Skip database queries during build with placeholder database
-  if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
-    return {
-      title: "ซีรี่ย์",
-      description: "ดูซีรี่ย์ออนไลน์คุณภาพ HD",
-    };
-  }
+  try {
+    // Skip database queries during build with placeholder database
+    if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+      return {
+        title: "ซีรี่ย์",
+        description: "ดูซีรี่ย์ออนไลน์คุณภาพ HD",
+      };
+    }
 
-  const [series] = await db
-    .select({
-      title: content.title,
-      description: content.description,
-      poster_url: content.poster_url,
-      backdrop_url: content.backdrop_url,
-      total_episodes: content.total_episodes,
-    })
-    .from(content)
-    .where(and(
-      eq(content.slug, params.slug),
-      eq(content.type, 'series'),
-      eq(content.status, 'published')
-    ))
-    .limit(1);
+    const [series] = await db
+      .select({
+        title: content.title,
+        description: content.description,
+        poster_url: content.poster_url,
+        backdrop_url: content.backdrop_url,
+        total_episodes: content.total_episodes,
+      })
+      .from(content)
+      .where(and(
+        eq(content.slug, params.slug),
+        eq(content.type, 'series'),
+        eq(content.status, 'published')
+      )!)
+      .limit(1);
 
   if (!series) {
     return {
@@ -58,40 +59,48 @@ export async function generateMetadata({ params }: SeriesPageProps): Promise<Met
     };
   }
 
-  return {
-    title: `${series.title} - Ronglakorn`,
-    description: series.description || `ดูซีรี่ย์ ${series.title} ออนไลน์คุณภาพ HD`,
-    openGraph: {
+    return {
       title: `${series.title} - Ronglakorn`,
       description: series.description || `ดูซีรี่ย์ ${series.title} ออนไลน์คุณภาพ HD`,
-      images: [series.poster_url || "/og-series-default.jpg"],
-      type: "video.tv_show",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${series.title} - Ronglakorn`,
-      description: series.description || `ดูซีรี่ย์ ${series.title} ออนไลน์คุณภาพ HD`,
-      images: [series.poster_url || "/og-series-default.jpg"],
-    },
-  };
+      openGraph: {
+        title: `${series.title} - Ronglakorn`,
+        description: series.description || `ดูซีรี่ย์ ${series.title} ออนไลน์คุณภาพ HD`,
+        images: [series.poster_url || "/og-series-default.jpg"],
+        type: "video.tv_show",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${series.title} - Ronglakorn`,
+        description: series.description || `ดูซีรี่ย์ ${series.title} ออนไลน์คุณภาพ HD`,
+        images: [series.poster_url || "/og-series-default.jpg"],
+      },
+    };
+  } catch (error) {
+    console.error('Series metadata error:', error);
+    return {
+      title: "ซีรี่ย์ - Ronglakorn",
+      description: "ดูซีรี่ย์ออนไลน์คุณภาพ HD",
+    };
+  }
 }
 
 export default async function SeriesPage({ params }: SeriesPageProps) {
-  const user = await getCurrentUser();
+  try {
+    const user = await getCurrentUser();
 
-  // Skip database queries during build with placeholder database
-  if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
-    return (
-      <div className="min-h-screen">
-        <div className="container py-12">
-          <h1 className="text-4xl font-bold mb-8">ซีรี่ย์</h1>
-          <div className="text-center py-16">
-            <p className="text-muted-foreground">รายละเอียดซีรี่ย์</p>
+    // Skip database queries during build with placeholder database
+    if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
+      return (
+        <div className="min-h-screen">
+          <div className="container py-12">
+            <h1 className="text-4xl font-bold mb-8">ซีรี่ย์</h1>
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">รายละเอียดซีรี่ย์</p>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   // Get series details
   const [series] = await db
@@ -457,4 +466,17 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('Series page error:', error);
+    return (
+      <div className="min-h-screen">
+        <div className="container py-12">
+          <h1 className="text-4xl font-bold mb-8">ซีรี่ย์</h1>
+          <p className="text-muted-foreground">
+            เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง
+          </p>
+        </div>
+      </div>
+    );
+  }
 }

@@ -194,7 +194,7 @@ export async function DELETE(
     // Delete files from R2 first
     try {
       const { deleteContentFilesFromR2 } = await import('@/lib/r2-cleanup');
-      await deleteContentFilesFromR2(existingContent.title);
+      await deleteContentFilesFromR2(existingContent.id);
     } catch (error) {
       console.error('Error deleting R2 files:', error);
       // Continue with database deletion even if R2 cleanup fails

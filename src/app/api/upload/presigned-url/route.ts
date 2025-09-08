@@ -21,7 +21,6 @@ const presignedUrlSchema = z.object({
   contentType: z.string().min(1, 'กรุณาระบุ Content Type'),
   contentId: z.string().optional(),
   episodeId: z.string().optional(),
-  contentTitle: z.string().optional(),
 });
 
 
@@ -115,7 +114,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate upload key
-    const uploadKey = generateUploadKey(user.id, validatedData.fileType, validatedData.filename, validatedData.contentTitle);
+    const uploadKey = generateUploadKey(user.id, validatedData.fileType, validatedData.filename, validatedData.contentId);
     console.log('Generated upload key:', uploadKey);
     
     // Generate presigned URL

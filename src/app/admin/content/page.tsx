@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ContentFilters from "@/components/admin/content-filters";
 import DeleteContentButton from "@/components/admin/delete-content-button";
+import DeleteVideoButton from "@/components/admin/delete-video-button";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -47,6 +48,7 @@ async function getContent(filters: ContentFilters = {}) {
         status: content.status,
         content_rating: content.content_rating,
         poster_url: content.poster_url,
+        video_url: content.video_url,
         views: content.views,
         saves: content.saves,
         total_episodes: content.total_episodes,
@@ -275,6 +277,12 @@ export default async function ContentManagement({ searchParams }: ContentPagePro
                       <Eye className="h-3 w-3" />
                     </Link>
                   </Button>
+                  {item.video_url && (
+                    <DeleteVideoButton 
+                      contentId={item.id} 
+                      contentTitle={item.title} 
+                    />
+                  )}
                   <DeleteContentButton 
                     contentId={item.id} 
                     contentTitle={item.title} 
