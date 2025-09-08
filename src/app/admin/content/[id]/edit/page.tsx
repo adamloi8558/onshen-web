@@ -5,7 +5,9 @@ import { content, categories } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Film, ArrowLeft } from "lucide-react";
+import { Film, ArrowLeft, FileVideo } from "lucide-react";
+import DeleteVideoButton from "@/components/admin/delete-video-button";
+import DeletePosterButton from "@/components/admin/delete-poster-button";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
@@ -182,6 +184,95 @@ export default async function EditContentPage({ params }: PageProps) {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">อัพเดตล่าสุด:</span>
                     <span>{new Date(contentItem.updated_at).toLocaleDateString('th-TH')}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Files Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileVideo className="h-5 w-5" />
+                  ไฟล์สื่อ
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Video File */}
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <FileVideo className="h-8 w-8 text-blue-500" />
+                    <div>
+                      <p className="font-medium">
+                        {contentItem.video_url ? 'วิดีโอหลัก' : 'ยังไม่มีวิดีโอ'}
+                      </p>
+                      {contentItem.video_url && (
+                        <p className="text-sm text-muted-foreground">
+                          {contentItem.video_url.split('/').pop()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {contentItem.video_url ? (
+                      <>
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/admin/content/${contentItem.id}/upload`}>
+                            เปลี่ยนไฟล์
+                          </Link>
+                        </Button>
+                        <DeleteVideoButton 
+                          contentId={contentItem.id}
+                          contentTitle={contentItem.title}
+                        />
+                      </>
+                    ) : (
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/admin/content/${contentItem.id}/upload`}>
+                          อัปโหลดวิดีโอ
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Poster File */}
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
+                      {contentItem.poster_url ? (
+                        <Image
+                          src={contentItem.poster_url}
+                          alt="Poster"
+                          width={32}
+                          height={32}
+                          className="w-full h-full object-cover rounded"
+                        />
+                      ) : (
+                        <Film className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium">
+                        {contentItem.poster_url ? 'โปสเตอร์' : 'ยังไม่มีโปสเตอร์'}
+                      </p>
+                      {contentItem.poster_url && (
+                        <p className="text-sm text-muted-foreground">
+                          รูปหน้าปก
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm">
+                      {contentItem.poster_url ? 'เปลี่ยนโปสเตอร์' : 'อัปโหลดโปสเตอร์'}
+                    </Button>
+                    {contentItem.poster_url && (
+                      <DeletePosterButton 
+                        contentId={contentItem.id}
+                        contentTitle={contentItem.title}
+                      />
+                    )}
                   </div>
                 </div>
               </CardContent>
