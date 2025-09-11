@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, QrCode, Clock, CheckCircle, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
-import Image from "next/image";
 
 interface PaymentFormProps {
   userCoins: number;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, users, transactions } from '@/lib/db';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { verifyWebhookSignature } from '@/lib/payment';
 import { z } from 'zod';
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const webhookData = webhookSchema.parse(body);
 
     // Verify signature
-    if (!verifyWebhookSignature(webhookData.ref, webhookData.signature)) {
+    if (!(await verifyWebhookSignature(webhookData.ref, webhookData.signature))) {
       console.error('Invalid webhook signature:', {
         ref: webhookData.ref,
         receivedSignature: webhookData.signature,

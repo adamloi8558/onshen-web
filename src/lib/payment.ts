@@ -96,18 +96,23 @@ export class PaymentService {
 }
 
 // Webhook signature verification
-export function verifyWebhookSignature(ref: string, signature: string): boolean {
-  const crypto = require('crypto') as typeof import('crypto');
-  const expectedSignature = crypto
-    .createHash('sha256')
-    .update(`${ref}:${PAYMENT_API_KEY}`)
-    .digest('hex');
-  
-  return signature === expectedSignature;
+export async function verifyWebhookSignature(ref: string, signature: string): Promise<boolean> {
+  try {
+    const crypto = await import('crypto');
+    const expectedSignature = crypto
+      .createHash('sha256')
+      .update(`${ref}:${PAYMENT_API_KEY}`)
+      .digest('hex');
+    
+    return signature === expectedSignature;
+  } catch (error) {
+    console.error('Error verifying webhook signature:', error);
+    return false;
+  }
 }
 
-export function createWebhookSignature(ref: string): string {
-  const crypto = require('crypto') as typeof import('crypto');
+export async function createWebhookSignature(ref: string): Promise<string> {
+  const crypto = await import('crypto');
   return crypto
     .createHash('sha256')
     .update(`${ref}:${PAYMENT_API_KEY}`)
