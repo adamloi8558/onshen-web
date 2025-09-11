@@ -139,44 +139,76 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
       notFound();
     }
 
-  // Get episodes
-  const seriesEpisodes = await db
-    .select({
-      id: episodes.id,
-      title: episodes.title,
-      episode_number: episodes.episode_number,
-      description: episodes.description,
-      thumbnail_url: episodes.thumbnail_url,
-      video_url: episodes.video_url,
-      duration_minutes: episodes.duration_minutes,
-      is_vip_required: episodes.is_vip_required,
-      views: episodes.views,
-      created_at: episodes.created_at,
-    })
-    .from(episodes)
-    .where(eq(episodes.content_id, series.id))
-    .orderBy(asc(episodes.episode_number));
+    // Get episodes
+    let seriesEpisodes: Array<{
+      id: string;
+      title: string;
+      episode_number: string;
+      description: string | null;
+      thumbnail_url: string | null;
+      video_url: string | null;
+      duration_minutes: number | null;
+      is_vip_required: boolean;
+      views: number;
+      created_at: Date;
+    }> = [];
+    try {
+      seriesEpisodes = await db
+        .select({
+          id: episodes.id,
+          title: episodes.title,
+          episode_number: episodes.episode_number,
+          description: episodes.description,
+          thumbnail_url: episodes.thumbnail_url,
+          video_url: episodes.video_url,
+          duration_minutes: episodes.duration_minutes,
+          is_vip_required: episodes.is_vip_required,
+          views: episodes.views,
+          created_at: episodes.created_at,
+        })
+        .from(episodes)
+        .where(eq(episodes.content_id, series.id))
+        .orderBy(asc(episodes.episode_number));
+    } catch (error) {
+      console.error('Error fetching episodes:', error);
+      seriesEpisodes = [];
+    }
 
-  // Get related series
-  const relatedSeries = await db
-    .select({
-      id: content.id,
-      title: content.title,
-      slug: content.slug,
-      poster_url: content.poster_url,
-      content_rating: content.content_rating,
-      is_vip_required: content.is_vip_required,
-      views: content.views,
-      total_episodes: content.total_episodes,
-    })
-    .from(content)
-    .where(and(
-      eq(content.type, 'series'),
-      eq(content.status, 'published'),
-      eq(content.category_id, series.category?.id || '')
-    ))
-    .orderBy(desc(content.views))
-    .limit(6);
+    // Get related series
+    let relatedSeries: Array<{
+      id: string;
+      title: string;
+      slug: string;
+      poster_url: string | null;
+      content_rating: string;
+      is_vip_required: boolean;
+      views: number;
+      total_episodes: number | null;
+    }> = [];
+    try {
+      relatedSeries = await db
+        .select({
+          id: content.id,
+          title: content.title,
+          slug: content.slug,
+          poster_url: content.poster_url,
+          content_rating: content.content_rating,
+          is_vip_required: content.is_vip_required,
+          views: content.views,
+          total_episodes: content.total_episodes,
+        })
+        .from(content)
+        .where(and(
+          eq(content.type, 'series'),
+          eq(content.status, 'published'),
+          series.category?.id ? eq(content.category_id, series.category.id) : undefined
+        )!)
+        .orderBy(desc(content.views))
+        .limit(6);
+    } catch (error) {
+      console.error('Error fetching related series:', error);
+      relatedSeries = [];
+    }
 
   const canWatch = user && (!series.is_vip_required || user.is_vip);
   
