@@ -114,6 +114,7 @@ export const transactions = pgTable('transactions', {
   description: text('description'),
   payment_method: text('payment_method'), // e.g., 'bank_transfer', 'credit_card'
   payment_reference: text('payment_reference'), // External payment ID
+  payment_ref: text('payment_ref'), // Payment gateway reference
   processed_at: timestamp('processed_at'),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),

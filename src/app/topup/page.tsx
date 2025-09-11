@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Coins, CreditCard, DollarSign, History } from "lucide-react";
-import TopupForm from "@/components/topup/topup-form";
+import RealPaymentForm from "@/components/topup/real-payment-form";
 
 export const dynamic = 'force-dynamic';
 
@@ -106,7 +106,7 @@ export default async function TopupPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <TopupForm user={user} />
+                <RealPaymentForm userCoins={user.coins} />
               </CardContent>
             </Card>
 
