@@ -44,21 +44,32 @@ export class PaymentService {
   private static async makeRequest(endpoint: string, options: RequestInit = {}) {
     const url = `${PAYMENT_API_BASE}${endpoint}`;
     
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Authorization': createAuthHeader(),
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+    try {
+      console.log('Making payment API request:', { url, method: options.method || 'GET' });
+      
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Authorization': createAuthHeader(),
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Unknown error' }));
-      throw new Error(error.message || `HTTP ${response.status}`);
+      console.log('Payment API response status:', response.status);
+      
+      const responseData = await response.json();
+      console.log('Payment API response data:', responseData);
+
+      if (!response.ok) {
+        throw new Error(`Payment API error: ${response.status} ${response.statusText} - ${JSON.stringify(responseData)}`);
+      }
+
+      return responseData;
+    } catch (error) {
+      console.error('Payment API request failed:', error);
+      throw error;
     }
-
-    return response.json();
   }
 
   static async getUserInfo(): Promise<UserInfo> {

@@ -39,6 +39,11 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Payment creation error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -53,9 +58,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Extract meaningful error message
+    let errorMessage = 'เกิดข้อผิดพลาดในการสร้างรายการชำระเงิน';
+    if (error instanceof Error) {
+      if (error.message.includes('Payment API error')) {
+        errorMessage = 'ไม่สามารถเชื่อมต่อระบบชำระเงินได้ กรุณาลองใหม่อีกครั้ง';
+      } else if (error.message.includes('fetch')) {
+        errorMessage = 'เกิดปัญหาการเชื่อมต่อ กรุณาตรวจสอบอินเทอร์เน็ต';
+      } else {
+        errorMessage = error.message;
+      }
+    }
+
     return NextResponse.json(
       { 
-        error: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการสร้างรายการชำระเงิน'
+        error: errorMessage,
+        debug: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : String(error) : undefined
       },
       { status: 500 }
     );

@@ -83,8 +83,18 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
       }
     } catch (error) {
       console.error('Payment creation error:', error);
-      toast.error(error instanceof Error ? error.message : 'เกิดข้อผิดพลาด');
+      
+      // Better error message handling
+      let errorMessage = 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
       setPayment(prev => ({ ...prev, status: 'error' }));
+    } finally {
+      setIsLoading(false);
     }
   };
 
