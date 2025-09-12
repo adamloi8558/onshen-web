@@ -94,7 +94,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
       toast.error(errorMessage);
       setPayment(prev => ({ ...prev, status: 'error' }));
     } finally {
-      setIsLoading(false);
+      // Status is already set in catch block or success flow
     }
   };
 
