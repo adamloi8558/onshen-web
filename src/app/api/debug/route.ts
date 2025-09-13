@@ -1,51 +1,58 @@
 import { NextResponse } from 'next/server';
+import { getCurrentUser } from '@/lib/auth';
 import { db } from '@/lib/db';
-
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export async function GET() {
   try {
-    console.log('=== DEBUG INFO ===');
-    console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
-    console.log('DATABASE_URL preview:', process.env.DATABASE_URL?.substring(0, 20) + '...');
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-    console.log('DB instance exists:', !!db);
+    console.log('=== Debug API Started ===');
     
-    // Test database connection if db exists
-    if (db && process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('placeholder')) {
-      console.log('Testing database connection...');
-      
-      // Simple query to test connection
-      const result = await db.execute('SELECT 1 as test');
-      console.log('Database test successful:', result);
-      
-      return NextResponse.json({
-        status: 'success',
-        database: 'connected',
-        env: process.env.NODE_ENV,
-        hasDb: !!db,
-        timestamp: new Date().toISOString()
-      });
-    } else {
-      return NextResponse.json({
-        status: 'info', 
-        database: 'placeholder or not available',
-        env: process.env.NODE_ENV,
-        hasDb: !!db,
-        dbUrl: process.env.DATABASE_URL?.includes('placeholder') ? 'placeholder' : 'real',
-        timestamp: new Date().toISOString()
-      });
+    // Test environment variables
+    const envCheck = {
+      DATABASE_URL: !!process.env.DATABASE_URL,
+      JWT_SECRET: !!process.env.JWT_SECRET,
+      NODE_ENV: process.env.NODE_ENV,
+      hasDbUrl: process.env.DATABASE_URL?.substring(0, 20) + '...'
+    };
+    console.log('Environment check:', envCheck);
+    
+    // Test database connection
+    let dbStatus = 'Failed';
+    try {
+      if (db) {
+        dbStatus = 'Connected';
+      }
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      dbStatus = `Error: ${dbError instanceof Error ? dbError.message : 'Unknown'}`;
     }
-  } catch (error) {
-    console.error('Debug endpoint error:', error);
+    
+    // Test auth
+    let authStatus = 'No auth';
+    try {
+      const user = await getCurrentUser();
+      authStatus = user ? `User: ${user.phone}` : 'Not authenticated';
+    } catch (authError) {
+      console.error('Auth error:', authError);
+      authStatus = `Auth error: ${authError instanceof Error ? authError.message : 'Unknown'}`;
+    }
+    
+    console.log('=== Debug API Completed ===');
+    
     return NextResponse.json({
-      status: 'error',
+      success: true,
+      timestamp: new Date().toISOString(),
+      environment: envCheck,
+      database: dbStatus,
+      authentication: authStatus,
+      message: 'Debug check completed'
+    });
+    
+  } catch (error) {
+    console.error('Debug API error:', error);
+    return NextResponse.json({
+      success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
-      env: process.env.NODE_ENV,
-      hasDb: !!db,
-      timestamp: new Date().toISOString()
+      stack: error instanceof Error ? error.stack : undefined
     }, { status: 500 });
   }
 }
