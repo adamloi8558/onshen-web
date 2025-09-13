@@ -2,6 +2,9 @@ const PAYMENT_API_BASE = 'https://barite.shengzhipay.com';
 const PAYMENT_USERNAME = 'ronglakorn';
 const PAYMENT_API_KEY = '3f17b5c0-7402-41cb-a2a2-dac94320dc22';
 
+// Development mode flag
+const USE_MOCK_PAYMENT = process.env.NODE_ENV === 'development';
+
 // Create Basic Auth header
 function createAuthHeader(): string {
   const credentials = `${PAYMENT_USERNAME}:${PAYMENT_API_KEY}`;
@@ -40,6 +43,9 @@ export interface UserInfo {
   webhook_url: string;
 }
 
+// Import mock service
+import { MockPaymentService } from './mock-payment';
+
 export class PaymentService {
   private static async makeRequest(endpoint: string, options: RequestInit = {}) {
     const url = `${PAYMENT_API_BASE}${endpoint}`;
@@ -73,10 +79,18 @@ export class PaymentService {
   }
 
   static async getUserInfo(): Promise<UserInfo> {
+    if (USE_MOCK_PAYMENT) {
+      console.log('Using mock payment service for getUserInfo');
+      return MockPaymentService.getUserInfo();
+    }
     return this.makeRequest('/user/me');
   }
 
   static async createTransaction(amount: number, type: 'qrcode_tg' | 'qrcode_slip' = 'qrcode_slip'): Promise<CreateTransactionResponse> {
+    if (USE_MOCK_PAYMENT) {
+      console.log('Using mock payment service for createTransaction');
+      return MockPaymentService.createTransaction(amount, type);
+    }
     return this.makeRequest('/transaction/create', {
       method: 'POST',
       body: JSON.stringify({ type, amount }),
@@ -84,6 +98,15 @@ export class PaymentService {
   }
 
   static async getTransaction(ref: string): Promise<PaymentTransaction> {
+    if (USE_MOCK_PAYMENT) {
+      console.log('Using mock payment service for getTransaction');
+      const mockTransaction = await MockPaymentService.getTransaction(ref);
+      // Convert mock to real interface
+      return {
+        ...mockTransaction,
+        status: mockTransaction.status as 'pending' | 'paid' | 'expired' | 'cancelled' | 'error'
+      };
+    }
     return this.makeRequest(`/transaction/${ref}`);
   }
 
