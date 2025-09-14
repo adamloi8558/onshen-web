@@ -2,8 +2,8 @@ const PAYMENT_API_BASE = 'https://barite.shengzhipay.com';
 const PAYMENT_USERNAME = 'ronglakorn';
 const PAYMENT_API_KEY = '3f17b5c0-7402-41cb-a2a2-dac94320dc22';
 
-// Development mode flag
-const USE_MOCK_PAYMENT = process.env.NODE_ENV === 'development';
+// Development mode flag - Force mock for debugging
+const USE_MOCK_PAYMENT = true; // process.env.NODE_ENV === 'development';
 
 // Create Basic Auth header
 function createAuthHeader(): string {
@@ -87,10 +87,16 @@ export class PaymentService {
   }
 
   static async createTransaction(amount: number, type: 'qrcode_tg' | 'qrcode_slip' = 'qrcode_slip'): Promise<CreateTransactionResponse> {
+    console.log('PaymentService.createTransaction called with:', { amount, type, USE_MOCK_PAYMENT });
+    
     if (USE_MOCK_PAYMENT) {
-      console.log('Using mock payment service for createTransaction');
-      return MockPaymentService.createTransaction(amount, type);
+      console.log('🎭 Using MOCK payment service for createTransaction');
+      const result = await MockPaymentService.createTransaction(amount, type);
+      console.log('🎭 Mock payment result:', result);
+      return result;
     }
+    
+    console.log('🌐 Using REAL payment service for createTransaction');
     return this.makeRequest('/transaction/create', {
       method: 'POST',
       body: JSON.stringify({ type, amount }),
