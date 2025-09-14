@@ -53,6 +53,7 @@
     "pg": "^8.13.1",
     "postcss": "^8",
     "postgres": "^3.4.4",
+    "qrcode.react": "^4.2.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.1",

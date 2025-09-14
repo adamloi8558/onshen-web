@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, QrCode, Clock, CheckCircle, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
+import QRCodeDisplay from "./qr-code-display";
 
 interface PaymentFormProps {
   userCoins: number;
@@ -30,6 +31,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
     status: 'idle',
   });
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
+  const [showQRCode, setShowQRCode] = useState<boolean>(false);
 
   const presetAmounts = [50, 100, 200, 500, 1000, 2000];
 
@@ -74,6 +76,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
           ref: data.ref,
           status: 'pending',
         });
+        setShowQRCode(true);
         toast.success('สร้างรายการชำระเงินสำเร็จ!');
         
         // Start checking payment status
@@ -107,9 +110,6 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
         if (data.status === 'paid') {
           setPayment(prev => ({ ...prev, status: 'completed' }));
           toast.success('ชำระเงินสำเร็จ! เหรียญถูกเพิ่มเข้าบัญชีแล้ว');
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
         } else if (data.status === 'expired') {
           setPayment(prev => ({ ...prev, status: 'expired' }));
           toast.error('รายการชำระเงินหมดอายุแล้ว');
@@ -266,6 +266,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
   }
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -352,5 +353,22 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
         </div>
       </CardContent>
     </Card>
+
+    {/* QR Code Display Modal */}
+    {showQRCode && payment.qrCode && (
+      <QRCodeDisplay
+        qrData={payment.qrCode}
+        amount={payment.amount}
+        ref={payment.ref}
+        status={payment.status}
+        onClose={() => {
+          setShowQRCode(false);
+          if (payment.status === 'completed') {
+            window.location.reload();
+          }
+        }}
+      />
+    )}
+  </>
   );
 }
