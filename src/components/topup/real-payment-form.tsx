@@ -402,26 +402,84 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
     </Card>
 
     {/* QR Code Display Modal */}
-    {shouldShowQRModal && (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full">
-          <h2 className="text-xl font-semibold mb-4">🎯 QR Code Test</h2>
-          <p>QR Data: {payment.qrCode.substring(0, 30)}...</p>
-          <p>Amount: ฿{payment.amount}</p>
-          <p>Ref: {payment.ref}</p>
-          <p>Status: {payment.status}</p>
-          <div className="mt-4 bg-gray-200 w-[200px] h-[200px] mx-auto flex items-center justify-center">
-            <p>QR Code ตำแหน่งนี้</p>
-          </div>
-          <button 
-            onClick={() => setShowQRCode(false)}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+    {shouldShowQRModal && (() => {
+      console.log('🚀 MODAL IS RENDERING NOW!');
+      return (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
+          style={{ 
+            zIndex: 9999, 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)'
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg p-6 max-w-md w-full"
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              padding: '24px',
+              maxWidth: '400px',
+              width: '100%'
+            }}
           >
-            ปิด
-          </button>
+            <h2 className="text-xl font-semibold mb-4" style={{ color: 'red', fontSize: '24px' }}>
+              🎯 QR Code Test Modal
+            </h2>
+            <p style={{ color: 'blue', marginBottom: '8px' }}>
+              QR Data: {payment.qrCode.substring(0, 30)}...
+            </p>
+            <p style={{ color: 'green', marginBottom: '8px' }}>
+              Amount: ฿{payment.amount}
+            </p>
+            <p style={{ color: 'purple', marginBottom: '8px' }}>
+              Ref: {payment.ref}
+            </p>
+            <p style={{ color: 'orange', marginBottom: '16px' }}>
+              Status: {payment.status}
+            </p>
+            <div 
+              className="mt-4 bg-gray-200 w-[200px] h-[200px] mx-auto flex items-center justify-center"
+              style={{
+                backgroundColor: '#e5e7eb',
+                width: '200px',
+                height: '200px',
+                margin: '16px auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px solid #374151'
+              }}
+            >
+              <p style={{ color: 'black', fontWeight: 'bold' }}>QR Code ตำแหน่งนี้</p>
+            </div>
+            <button 
+              onClick={() => {
+                console.log('🚀 CLOSE BUTTON CLICKED!');
+                setShowQRCode(false);
+              }}
+              style={{
+                marginTop: '16px',
+                padding: '8px 16px',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+            >
+              ปิด Modal
+            </button>
+          </div>
         </div>
-      </div>
-    )}
+      );
+    })()}
   </>
   );
 }
