@@ -18,6 +18,11 @@ interface QRCodeDisplayProps {
 
 export default function QRCodeDisplay({ qrData, amount, ref, status, onClose }: QRCodeDisplayProps) {
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+  
+  // Debug logging
+  console.log('QRCodeDisplay props:', { qrData, amount, ref, status });
+  console.log('QR Data length:', qrData?.length);
+  console.log('QR Data preview:', qrData?.substring(0, 50) + '...');
 
   useEffect(() => {
     if (status !== 'pending') return;
@@ -112,13 +117,23 @@ export default function QRCodeDisplay({ qrData, amount, ref, status, onClose }: 
             <>
               {/* QR Code */}
               <div className="flex justify-center p-4 bg-white rounded-lg border">
-                <QRCodeSVG
-                  value={qrData}
-                  size={200}
-                  level="M"
-                  includeMargin
-                  className="border rounded"
-                />
+                {qrData && qrData.length > 0 ? (
+                  <QRCodeSVG
+                    value={qrData}
+                    size={200}
+                    level="M"
+                    includeMargin
+                    className="border rounded"
+                  />
+                ) : (
+                  <div className="w-[200px] h-[200px] flex items-center justify-center bg-gray-100 border rounded">
+                    <div className="text-center">
+                      <div className="text-2xl mb-2">⚠️</div>
+                      <p className="text-sm text-gray-600">QR Code ไม่สามารถแสดงได้</p>
+                      <p className="text-xs text-gray-500 mt-1">qrData: {qrData || 'null'}</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Instructions */}

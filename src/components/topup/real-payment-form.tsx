@@ -56,8 +56,13 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
       });
 
       const data = await response.json();
+      console.log('Payment API response:', data);
 
       if (response.ok) {
+        // Debug the received data
+        console.log('QR Code received:', data.qrcode);
+        console.log('QR Code length:', data.qrcode?.length);
+        
         // Set payment data first (don't wait for link)
         setPayment({
           amount: selectedAmount,
