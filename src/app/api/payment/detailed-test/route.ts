@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 const PAYMENT_API_BASE = 'https://barite.shengzhipay.com';
 const PAYMENT_USERNAME = 'ronglakorn';
@@ -10,7 +10,7 @@ function createAuthHeader(): string {
   return `Basic ${base64Credentials}`;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const testResults = [];
   
   try {

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 // Simple test without using PaymentService class
 const PAYMENT_API_BASE = 'https://barite.shengzhipay.com';
@@ -11,7 +11,7 @@ function createAuthHeader(): string {
   return `Basic ${base64Credentials}`;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('🧪 Simple Payment API Test Starting...');
     
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     try {
       responseData = await response.json();
       console.log('🧪 Response Data:', responseData);
-    } catch (jsonError) {
+    } catch {
       const textData = await response.text();
       console.log('🧪 Response Text:', textData);
       responseData = { raw: textData };

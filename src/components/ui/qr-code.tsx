@@ -87,6 +87,7 @@ export function QRCodeDataURL({ value, size = 200, className }: QRCodeProps) {
   }, [value, size]);
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img 
       ref={imgRef}
       className={className}
