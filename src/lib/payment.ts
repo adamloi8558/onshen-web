@@ -2,8 +2,8 @@ const PAYMENT_API_BASE = 'https://barite.shengzhipay.com';
 const PAYMENT_USERNAME = 'ronglakorn';
 const PAYMENT_API_KEY = '3f17b5c0-7402-41cb-a2a2-dac94320dc22';
 
-// Development mode flag - Use mock while debugging real API
-const USE_MOCK_PAYMENT = true; // Temporarily use mock until real API is fixed
+// Development mode flag - Real API is working now!
+const USE_MOCK_PAYMENT = false; // Real API is working with qrcode_tg
 
 // Create Basic Auth header
 function createAuthHeader(): string {
@@ -86,7 +86,7 @@ export class PaymentService {
     return this.makeRequest('/user/me');
   }
 
-  static async createTransaction(amount: number, type: 'qrcode_tg' | 'qrcode_slip' = 'qrcode_slip'): Promise<CreateTransactionResponse> {
+  static async createTransaction(amount: number, type: 'qrcode_tg' | 'qrcode_slip' = 'qrcode_tg'): Promise<CreateTransactionResponse> {
     console.log('PaymentService.createTransaction called with:', { amount, type, USE_MOCK_PAYMENT });
     
     if (USE_MOCK_PAYMENT) {
@@ -97,13 +97,13 @@ export class PaymentService {
     }
     
     console.log('🌐 Using REAL payment service for createTransaction');
-    console.log('🌐 Making request to:', `${PAYMENT_API_BASE}/transaction`);
+    console.log('🌐 Making request to:', `${PAYMENT_API_BASE}/transaction/create`);
     console.log('🌐 Request payload:', { type, amount });
     console.log('🌐 Auth header:', createAuthHeader().substring(0, 20) + '...');
     
     try {
-      // Try different endpoint paths
-      const result = await this.makeRequest('/transaction', {
+      // Use correct endpoint from documentation
+      const result = await this.makeRequest('/transaction/create', {
         method: 'POST',
         body: JSON.stringify({ type, amount }),
       });

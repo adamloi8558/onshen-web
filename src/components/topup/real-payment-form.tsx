@@ -51,7 +51,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
         },
         body: JSON.stringify({
           amount: selectedAmount,
-          type: 'qrcode_slip'
+          type: 'qrcode_tg'
         }),
       });
 
