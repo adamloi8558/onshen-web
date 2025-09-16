@@ -119,7 +119,7 @@ export default function QRCodeDisplay({ qrData, amount, ref, status, onClose }: 
               <div className="flex justify-center p-4 bg-white rounded-lg border">
                 {qrData && qrData.length > 0 ? (
                   <div className="border rounded overflow-hidden">
-                    <QRCodeCanvas
+                    <QRCodeDataURL
                       value={qrData}
                       size={200}
                       className="block"

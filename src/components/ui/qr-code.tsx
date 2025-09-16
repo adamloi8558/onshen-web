@@ -13,10 +13,16 @@ export function QRCodeCanvas({ value, size = 200, className }: QRCodeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!canvasRef.current || !value) return;
+    console.log('QRCodeCanvas useEffect:', { value: value?.substring(0, 20) + '...', size, hasCanvas: !!canvasRef.current });
+    
+    if (!canvasRef.current || !value) {
+      console.log('QRCodeCanvas: Missing canvas or value');
+      return;
+    }
 
     const generateQR = async () => {
       try {
+        console.log('QRCodeCanvas: Generating QR Code...');
         await QRCode.toCanvas(canvasRef.current!, value, {
           width: size,
           margin: 2,
@@ -25,6 +31,7 @@ export function QRCodeCanvas({ value, size = 200, className }: QRCodeProps) {
             light: '#FFFFFF'
           }
         });
+        console.log('QRCodeCanvas: QR Code generated successfully');
       } catch (error) {
         console.error('QR Code generation error:', error);
       }
@@ -46,10 +53,16 @@ export function QRCodeDataURL({ value, size = 200, className }: QRCodeProps) {
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (!imgRef.current || !value) return;
+    console.log('QRCodeDataURL useEffect:', { value: value?.substring(0, 20) + '...', size, hasImg: !!imgRef.current });
+    
+    if (!imgRef.current || !value) {
+      console.log('QRCodeDataURL: Missing img or value');
+      return;
+    }
 
     const generateQR = async () => {
       try {
+        console.log('QRCodeDataURL: Generating QR Code...');
         const dataURL = await QRCode.toDataURL(value, {
           width: size,
           margin: 2,
@@ -59,11 +72,14 @@ export function QRCodeDataURL({ value, size = 200, className }: QRCodeProps) {
           }
         });
         
+        console.log('QRCodeDataURL: QR Code generated, dataURL length:', dataURL.length);
+        
         if (imgRef.current) {
           imgRef.current.src = dataURL;
+          console.log('QRCodeDataURL: Image src set');
         }
       } catch (error) {
-        console.error('QR Code generation error:', error);
+        console.error('QRCodeDataURL generation error:', error);
       }
     };
 
