@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +32,15 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
   });
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
   const [showQRCode, setShowQRCode] = useState<boolean>(false);
+
+  // Debug state changes
+  useEffect(() => {
+    console.log('Payment state changed:', payment);
+  }, [payment]);
+
+  useEffect(() => {
+    console.log('showQRCode state changed:', showQRCode);
+  }, [showQRCode]);
 
   const presetAmounts = [50, 100, 200, 500, 1000, 2000];
 
@@ -73,7 +82,12 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
         console.log('Setting payment data:', paymentData);
         setPayment(paymentData);
         console.log('Setting showQRCode to true');
-        setShowQRCode(true);
+        
+        // Use setTimeout to ensure state updates are processed
+        setTimeout(() => {
+          setShowQRCode(true);
+          console.log('showQRCode set to true via setTimeout');
+        }, 100);
         toast.success('สร้างรายการชำระเงินสำเร็จ!');
         
         // Link payment to user (async, don't block UI)
