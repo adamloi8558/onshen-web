@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
+    "pre-commit": "npm run lint && npm run type-check",
+    "safe-push": "npm run pre-commit && git push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",

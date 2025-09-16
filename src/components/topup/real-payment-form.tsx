@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, QrCode, Clock, CheckCircle, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
-import QRCodeDisplay from "./qr-code-display";
+// import QRCodeDisplay from "./qr-code-display"; // Temporarily disabled for testing
 
 interface PaymentFormProps {
   userCoins: number;
@@ -351,6 +351,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
           </div>
         </CardContent>
       </Card>
+      </>
     );
   }
 
