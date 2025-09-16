@@ -2,8 +2,8 @@ const PAYMENT_API_BASE = 'https://barite.shengzhipay.com';
 const PAYMENT_USERNAME = 'ronglakorn';
 const PAYMENT_API_KEY = '3f17b5c0-7402-41cb-a2a2-dac94320dc22';
 
-// Development mode flag - Use real payment API
-const USE_MOCK_PAYMENT = false;
+// Development mode flag - Use mock while debugging real API
+const USE_MOCK_PAYMENT = true; // Temporarily use mock until real API is fixed
 
 // Create Basic Auth header
 function createAuthHeader(): string {
