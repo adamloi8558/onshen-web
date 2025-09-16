@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,9 +46,25 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
       qrCodeLength: payment.qrCode?.length,
       shouldShow: showQRCode && !!payment.qrCode
     });
+    
+    // Force component re-render when showQRCode changes
+    if (showQRCode && payment.qrCode) {
+      console.log('🔄 Force re-render: showQRCode is true and has QR data');
+    }
   }, [showQRCode, payment.qrCode]);
 
   const presetAmounts = [50, 100, 200, 500, 1000, 2000];
+
+  // Memoized QR modal visibility
+  const shouldShowQRModal = useMemo(() => {
+    const result = showQRCode && !!payment.qrCode;
+    console.log('🧮 useMemo shouldShowQRModal:', { 
+      showQRCode, 
+      hasQrCode: !!payment.qrCode, 
+      result 
+    });
+    return result;
+  }, [showQRCode, payment.qrCode]);
 
   const handleCreatePayment = async () => {
     if (!selectedAmount || selectedAmount < 1) {
@@ -386,39 +402,20 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
     </Card>
 
     {/* QR Code Display Modal */}
-    {(() => {
-      const shouldRender = showQRCode && payment.qrCode;
-      console.log('🚀 QR Modal render check:', { 
-        showQRCode, 
-        hasQrCode: !!payment.qrCode, 
-        shouldRender,
-        qrCodeLength: payment.qrCode?.length 
-      });
-      
-      if (shouldRender) {
-        console.log('🚀 Rendering QRCodeDisplay with props:', {
-          qrData: payment.qrCode.substring(0, 20) + '...',
-          amount: payment.amount,
-          ref: payment.ref,
-          status: payment.status
-        });
-        return (
-          <QRCodeDisplay
-            qrData={payment.qrCode}
-            amount={payment.amount}
-            ref={payment.ref}
-            status={payment.status}
-            onClose={() => {
-              setShowQRCode(false);
-              if (payment.status === 'completed') {
-                window.location.reload();
-              }
-            }}
-          />
-        );
-      }
-      return null;
-    })()}
+    {shouldShowQRModal && (
+      <QRCodeDisplay
+        qrData={payment.qrCode}
+        amount={payment.amount}
+        ref={payment.ref}
+        status={payment.status}
+        onClose={() => {
+          setShowQRCode(false);
+          if (payment.status === 'completed') {
+            window.location.reload();
+          }
+        }}
+      />
+    )}
   </>
   );
 }
