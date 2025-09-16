@@ -97,10 +97,21 @@ export class PaymentService {
     }
     
     console.log('🌐 Using REAL payment service for createTransaction');
-    return this.makeRequest('/transaction/create', {
-      method: 'POST',
-      body: JSON.stringify({ type, amount }),
-    });
+    console.log('🌐 Making request to:', `${PAYMENT_API_BASE}/transaction/create`);
+    console.log('🌐 Request payload:', { type, amount });
+    console.log('🌐 Auth header:', createAuthHeader().substring(0, 20) + '...');
+    
+    try {
+      const result = await this.makeRequest('/transaction/create', {
+        method: 'POST',
+        body: JSON.stringify({ type, amount }),
+      });
+      console.log('🌐 Real payment result:', result);
+      return result;
+    } catch (error) {
+      console.error('🌐 Real payment error:', error);
+      throw error;
+    }
   }
 
   static async getTransaction(ref: string): Promise<PaymentTransaction> {
