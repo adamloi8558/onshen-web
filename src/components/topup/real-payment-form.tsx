@@ -40,7 +40,13 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
 
   useEffect(() => {
     console.log('showQRCode state changed:', showQRCode);
-  }, [showQRCode]);
+    console.log('QR Code Modal should show:', { 
+      showQRCode, 
+      hasQrCode: !!payment.qrCode, 
+      qrCodeLength: payment.qrCode?.length,
+      shouldShow: showQRCode && !!payment.qrCode
+    });
+  }, [showQRCode, payment.qrCode]);
 
   const presetAmounts = [50, 100, 200, 500, 1000, 2000];
 
@@ -380,7 +386,6 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
     </Card>
 
     {/* QR Code Display Modal */}
-    {console.log('QR Code Modal condition:', { showQRCode, hasQrCode: !!payment.qrCode, qrCodeLength: payment.qrCode?.length })}
     {showQRCode && payment.qrCode && (
       <QRCodeDisplay
         qrData={payment.qrCode}
