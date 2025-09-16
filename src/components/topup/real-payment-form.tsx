@@ -403,18 +403,24 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
 
     {/* QR Code Display Modal */}
     {shouldShowQRModal && (
-      <QRCodeDisplay
-        qrData={payment.qrCode}
-        amount={payment.amount}
-        ref={payment.ref}
-        status={payment.status}
-        onClose={() => {
-          setShowQRCode(false);
-          if (payment.status === 'completed') {
-            window.location.reload();
-          }
-        }}
-      />
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <h2 className="text-xl font-semibold mb-4">🎯 QR Code Test</h2>
+          <p>QR Data: {payment.qrCode.substring(0, 30)}...</p>
+          <p>Amount: ฿{payment.amount}</p>
+          <p>Ref: {payment.ref}</p>
+          <p>Status: {payment.status}</p>
+          <div className="mt-4 bg-gray-200 w-[200px] h-[200px] mx-auto flex items-center justify-center">
+            <p>QR Code ตำแหน่งนี้</p>
+          </div>
+          <button 
+            onClick={() => setShowQRCode(false)}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            ปิด
+          </button>
+        </div>
+      </div>
     )}
   </>
   );
