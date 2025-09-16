@@ -97,12 +97,13 @@ export class PaymentService {
     }
     
     console.log('🌐 Using REAL payment service for createTransaction');
-    console.log('🌐 Making request to:', `${PAYMENT_API_BASE}/transaction/create`);
+    console.log('🌐 Making request to:', `${PAYMENT_API_BASE}/transaction`);
     console.log('🌐 Request payload:', { type, amount });
     console.log('🌐 Auth header:', createAuthHeader().substring(0, 20) + '...');
     
     try {
-      const result = await this.makeRequest('/transaction/create', {
+      // Try different endpoint paths
+      const result = await this.makeRequest('/transaction', {
         method: 'POST',
         body: JSON.stringify({ type, amount }),
       });
