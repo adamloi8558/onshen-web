@@ -41,8 +41,31 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Link payment error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
+    
+    // More specific error handling
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { 
+          error: 'ข้อมูลไม่ถูกต้อง',
+          details: error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'เกิดข้อผิดพลาดในการเชื่อมรายการ' },
+      { 
+        error: 'เกิดข้อผิดพลาดในการเชื่อมรายการ',
+        debug: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : String(error) : undefined
+      },
       { status: 500 }
     );
   }

@@ -58,18 +58,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
       const data = await response.json();
 
       if (response.ok) {
-        // Link payment to user
-        await fetch('/api/payment/link', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ref: data.ref,
-            amount: selectedAmount,
-          }),
-        });
-
+        // Set payment data first (don't wait for link)
         setPayment({
           amount: selectedAmount,
           qrCode: data.qrcode,
@@ -78,6 +67,20 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
         });
         setShowQRCode(true);
         toast.success('สร้างรายการชำระเงินสำเร็จ!');
+        
+        // Link payment to user (async, don't block UI)
+        fetch('/api/payment/link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ref: data.ref,
+            amount: selectedAmount,
+          }),
+        }).catch(error => {
+          console.error('Link payment error (non-blocking):', error);
+        });
         
         // Start checking payment status
         startPaymentStatusCheck(data.ref);
