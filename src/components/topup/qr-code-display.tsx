@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas, QRCodeDataURL } from "@/components/ui/qr-code";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -118,13 +118,13 @@ export default function QRCodeDisplay({ qrData, amount, ref, status, onClose }: 
               {/* QR Code */}
               <div className="flex justify-center p-4 bg-white rounded-lg border">
                 {qrData && qrData.length > 0 ? (
-                  <QRCodeSVG
-                    value={qrData}
-                    size={200}
-                    level="M"
-                    includeMargin
-                    className="border rounded"
-                  />
+                  <div className="border rounded overflow-hidden">
+                    <QRCodeCanvas
+                      value={qrData}
+                      size={200}
+                      className="block"
+                    />
+                  </div>
                 ) : (
                   <div className="w-[200px] h-[200px] flex items-center justify-center bg-gray-100 border rounded">
                     <div className="text-center">
