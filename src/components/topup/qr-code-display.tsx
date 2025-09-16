@@ -11,17 +11,17 @@ import { toast } from "sonner";
 interface QRCodeDisplayProps {
   qrData: string;
   amount: number;
-  ref: string;
+  paymentRef: string; // Changed from 'ref' to avoid React reserved prop
   status: 'idle' | 'creating' | 'pending' | 'checking' | 'completed' | 'expired' | 'error';
   onClose: () => void;
 }
 
-export default function QRCodeDisplay({ qrData, amount, ref, status, onClose }: QRCodeDisplayProps) {
+export default function QRCodeDisplay({ qrData, amount, paymentRef, status, onClose }: QRCodeDisplayProps) {
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   
   // Debug logging
   console.log('🎯 QRCodeDisplay RENDERED!');
-  console.log('QRCodeDisplay props:', { qrData: qrData?.substring(0, 20) + '...', amount, ref, status });
+  console.log('QRCodeDisplay props:', { qrData: qrData?.substring(0, 20) + '...', amount, paymentRef, status });
   console.log('QR Data length:', qrData?.length);
   console.log('QR Data preview:', qrData?.substring(0, 50) + '...');
 
@@ -153,12 +153,12 @@ export default function QRCodeDisplay({ qrData, amount, ref, status, onClose }: 
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-gray-500">หมายเลขอ้างอิง</p>
-                    <p className="font-mono text-sm">{ref}</p>
+                    <p className="font-mono text-sm">{paymentRef}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => copyToClipboard(ref, 'หมายเลขอ้างอิง')}
+                    onClick={() => copyToClipboard(paymentRef, 'หมายเลขอ้างอิง')}
                   >
                     <Copy className="w-4 h-4" />
                   </Button>

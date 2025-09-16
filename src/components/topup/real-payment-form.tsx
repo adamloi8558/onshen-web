@@ -197,7 +197,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
           <QRCodeDisplay
             qrData={payment.qrCode}
             amount={payment.amount}
-            ref={payment.ref}
+            paymentRef={payment.ref}
             status={payment.status}
             onClose={() => {
               setShowQRCode(false);
