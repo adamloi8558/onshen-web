@@ -386,20 +386,28 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
     </Card>
 
     {/* QR Code Display Modal */}
-    {showQRCode && payment.qrCode && (
-      <QRCodeDisplay
-        qrData={payment.qrCode}
-        amount={payment.amount}
-        ref={payment.ref}
-        status={payment.status}
-        onClose={() => {
+    {showQRCode && payment.qrCode && (() => {
+      console.log('🚀 Rendering QRCodeDisplay with props:', {
+        qrData: payment.qrCode.substring(0, 20) + '...',
+        amount: payment.amount,
+        ref: payment.ref,
+        status: payment.status
+      });
+      return (
+        <QRCodeDisplay
+          qrData={payment.qrCode}
+          amount={payment.amount}
+          ref={payment.ref}
+          status={payment.status}
+          onClose={() => {
           setShowQRCode(false);
           if (payment.status === 'completed') {
             window.location.reload();
           }
         }}
-      />
-    )}
+        />
+      );
+    })()}
   </>
   );
 }

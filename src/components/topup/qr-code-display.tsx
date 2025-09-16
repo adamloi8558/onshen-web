@@ -20,7 +20,8 @@ export default function QRCodeDisplay({ qrData, amount, ref, status, onClose }: 
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   
   // Debug logging
-  console.log('QRCodeDisplay props:', { qrData, amount, ref, status });
+  console.log('🎯 QRCodeDisplay RENDERED!');
+  console.log('QRCodeDisplay props:', { qrData: qrData?.substring(0, 20) + '...', amount, ref, status });
   console.log('QR Data length:', qrData?.length);
   console.log('QR Data preview:', qrData?.substring(0, 50) + '...');
 
