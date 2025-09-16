@@ -64,12 +64,15 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
         console.log('QR Code length:', data.qrcode?.length);
         
         // Set payment data first (don't wait for link)
-        setPayment({
+        const paymentData = {
           amount: selectedAmount,
           qrCode: data.qrcode,
           ref: data.ref,
-          status: 'pending',
-        });
+          status: 'pending' as const,
+        };
+        console.log('Setting payment data:', paymentData);
+        setPayment(paymentData);
+        console.log('Setting showQRCode to true');
         setShowQRCode(true);
         toast.success('สร้างรายการชำระเงินสำเร็จ!');
         
@@ -363,6 +366,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
     </Card>
 
     {/* QR Code Display Modal */}
+    {console.log('QR Code Modal condition:', { showQRCode, hasQrCode: !!payment.qrCode, qrCodeLength: payment.qrCode?.length })}
     {showQRCode && payment.qrCode && (
       <QRCodeDisplay
         qrData={payment.qrCode}
