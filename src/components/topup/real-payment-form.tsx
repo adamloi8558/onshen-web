@@ -191,29 +191,110 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
 
   if (payment.status === 'pending' || payment.status === 'checking') {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <QrCode className="h-5 w-5" />
-            สแกน QR Code เพื่อชำระเงิน
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* QR Code Display */}
-          <div className="text-center">
-            <div className="inline-block p-4 bg-white rounded-lg shadow-lg">
-              <div className="w-48 h-48 mx-auto bg-muted rounded flex items-center justify-center">
-                <div className="text-center">
-                  <QrCode className="h-16 w-16 mx-auto mb-2 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">QR Code</p>
-                  <p className="text-xs text-muted-foreground font-mono">{payment.ref}</p>
+      <>
+        {/* QR Code Display Modal */}
+        {shouldShowQRModal && (() => {
+          console.log('🚀 MODAL IS RENDERING NOW IN PENDING STATE!');
+          return (
+            <div 
+              className="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
+              style={{ 
+                zIndex: 9999, 
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)'
+              }}
+            >
+              <div 
+                className="bg-white rounded-lg p-6 max-w-md w-full"
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  padding: '24px',
+                  maxWidth: '400px',
+                  width: '100%'
+                }}
+              >
+                <h2 className="text-xl font-semibold mb-4" style={{ color: 'red', fontSize: '24px' }}>
+                  🎯 QR Code Test Modal (PENDING STATE)
+                </h2>
+                <p style={{ color: 'blue', marginBottom: '8px' }}>
+                  QR Data: {payment.qrCode.substring(0, 30)}...
+                </p>
+                <p style={{ color: 'green', marginBottom: '8px' }}>
+                  Amount: ฿{payment.amount}
+                </p>
+                <p style={{ color: 'purple', marginBottom: '8px' }}>
+                  Ref: {payment.ref}
+                </p>
+                <p style={{ color: 'orange', marginBottom: '16px' }}>
+                  Status: {payment.status}
+                </p>
+                <div 
+                  className="mt-4 bg-gray-200 w-[200px] h-[200px] mx-auto flex items-center justify-center"
+                  style={{
+                    backgroundColor: '#e5e7eb',
+                    width: '200px',
+                    height: '200px',
+                    margin: '16px auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid #374151'
+                  }}
+                >
+                  <p style={{ color: 'black', fontWeight: 'bold' }}>QR Code ตำแหน่งนี้</p>
                 </div>
+                <button 
+                  onClick={() => {
+                    console.log('🚀 CLOSE BUTTON CLICKED!');
+                    setShowQRCode(false);
+                  }}
+                  style={{
+                    marginTop: '16px',
+                    padding: '8px 16px',
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  ปิด Modal
+                </button>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              สแกน QR Code ด้วยแอปธนาคารของคุณ
-            </p>
-          </div>
+          );
+        })()}
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5" />
+              สแกน QR Code เพื่อชำระเงิน
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* QR Code Display */}
+            <div className="text-center">
+              <div className="inline-block p-4 bg-white rounded-lg shadow-lg">
+                <div className="w-48 h-48 mx-auto bg-muted rounded flex items-center justify-center">
+                  <div className="text-center">
+                    <QrCode className="h-16 w-16 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">QR Code</p>
+                    <p className="text-xs text-muted-foreground font-mono">{payment.ref}</p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                สแกน QR Code ด้วยแอปธนาคารของคุณ
+              </p>
+            </div>
 
           {/* Payment Info */}
           <div className="space-y-3">
@@ -401,85 +482,6 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
       </CardContent>
     </Card>
 
-    {/* QR Code Display Modal */}
-    {shouldShowQRModal && (() => {
-      console.log('🚀 MODAL IS RENDERING NOW!');
-      return (
-        <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
-          style={{ 
-            zIndex: 9999, 
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)'
-          }}
-        >
-          <div 
-            className="bg-white rounded-lg p-6 max-w-md w-full"
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              padding: '24px',
-              maxWidth: '400px',
-              width: '100%'
-            }}
-          >
-            <h2 className="text-xl font-semibold mb-4" style={{ color: 'red', fontSize: '24px' }}>
-              🎯 QR Code Test Modal
-            </h2>
-            <p style={{ color: 'blue', marginBottom: '8px' }}>
-              QR Data: {payment.qrCode.substring(0, 30)}...
-            </p>
-            <p style={{ color: 'green', marginBottom: '8px' }}>
-              Amount: ฿{payment.amount}
-            </p>
-            <p style={{ color: 'purple', marginBottom: '8px' }}>
-              Ref: {payment.ref}
-            </p>
-            <p style={{ color: 'orange', marginBottom: '16px' }}>
-              Status: {payment.status}
-            </p>
-            <div 
-              className="mt-4 bg-gray-200 w-[200px] h-[200px] mx-auto flex items-center justify-center"
-              style={{
-                backgroundColor: '#e5e7eb',
-                width: '200px',
-                height: '200px',
-                margin: '16px auto',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '2px solid #374151'
-              }}
-            >
-              <p style={{ color: 'black', fontWeight: 'bold' }}>QR Code ตำแหน่งนี้</p>
-            </div>
-            <button 
-              onClick={() => {
-                console.log('🚀 CLOSE BUTTON CLICKED!');
-                setShowQRCode(false);
-              }}
-              style={{
-                marginTop: '16px',
-                padding: '8px 16px',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                borderRadius: '4px',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold'
-              }}
-            >
-              ปิด Modal
-            </button>
-          </div>
-        </div>
-      );
-    })()}
   </>
   );
 }
