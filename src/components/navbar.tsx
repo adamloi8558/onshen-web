@@ -177,6 +177,12 @@ export default function Navbar({ user }: NavbarProps) {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link href="/topup" className="cursor-pointer text-amber-600">
+                        <Coins className="mr-2 h-4 w-4" />
+                        เติมเงิน
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link href="/settings" className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />
                         ตั้งค่า
@@ -184,9 +190,9 @@ export default function Navbar({ user }: NavbarProps) {
                     </DropdownMenuItem>
                     {!user.is_vip && (
                       <DropdownMenuItem asChild>
-                        <Link href="/vip" className="cursor-pointer text-yellow-600">
+                        <Link href="/vip" className="cursor-pointer text-yellow-600 font-medium">
                           <Crown className="mr-2 h-4 w-4" />
-                          สมัครสมาชิก VIP
+                          ซื้อ VIP (39 บาท/เดือน)
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -291,6 +297,19 @@ export default function Navbar({ user }: NavbarProps) {
               >
                 หมวดหมู่
               </Link>
+              
+              {user && !user.is_vip && (
+                <Link
+                  href="/vip"
+                  className="block px-4 py-3 text-yellow-600 font-medium hover:bg-yellow-50 transition-colors border-t border-yellow-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <div className="flex items-center gap-2">
+                    <Crown className="h-4 w-4" />
+                    ซื้อ VIP (39 บาท/เดือน)
+                  </div>
+                </Link>
+              )}
               
               {!user && (
                 <div className="px-4 pt-4 space-y-2">
