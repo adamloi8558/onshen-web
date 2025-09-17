@@ -90,6 +90,13 @@ export async function POST(request: Request) {
     }
 
     // Update user: deduct coins, set VIP status, set expiration
+    console.log('🔍 VIP Purchase: Updating user...', {
+      userId: user.id,
+      currentCoins: currentUser.coins,
+      newCoins: currentUser.coins - VIP_PRICE_COINS,
+      vipExpiresAt
+    });
+    
     await db
       .update(users)
       .set({
@@ -99,8 +106,11 @@ export async function POST(request: Request) {
         updated_at: new Date(),
       })
       .where(eq(users.id, user.id));
+    
+    console.log('🔍 VIP Purchase: User updated successfully');
 
     // Record transaction
+    console.log('🔍 VIP Purchase: Recording transaction...');
     await db
       .insert(transactions)
       .values({
@@ -108,12 +118,10 @@ export async function POST(request: Request) {
         type: 'vip_purchase',
         status: 'completed',
         amount: VIP_PRICE_COINS.toString(),
-        coins: -VIP_PRICE_COINS, // Negative because coins were spent
         description: `สมัครสมาชิก VIP ${VIP_DURATION_DAYS} วัน`,
-        payment_method: 'coins',
-        payment_reference: `VIP${Date.now()}`,
         processed_at: new Date(),
       });
+    console.log('🔍 VIP Purchase: Transaction recorded successfully');
 
     console.log('VIP purchase successful:', {
       userId: user.id,
