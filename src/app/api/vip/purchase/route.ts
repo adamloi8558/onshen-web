@@ -9,11 +9,30 @@ export const dynamic = 'force-dynamic';
 const VIP_PRICE_COINS = 39; // 39 เหรียญ = 39 บาท
 const VIP_DURATION_DAYS = 30; // 30 วัน
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    console.log('🔍 VIP Purchase: Starting process...');
     const user = await requireAuth();
+    console.log('🔍 VIP Purchase: User authenticated:', user.id);
+
+    // Parse request body to ensure it's intentional
+    const body = await request.json().catch(() => ({}));
+    console.log('🔍 VIP Purchase: Request body:', body);
+
+    // Require confirmation token to prevent accidental purchases
+    if (!body.confirmed || body.confirmed !== 'I_CONFIRM_VIP_PURCHASE') {
+      console.log('🚨 VIP Purchase: Missing or invalid confirmation token');
+      return NextResponse.json(
+        { 
+          error: 'การยืนยันไม่ถูกต้อง',
+          details: 'กรุณายืนยันการซื้อผ่านหน้าเว็บ'
+        },
+        { status: 400 }
+      );
+    }
 
     // Get current user data
+    console.log('🔍 VIP Purchase: Fetching user data...');
     const [currentUser] = await db
       .select({
         id: users.id,
@@ -25,6 +44,8 @@ export async function POST() {
       .from(users)
       .where(eq(users.id, user.id))
       .limit(1);
+    
+    console.log('🔍 VIP Purchase: Current user data:', currentUser);
 
     if (!currentUser) {
       return NextResponse.json(
@@ -120,11 +141,22 @@ export async function POST() {
     });
 
   } catch (error) {
-    console.error('VIP purchase error:', error);
+    console.error('🚨 VIP purchase error:', error);
+    console.error('🚨 Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
+    
     return NextResponse.json(
       { 
+        success: false,
         error: 'เกิดข้อผิดพลาดในการสมัครสมาชิก VIP',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : String(error) : undefined,
+        debug: process.env.NODE_ENV === 'development' ? {
+          errorName: error instanceof Error ? error.name : 'Unknown',
+          timestamp: new Date().toISOString()
+        } : undefined
       },
       { status: 500 }
     );

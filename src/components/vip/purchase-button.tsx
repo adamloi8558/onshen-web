@@ -38,21 +38,26 @@ export default function VIPPurchaseButton({ user }: VIPPurchaseButtonProps) {
       return;
     }
 
+    // Prevent double-click
+    if (isPurchasing) return;
+
     const confirmed = window.confirm(
-      `ยืนยันการสมัครสมาชิก VIP?\n\n` +
-      `💰 ราคา: ${VIP_PRICE} เหรียญ\n` +
+      `⚠️ ยืนยันการสมัครสมาชิก VIP?\n\n` +
+      `💰 ราคา: ${VIP_PRICE} เหรียญ (จาก ${user.coins} เหรียญ)\n` +
       `⏰ ระยะเวลา: 30 วัน\n` +
       `🪙 เหรียญคงเหลือ: ${user.coins - VIP_PRICE} เหรียญ\n\n` +
       `✅ สิทธิประโยชน์:\n` +
       `• เข้าถึงเนื้อหาพรีเมียมทั้งหมด\n` +
       `• ไม่มีโฆษณาขณะดู\n` +
       `• คุณภาพ HD และ 4K\n` +
-      `• ดูได้ก่อนใครตลอด 24 ชั่วโมง`
+      `• ดูได้ก่อนใครตลอด 24 ชั่วโมง\n\n` +
+      `❗ กดตกลงเพื่อยืนยันการซื้อ`
     );
 
     if (!confirmed) return;
 
     try {
+      console.log('🔍 VIP Purchase: Starting API call...');
       setIsPurchasing(true);
       
       const response = await fetch('/api/vip/purchase', {
@@ -60,19 +65,31 @@ export default function VIPPurchaseButton({ user }: VIPPurchaseButtonProps) {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          confirmed: 'I_CONFIRM_VIP_PURCHASE',
+          userCoins: user.coins,
+          timestamp: Date.now()
+        }),
       });
 
+      console.log('🔍 VIP Purchase: Response status:', response.status);
+      console.log('🔍 VIP Purchase: Response ok:', response.ok);
+
       const data = await response.json();
+      console.log('🔍 VIP Purchase: Response data:', data);
 
       if (response.ok) {
+        console.log('✅ VIP Purchase: Success!');
         toast.success(`🎉 ${data.message}`);
         toast.success(`👑 ยินดีต้อนรับสู่สมาชิก VIP!`);
         
         // Redirect to profile to see VIP status
         setTimeout(() => {
           router.push('/profile');
+          router.refresh(); // Force refresh to update user state
         }, 2000);
       } else {
+        console.log('❌ VIP Purchase: API returned error');
         toast.error(data.error || "เกิดข้อผิดพลาด");
         
         if (data.shortfall) {
@@ -84,9 +101,10 @@ export default function VIPPurchaseButton({ user }: VIPPurchaseButtonProps) {
         }
       }
     } catch (error) {
-      console.error('VIP purchase error:', error);
+      console.error('🚨 VIP purchase fetch error:', error);
       toast.error("เกิดข้อผิดพลาดในการสมัครสมาชิก VIP");
     } finally {
+      console.log('🔍 VIP Purchase: Cleaning up...');
       setIsPurchasing(false);
     }
   };
@@ -138,12 +156,19 @@ export default function VIPPurchaseButton({ user }: VIPPurchaseButtonProps) {
       {hasEnoughCoins ? (
         <Button 
           size="lg" 
-          className="w-full"
+          className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700"
           onClick={handlePurchase}
           disabled={isPurchasing}
         >
           <Crown className="h-5 w-5 mr-2" />
-          {isPurchasing ? "กำลังดำเนินการ..." : `สมัครสมาชิก VIP (${VIP_PRICE} เหรียญ)`}
+          {isPurchasing ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+              กำลังดำเนินการ...
+            </div>
+          ) : (
+            `สมัครสมาชิก VIP (${VIP_PRICE} เหรียญ)`
+          )}
         </Button>
       ) : (
         <Button 
