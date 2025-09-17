@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { content, users, upload_jobs } from "@/lib/db/schema";
+import { content, users, upload_jobs, transactions } from "@/lib/db/schema";
 import { eq, desc, count, sql } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,10 @@ import {
   Folder,
   Play,
   Eye,
-  Coins
+  Coins,
+  Calendar,
+  CreditCard,
+  Activity
 } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -90,6 +93,26 @@ async function getDashboardStats() {
       .from(users)
       .where(sql`${users.created_at} >= ${today}`);
 
+    // Get total revenue (completed transactions)
+    const [totalRevenue] = await db
+      .select({ 
+        total: sql<number>`COALESCE(SUM(CAST(${transactions.amount} AS DECIMAL)), 0)` 
+      })
+      .from(transactions)
+      .where(eq(transactions.status, 'completed'));
+
+    // Get transactions today
+    const [transactionsToday] = await db
+      .select({ count: count() })
+      .from(transactions)
+      .where(sql`${transactions.created_at} >= ${today}`);
+
+    // Get pending transactions
+    const [pendingTransactions] = await db
+      .select({ count: count() })
+      .from(transactions)
+      .where(eq(transactions.status, 'pending'));
+
     return {
       totalUsers: userCount?.count || 0,
       totalContent: contentCount?.count || 0,
@@ -101,6 +124,9 @@ async function getDashboardStats() {
       totalUploads: uploadCount?.count || 0,
       processingUploads: processingCount?.count || 0,
       newUsersToday: newUsersToday?.count || 0,
+      totalRevenue: totalRevenue?.total || 0,
+      transactionsToday: transactionsToday?.count || 0,
+      pendingTransactions: pendingTransactions?.count || 0,
     };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
@@ -115,6 +141,9 @@ async function getDashboardStats() {
       totalUploads: 0,
       processingUploads: 0,
       newUsersToday: 0,
+      totalRevenue: 0,
+      transactionsToday: 0,
+      pendingTransactions: 0,
     };
   }
 }
@@ -180,12 +209,34 @@ async function getRecentUploads() {
   }
 }
 
+async function getRecentTransactions() {
+  try {
+    return await db
+      .select({
+        id: transactions.id,
+        user_id: transactions.user_id,
+        type: transactions.type,
+        amount: transactions.amount,
+        status: transactions.status,
+        payment_ref: transactions.payment_ref,
+        created_at: transactions.created_at,
+      })
+      .from(transactions)
+      .orderBy(desc(transactions.created_at))
+      .limit(10);
+  } catch (error) {
+    console.error('Error fetching recent transactions:', error);
+    return [];
+  }
+}
+
 export default async function AdminDashboard() {
   const user = await requireAdmin();
   const stats = await getDashboardStats();
   const recentContent = await getRecentContent();
   const recentUsers = await getRecentUsers();
   const recentUploads = await getRecentUploads();
+  const recentTransactions = await getRecentTransactions();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -235,6 +286,7 @@ export default async function AdminDashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Row 1 */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">ผู้ใช้ทั้งหมด</CardTitle>
@@ -288,36 +340,92 @@ export default async function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Financial Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">รายได้ทั้งหมด</CardTitle>
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">฿{stats.totalRevenue.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">
+                รายการรอ: {stats.pendingTransactions}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">รายการวันนี้</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.transactionsToday.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">
+                รายการเติมเงิน
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">กิจกรรมระบบ</CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {(stats.totalViews + stats.transactionsToday + stats.newUsersToday).toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                กิจกรรมรวมวันนี้
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
           <Button asChild className="h-20 flex-col">
             <Link href="/admin/content">
               <Film className="h-6 w-6 mb-2" />
-              จัดการเนื้อหา
+              <span className="text-sm">จัดการเนื้อหา</span>
             </Link>
           </Button>
           <Button asChild variant="outline" className="h-20 flex-col">
             <Link href="/admin/users">
               <Users className="h-6 w-6 mb-2" />
-              จัดการผู้ใช้
+              <span className="text-sm">จัดการผู้ใช้</span>
             </Link>
           </Button>
           <Button asChild variant="outline" className="h-20 flex-col">
             <Link href="/admin/categories">
               <Folder className="h-6 w-6 mb-2" />
-              จัดการหมวดหมู่
+              <span className="text-sm">หมวดหมู่</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-20 flex-col">
+            <Link href="/admin/content/new">
+              <Plus className="h-6 w-6 mb-2" />
+              <span className="text-sm">เพิ่มเนื้อหา</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-20 flex-col">
+            <Link href="/api/payment/test">
+              <Activity className="h-6 w-6 mb-2" />
+              <span className="text-sm">ตรวจสอบระบบ</span>
             </Link>
           </Button>
           <Button asChild variant="outline" className="h-20 flex-col">
             <Link href="/admin/settings">
               <Settings className="h-6 w-6 mb-2" />
-              ตั้งค่าระบบ
+              <span className="text-sm">ตั้งค่า</span>
             </Link>
           </Button>
         </div>
 
         {/* Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
           {/* Recent Content */}
           <Card>
             <CardHeader>
@@ -474,6 +582,62 @@ export default async function AdminDashboard() {
               )}
             </CardContent>
           </Card>
+
+          {/* Recent Transactions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                รายการเติมเงินล่าสุด
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentTransactions.length > 0 ? recentTransactions.map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">฿{parseFloat(transaction.amount).toLocaleString()}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          {transaction.type}
+                        </Badge>
+                        <Badge 
+                          className={`text-xs text-white ${
+                            transaction.status === 'completed' ? 'bg-green-500' :
+                            transaction.status === 'pending' ? 'bg-yellow-500' :
+                            transaction.status === 'failed' ? 'bg-red-500' : 'bg-gray-500'
+                          }`}
+                        >
+                          {transaction.status === 'completed' ? 'สำเร็จ' :
+                           transaction.status === 'pending' ? 'รอ' :
+                           transaction.status === 'failed' ? 'ล้มเหลว' : transaction.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="text-right text-sm text-muted-foreground">
+                      <p className="font-mono text-xs">
+                        {transaction.payment_ref?.substring(0, 8)}...
+                      </p>
+                      <p>{new Date(transaction.created_at).toLocaleDateString('th-TH')}</p>
+                    </div>
+                  </div>
+                )) : (
+                  <p className="text-muted-foreground text-center py-4">
+                    ยังไม่มีรายการเติมเงิน
+                  </p>
+                )}
+              </div>
+              {recentTransactions.length > 0 && (
+                <div className="mt-4">
+                  <Button asChild variant="outline" className="w-full">
+                    <Link href="/admin/users">
+                      ดูรายการทั้งหมด
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* System Health */}
@@ -486,26 +650,45 @@ export default async function AdminDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground">Database</div>
                   <div className="flex items-center justify-center mt-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                     <span className="text-sm">ปกติ</span>
                   </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {stats.totalUsers} users
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm text-muted-foreground">Storage</div>
+                  <div className="text-sm text-muted-foreground">Storage (R2)</div>
                   <div className="flex items-center justify-center mt-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                     <span className="text-sm">ปกติ</span>
                   </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {stats.totalUploads} files
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm text-muted-foreground">Worker</div>
+                  <div className="text-sm text-muted-foreground">Payment</div>
                   <div className="flex items-center justify-center mt-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                     <span className="text-sm">ปกติ</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    ฿{stats.totalRevenue.toLocaleString()}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-muted-foreground">API</div>
+                  <div className="flex items-center justify-center mt-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-sm">ปกติ</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {stats.transactionsToday} today
                   </div>
                 </div>
                 <div className="text-center">
@@ -513,6 +696,9 @@ export default async function AdminDashboard() {
                   <div className="flex items-center justify-center mt-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                     <span className="text-sm">ปกติ</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {stats.totalViews.toLocaleString()} views
                   </div>
                 </div>
               </div>
