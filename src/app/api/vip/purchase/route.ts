@@ -10,14 +10,34 @@ const VIP_PRICE_COINS = 39; // 39 เหรียญ = 39 บาท
 const VIP_DURATION_DAYS = 30; // 30 วัน
 
 export async function POST(request: Request) {
+  console.log('🚀 VIP Purchase API: Entry point reached');
   try {
     console.log('🔍 VIP Purchase: Starting process...');
-    const user = await requireAuth();
-    console.log('🔍 VIP Purchase: User authenticated:', user.id);
+    
+    let user;
+    try {
+      user = await requireAuth();
+      console.log('🔍 VIP Purchase: User authenticated:', user.id);
+    } catch (authError) {
+      console.error('🚨 VIP Purchase: Authentication failed:', authError);
+      return NextResponse.json(
+        { success: false, error: 'การยืนยันตัวตนล้มเหลว' },
+        { status: 401 }
+      );
+    }
 
     // Parse request body to ensure it's intentional
-    const body = await request.json().catch(() => ({}));
-    console.log('🔍 VIP Purchase: Request body:', body);
+    let body;
+    try {
+      body = await request.json();
+      console.log('🔍 VIP Purchase: Request body:', body);
+    } catch (jsonError) {
+      console.error('🚨 VIP Purchase: JSON parse failed:', jsonError);
+      return NextResponse.json(
+        { success: false, error: 'ข้อมูลคำขอไม่ถูกต้อง' },
+        { status: 400 }
+      );
+    }
 
     // Require confirmation token to prevent accidental purchases
     if (!body.confirmed || body.confirmed !== 'I_CONFIRM_VIP_PURCHASE') {
@@ -33,19 +53,29 @@ export async function POST(request: Request) {
 
     // Get current user data
     console.log('🔍 VIP Purchase: Fetching user data...');
-    const [currentUser] = await db
-      .select({
-        id: users.id,
-        phone: users.phone,
-        coins: users.coins,
-        is_vip: users.is_vip,
-        vip_expires_at: users.vip_expires_at,
-      })
-      .from(users)
-      .where(eq(users.id, user.id))
-      .limit(1);
-    
-    console.log('🔍 VIP Purchase: Current user data:', currentUser);
+    let currentUser;
+    try {
+      const [userData] = await db
+        .select({
+          id: users.id,
+          phone: users.phone,
+          coins: users.coins,
+          is_vip: users.is_vip,
+          vip_expires_at: users.vip_expires_at,
+        })
+        .from(users)
+        .where(eq(users.id, user.id))
+        .limit(1);
+      
+      currentUser = userData;
+      console.log('🔍 VIP Purchase: Current user data:', currentUser);
+    } catch (dbError) {
+      console.error('🚨 VIP Purchase: Database query failed:', dbError);
+      return NextResponse.json(
+        { success: false, error: 'เกิดข้อผิดพลาดในการเข้าถึงฐานข้อมูล' },
+        { status: 500 }
+      );
+    }
 
     if (!currentUser) {
       return NextResponse.json(
@@ -68,12 +98,22 @@ export async function POST(request: Request) {
 
     // Check if user is already VIP and not expired
     const now = new Date();
+    console.log('🔍 VIP Purchase: Checking VIP status...', {
+      is_vip: currentUser.is_vip,
+      vip_expires_at: currentUser.vip_expires_at,
+      now: now,
+      isExpired: currentUser.vip_expires_at ? currentUser.vip_expires_at <= now : 'no_expiry'
+    });
+    
     if (currentUser.is_vip && currentUser.vip_expires_at && currentUser.vip_expires_at > now) {
+      console.log('🚨 VIP Purchase: User is already VIP and not expired');
       return NextResponse.json(
         { 
+          success: false,
           error: 'คุณเป็นสมาชิก VIP อยู่แล้ว',
-          details: `VIP หมดอายุ: ${currentUser.vip_expires_at.toLocaleDateString('th-TH')}`,
-          vip_expires_at: currentUser.vip_expires_at
+          details: `VIP หมดอายุ: ${currentUser.vip_expires_at.toISOString()}`,
+          vip_expires_at: currentUser.vip_expires_at.toISOString(),
+          currentStatus: 'already_vip'
         },
         { status: 400 }
       );
@@ -97,31 +137,42 @@ export async function POST(request: Request) {
       vipExpiresAt
     });
     
-    await db
-      .update(users)
-      .set({
-        coins: currentUser.coins - VIP_PRICE_COINS,
-        is_vip: true,
-        vip_expires_at: vipExpiresAt,
-        updated_at: new Date(),
-      })
-      .where(eq(users.id, user.id));
-    
-    console.log('🔍 VIP Purchase: User updated successfully');
+    try {
+      await db
+        .update(users)
+        .set({
+          coins: currentUser.coins - VIP_PRICE_COINS,
+          is_vip: true,
+          vip_expires_at: vipExpiresAt,
+          updated_at: new Date(),
+        })
+        .where(eq(users.id, user.id));
+      
+      console.log('🔍 VIP Purchase: User updated successfully');
+    } catch (userUpdateError) {
+      console.error('🚨 VIP Purchase: User update failed:', userUpdateError);
+      throw new Error(`User update failed: ${userUpdateError instanceof Error ? userUpdateError.message : String(userUpdateError)}`);
+    }
 
     // Record transaction
     console.log('🔍 VIP Purchase: Recording transaction...');
-    await db
-      .insert(transactions)
-      .values({
-        user_id: user.id,
-        type: 'vip_purchase',
-        status: 'completed',
-        amount: VIP_PRICE_COINS.toString(),
-        description: `สมัครสมาชิก VIP ${VIP_DURATION_DAYS} วัน`,
-        processed_at: new Date(),
-      });
-    console.log('🔍 VIP Purchase: Transaction recorded successfully');
+    try {
+      await db
+        .insert(transactions)
+        .values({
+          user_id: user.id,
+          type: 'vip_purchase',
+          status: 'completed',
+          amount: VIP_PRICE_COINS.toString(),
+          description: `สมัครสมาชิก VIP ${VIP_DURATION_DAYS} วัน`,
+          processed_at: new Date(),
+        });
+      console.log('🔍 VIP Purchase: Transaction recorded successfully');
+    } catch (transactionError) {
+      console.error('🚨 VIP Purchase: Transaction insert failed:', transactionError);
+      // Don't throw here - user update already succeeded
+      console.log('🔍 VIP Purchase: Continuing despite transaction error (user already updated)');
+    }
 
     console.log('VIP purchase successful:', {
       userId: user.id,
