@@ -12,18 +12,18 @@ const loginSchema = z.object({
 });
 
 function getClientIP(request: NextRequest): string {
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp && cfIp.trim().length > 0) return cfIp.trim();
+
   const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  
-  if (forwarded) {
+  if (forwarded && forwarded.trim().length > 0) {
     return forwarded.split(',')[0].trim();
   }
-  
-  if (realIP) {
-    return realIP.trim();
-  }
-  
-  return 'unknown';
+
+  const realIP = request.headers.get('x-real-ip');
+  if (realIP && realIP.trim().length > 0) return realIP.trim();
+
+  return '';
 }
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
@@ -32,19 +32,27 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   }
 
   try {
+    const params = new URLSearchParams({
+      secret: process.env.TURNSTILE_SECRET_KEY,
+      response: token,
+    });
+    // Only include remoteip if we actually have an IP; sending an invalid value can cause failure
+    if (ip && ip.length > 0) {
+      params.set('remoteip', ip);
+    }
+
     const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: new URLSearchParams({
-        secret: process.env.TURNSTILE_SECRET_KEY,
-        response: token,
-        remoteip: ip,
-      }),
+      body: params,
     });
 
     const result = await response.json();
+    if (!result.success) {
+      console.warn('Turnstile verify failed', { ip, result });
+    }
     return result.success === true;
   } catch (error) {
     console.error('Turnstile verification error:', error);
