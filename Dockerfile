@@ -20,7 +20,7 @@ COPY src ./src
 COPY public ./public
 
 # Build the application (with placeholder for required env vars)
-ENV DATABASE_URL="postgres://postgres:7q5Fc3THW88L73nd7pizr2nmmrfYsriUgFGGUvoBLdzXQUD287omXrjKzjNPc9Be@s4kcgg0kcw0c4wowoocsogk0:5432/postgres"
+ENV DATABASE_URL="postgres://postgres:pvMAMEMKajRAXZLcvJNcJFuroYrpcQ2aBEIBQ9Mqk8rQI3kB5RvvOZnheNdYxh2o@eo444808s0o8osggcwowgwko:5432/postgres"
 ENV JWT_SECRET="development-jwt-secret-key-123456789"
 ENV CLOUDFLARE_R2_ACCOUNT_ID="006ec9fb36d37617efc47a9811cc37a1"
 ENV CLOUDFLARE_R2_ACCESS_KEY_ID="6e6790ddc7c1b21a8534798c687a2042"
@@ -52,6 +52,7 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/drizzle ./drizzle
 
 # Set correct permissions
 RUN chown -R nextjs:nodejs /app
