@@ -18,6 +18,7 @@ RUN npm ci && npm cache clean --force
 # Copy source code
 COPY src ./src
 COPY public ./public
+COPY drizzle ./drizzle
 
 # Build the application (with placeholder for required env vars)
 ENV DATABASE_URL="postgres://postgres:pvMAMEMKajRAXZLcvJNcJFuroYrpcQ2aBEIBQ9Mqk8rQI3kB5RvvOZnheNdYxh2o@eo444808s0o8osggcwowgwko:5432/postgres"
