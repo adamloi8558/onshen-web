@@ -630,7 +630,7 @@ export default async function AdminDashboard() {
               {recentTransactions.length > 0 && (
                 <div className="mt-4">
                   <Button asChild variant="outline" className="w-full">
-                    <Link href="/admin/users">
+                    <Link href="/admin/transactions">
                       ดูรายการทั้งหมด
                     </Link>
                   </Button>
