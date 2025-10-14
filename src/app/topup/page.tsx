@@ -1,9 +1,12 @@
 import { Metadata } from "next";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { db, transactions } from "@/lib/db";
+import { eq, desc } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Coins, CreditCard, DollarSign, History } from "lucide-react";
 import RealPaymentForm from "@/components/topup/real-payment-form";
+import TransactionHistory from "@/components/topup/transaction-history";
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +28,22 @@ export default async function TopupPage() {
   if (!user) {
     redirect("/auth/login");
   }
+
+  // Get user's recent transactions
+  const userTransactions = await db
+    .select({
+      id: transactions.id,
+      type: transactions.type,
+      status: transactions.status,
+      amount: transactions.amount,
+      description: transactions.description,
+      payment_ref: transactions.payment_ref,
+      created_at: transactions.created_at,
+    })
+    .from(transactions)
+    .where(eq(transactions.user_id, user.id))
+    .orderBy(desc(transactions.created_at))
+    .limit(10);
 
   return (
     <div className="min-h-screen">
@@ -119,13 +138,15 @@ export default async function TopupPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                {userTransactions.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <History className="h-12 w-12 mx-auto mb-3 opacity-50" />
                     <p>ยังไม่มีประวัติการเติมเงิน</p>
                     <p className="text-sm">เติมเงินครั้งแรกเพื่อดูประวัติ</p>
                   </div>
-                </div>
+                ) : (
+                  <TransactionHistory transactions={userTransactions} />
+                )}
               </CardContent>
             </Card>
           </div>
