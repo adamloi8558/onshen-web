@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, QrCode, Clock, CheckCircle, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { QRCodeDataURL } from "@/components/ui/qr-code";
 import QRCodeDisplay from "./qr-code-display";
 
 interface PaymentFormProps {
@@ -218,14 +219,22 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
           <CardContent className="space-y-6">
             {/* QR Code Display */}
             <div className="text-center">
-              <div className="inline-block p-4 bg-white rounded-lg shadow-lg">
-                <div className="w-48 h-48 mx-auto bg-muted rounded flex items-center justify-center">
-                  <div className="text-center">
-                    <QrCode className="h-16 w-16 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">QR Code</p>
-                    <p className="text-xs text-muted-foreground font-mono">{payment.ref}</p>
+              <div className="inline-block p-4 bg-white rounded-lg shadow-lg border-2 border-gray-200">
+                {payment.qrCode && payment.qrCode.length > 0 ? (
+                  <QRCodeDataURL
+                    value={payment.qrCode}
+                    size={200}
+                    className="block mx-auto"
+                  />
+                ) : (
+                  <div className="w-48 h-48 mx-auto bg-muted rounded flex items-center justify-center">
+                    <div className="text-center">
+                      <QrCode className="h-16 w-16 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">กำลังโหลด QR Code...</p>
+                      <p className="text-xs text-muted-foreground font-mono">{payment.ref}</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
               <p className="text-sm text-muted-foreground mt-4">
                 สแกน QR Code ด้วยแอปธนาคารของคุณ
