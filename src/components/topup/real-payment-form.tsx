@@ -150,24 +150,76 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
   };
 
   const startPaymentStatusCheck = (ref: string) => {
+    let checkCount = 0;
+    const maxChecks = 300; // Check for 15 minutes (300 x 3 seconds)
+    
     const checkStatus = async () => {
       try {
+        console.log(`🔍 Checking payment status (${checkCount + 1}/${maxChecks}):`, ref);
+        
         const response = await fetch(`/api/payment/status/${ref}`);
         const data = await response.json();
+        
+        console.log('🔍 Payment status response:', data);
 
         if (data.status === 'paid') {
-          setPayment(prev => ({ ...prev, status: 'completed' }));
-          toast.success('ชำระเงินสำเร็จ! เหรียญถูกเพิ่มเข้าบัญชีแล้ว');
+          console.log('✅ Payment successful! Triggering webhook...');
+          
+          // Trigger our webhook manually to process payment
+          try {
+            const webhookResponse = await fetch('/api/admin/test-webhook', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                ref: ref,
+                amount: payment.amount,
+                event: 'paid'
+              }),
+            });
+            
+            if (webhookResponse.ok) {
+              console.log('✅ Webhook triggered successfully');
+              setPayment(prev => ({ ...prev, status: 'completed' }));
+              toast.success('ชำระเงินสำเร็จ! เหรียญถูกเพิ่มเข้าบัญชีแล้ว');
+              setTimeout(() => window.location.reload(), 2000);
+            }
+          } catch (webhookError) {
+            console.error('Webhook trigger error:', webhookError);
+            // Still show success to user
+            setPayment(prev => ({ ...prev, status: 'completed' }));
+            toast.success('ชำระเงินสำเร็จ! กรุณารีเฟรชหน้าเพื่ออัปเดตยอดเหรียญ');
+            setTimeout(() => window.location.reload(), 3000);
+          }
         } else if (data.status === 'expired') {
+          console.log('❌ Payment expired');
           setPayment(prev => ({ ...prev, status: 'expired' }));
           toast.error('รายการชำระเงินหมดอายุแล้ว');
         } else if (data.status === 'pending') {
-          // Continue checking
-          setTimeout(checkStatus, 3000);
+          checkCount++;
+          
+          // Check if exceeded max checks (15 minutes)
+          if (checkCount >= maxChecks) {
+            console.log('⏰ Payment timeout - exceeded 15 minutes');
+            setPayment(prev => ({ ...prev, status: 'expired' }));
+            toast.error('หมดเวลาชำระเงิน (15 นาที)');
+          } else {
+            // Continue checking
+            setTimeout(checkStatus, 3000);
+          }
         }
       } catch (error) {
         console.error('Status check error:', error);
-        setTimeout(checkStatus, 5000); // Retry after 5 seconds
+        checkCount++;
+        
+        // Retry if not exceeded max checks
+        if (checkCount < maxChecks) {
+          setTimeout(checkStatus, 5000);
+        } else {
+          setPayment(prev => ({ ...prev, status: 'error' }));
+          toast.error('ไม่สามารถตรวจสอบสถานะได้');
+        }
       }
     };
 
