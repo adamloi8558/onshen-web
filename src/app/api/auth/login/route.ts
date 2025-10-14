@@ -50,8 +50,24 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
     });
 
     const result = await response.json();
+    console.log('🔍 Turnstile verify response:', {
+      success: result.success,
+      'error-codes': result['error-codes'],
+      challenge_ts: result.challenge_ts,
+      hostname: result.hostname,
+      ip: ip
+    });
+    
     if (!result.success) {
-      console.warn('Turnstile verify failed', { ip, result });
+      console.warn('❌ Turnstile verify failed', { 
+        ip, 
+        result,
+        'error-codes': result['error-codes'],
+        possibleCauses: result['error-codes']?.includes('invalid-input-secret') ? 'Wrong SECRET_KEY' :
+                       result['error-codes']?.includes('timeout-or-duplicate') ? 'Token expired or reused' :
+                       result['error-codes']?.includes('invalid-input-response') ? 'Invalid token format' :
+                       'Unknown error'
+      });
     }
     return result.success === true;
   } catch (error) {
