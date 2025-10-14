@@ -88,10 +88,11 @@ async function getDashboardStats() {
     // Get new users today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const todayISO = today.toISOString();
     const [newUsersToday] = await db
       .select({ count: count() })
       .from(users)
-      .where(sql`${users.created_at} >= ${today}`);
+      .where(sql`${users.created_at} >= ${todayISO}::timestamp`);
 
     // Get total revenue (completed transactions)
     const [totalRevenue] = await db
@@ -105,7 +106,7 @@ async function getDashboardStats() {
     const [transactionsToday] = await db
       .select({ count: count() })
       .from(transactions)
-      .where(sql`${transactions.created_at} >= ${today}`);
+      .where(sql`${transactions.created_at} >= ${todayISO}::timestamp`);
 
     // Get pending transactions
     const [pendingTransactions] = await db
