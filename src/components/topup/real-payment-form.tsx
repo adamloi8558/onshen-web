@@ -292,7 +292,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
           <CardContent className="space-y-6">
             {/* QR Code Display */}
             <div className="text-center">
-              <div className="inline-block p-4 bg-white rounded-lg shadow-lg border-2 border-gray-200">
+              <div className="inline-block p-4 bg-white rounded-lg shadow-lg border-2 border-gray-300">
                 {payment.qrCode && payment.qrCode.length > 0 ? (
                   <QRCodeDataURL
                     value={payment.qrCode}

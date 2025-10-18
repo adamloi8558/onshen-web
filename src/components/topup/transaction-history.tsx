@@ -157,8 +157,8 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
 
       {/* QR Code Modal */}
       {selectedTransaction && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full relative">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-card text-card-foreground rounded-lg p-6 max-w-md w-full relative border border-border">
             <Button
               variant="ghost"
               size="sm"

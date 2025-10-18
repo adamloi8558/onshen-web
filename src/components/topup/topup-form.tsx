@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +24,7 @@ interface TopupFormProps {
 const QUICK_AMOUNTS = [50, 100, 200, 500, 1000, 2000];
 
 export default function TopupForm({ }: TopupFormProps) {
+  const router = useRouter();
   const [amount, setAmount] = useState<number>(100);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<'credit' | 'wallet' | 'qr'>('credit');
@@ -62,9 +64,10 @@ export default function TopupForm({ }: TopupFormProps) {
 
       if (response.ok) {
         toast.success(`เติมเงินสำเร็จ! ได้รับ ${amount} Coins`);
+        router.refresh();
         setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+          router.push('/topup');
+        }, 500);
       } else {
         toast.error(data.error || "เกิดข้อผิดพลาด");
       }
