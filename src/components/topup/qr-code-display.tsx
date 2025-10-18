@@ -96,8 +96,8 @@ export default function QRCodeDisplay({ qrData, amount, paymentRef, status, onCl
   const statusConfig = getStatusConfig();
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className={`w-full max-w-md ${statusConfig.color}`}>
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+      <Card className={`w-full max-w-md bg-card border-border ${statusConfig.color}`}>
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             {statusConfig.icon}
