@@ -144,8 +144,8 @@ export default function UploadForm({ contentId }: UploadFormProps) {
           
           // Upload completed
           setTimeout(() => {
-            window.location.reload();
-          }, 2000);
+            router.refresh();
+          }, 1000);
         } else {
           toast.warning("อัปโหลดสำเร็จ แต่ไม่สามารถอัพเดตฐานข้อมูลได้ กรุณาอัพเดต URL ด้วยตนเอง");
         }

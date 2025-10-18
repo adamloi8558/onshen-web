@@ -47,7 +47,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
       if (response.ok) {
         setAvatarUrl("/avatars/default.webp");
         toast.success("ลบรูปโปรไฟล์สำเร็จ");
-        window.location.reload();
+        router.refresh();
       } else {
         toast.error(data.error || "เกิดข้อผิดพลาด");
       }

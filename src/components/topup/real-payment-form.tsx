@@ -183,14 +183,18 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
               console.log('✅ Webhook triggered successfully');
               setPayment(prev => ({ ...prev, status: 'completed' }));
               toast.success('ชำระเงินสำเร็จ! เหรียญถูกเพิ่มเข้าบัญชีแล้ว');
-              setTimeout(() => window.location.reload(), 2000);
+              setTimeout(() => {
+                window.location.href = '/topup';
+              }, 2000);
             }
           } catch (webhookError) {
             console.error('Webhook trigger error:', webhookError);
             // Still show success to user
             setPayment(prev => ({ ...prev, status: 'completed' }));
             toast.success('ชำระเงินสำเร็จ! กรุณารีเฟรชหน้าเพื่ออัปเดตยอดเหรียญ');
-            setTimeout(() => window.location.reload(), 3000);
+            setTimeout(() => {
+              window.location.href = '/topup';
+            }, 3000);
           }
         } else if (data.status === 'expired') {
           console.log('❌ Payment expired');
