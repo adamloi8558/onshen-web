@@ -74,8 +74,11 @@ export default function UserEditForm({ user }: UserEditFormProps) {
 
       if (response.ok) {
         toast.success("อัพเดตข้อมูลผู้ใช้สำเร็จ");
+        // Refresh first, then redirect after a short delay
         router.refresh();
-        router.push('/admin/users');
+        setTimeout(() => {
+          router.push('/admin/users');
+        }, 500);
       } else {
         toast.error(data.error || "เกิดข้อผิดพลาด");
       }

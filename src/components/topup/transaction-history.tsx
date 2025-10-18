@@ -184,14 +184,22 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
                 </div>
               </div>
             ) : qrCode ? (
-              <div className="flex justify-center p-4 bg-white rounded-lg border mb-4">
+              <div className="flex justify-center p-4 bg-white rounded-lg border border-gray-300 mb-4">
                 <QRCodeDataURL
                   value={qrCode}
                   size={200}
                   className="block"
                 />
               </div>
-            ) : null}
+            ) : (
+              <div className="flex justify-center p-4 mb-4">
+                <div className="w-[200px] h-[200px] flex items-center justify-center bg-muted rounded border">
+                  <p className="text-sm text-muted-foreground text-center">
+                    ไม่พบ QR Code<br/>สำหรับรายการนี้
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">

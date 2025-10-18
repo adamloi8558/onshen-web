@@ -232,7 +232,26 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
     toast.success('คัดลอกแล้ว!');
   };
 
-  const resetPayment = () => {
+  const resetPayment = async () => {
+    // Cancel the payment transaction if it exists
+    if (payment.ref && payment.status === 'pending') {
+      try {
+        // Update transaction to cancelled
+        await fetch('/api/payment/cancel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ref: payment.ref
+          }),
+        });
+      } catch (error) {
+        console.error('Error cancelling payment:', error);
+      }
+    }
+    
+    // Reset form
     setPayment({
       amount: 0,
       qrCode: '',
@@ -240,6 +259,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
       status: 'idle',
     });
     setSelectedAmount(0);
+    setShowQRCode(false);
   };
 
   if (payment.status === 'pending' || payment.status === 'checking') {
@@ -340,10 +360,14 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
             </Button>
             <Button 
               className="flex-1" 
-              onClick={() => startPaymentStatusCheck(payment.ref)}
+              onClick={() => {
+                console.log('🔄 Manual status check button clicked');
+                setPayment(prev => ({ ...prev, status: 'checking' }));
+                startPaymentStatusCheck(payment.ref);
+              }}
               disabled={payment.status === 'checking'}
             >
-              ตรวจสอบสถานะ
+              {payment.status === 'checking' ? 'กำลังตรวจสอบ...' : 'ตรวจสอบสถานะ'}
             </Button>
           </div>
         </CardContent>
