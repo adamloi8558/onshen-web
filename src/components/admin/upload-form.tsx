@@ -236,17 +236,19 @@ export default function UploadForm({ contentId }: UploadFormProps) {
 
           {selectedFile && (
             <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
-              <div className="flex justify-between text-sm">
-                <span>ชื่อไฟล์:</span>
-                <span className="font-medium">{selectedFile.name}</span>
+              <div className="flex justify-between text-sm gap-2">
+                <span className="flex-shrink-0">ชื่อไฟล์:</span>
+                <span className="font-medium truncate text-right" title={selectedFile.name}>
+                  {selectedFile.name}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>ขนาด:</span>
                 <span>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span>ประเภท:</span>
-                <span>{selectedFile.type}</span>
+              <div className="flex justify-between text-sm gap-2">
+                <span className="flex-shrink-0">ประเภท:</span>
+                <span className="truncate">{selectedFile.type}</span>
               </div>
             </div>
           )}

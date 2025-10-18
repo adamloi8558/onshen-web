@@ -127,10 +127,12 @@ export default async function UploadManagement() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => window.location.reload()}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              รีเฟรช
-            </Button>
+            <form action="/admin/upload" method="GET">
+              <Button variant="outline" type="submit">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                รีเฟรช
+              </Button>
+            </form>
             <Button variant="outline" asChild>
               <Link href="/admin">
                 กลับแดชบอร์ด

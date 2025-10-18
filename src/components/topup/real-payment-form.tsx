@@ -278,9 +278,6 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
             status={payment.status}
             onClose={() => {
               setShowQRCode(false);
-              if (payment.status === 'completed') {
-                window.location.reload();
-              }
             }}
           />
         )}

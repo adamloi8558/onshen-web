@@ -28,13 +28,14 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
   const handleViewTransaction = async (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     
-    // Fetch QR code from payment gateway if available
-    if (transaction.payment_ref && transaction.type === 'topup') {
+    // Only show QR for pending transactions
+    if (transaction.payment_ref && transaction.type === 'topup' && transaction.status === 'pending') {
       setIsLoadingQR(true);
       try {
         const response = await fetch(`/api/payment/status/${transaction.payment_ref}`);
         if (response.ok) {
           const data = await response.json();
+          console.log('Transaction data:', data);
           setQrCode(data.transfer_qrcode || null);
         }
       } catch (error) {
@@ -140,7 +141,7 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
                 )}
               </div>
               
-              {transaction.payment_ref && transaction.type === 'topup' && (
+              {transaction.payment_ref && transaction.type === 'topup' && transaction.status === 'pending' && (
                 <Button
                   variant="outline"
                   size="sm"

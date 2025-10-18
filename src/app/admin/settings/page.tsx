@@ -303,10 +303,12 @@ export default async function SettingsPage() {
                   สร้าง Tables
                 </Link>
               </Button>
-              <Button variant="outline" onClick={() => window.location.reload()}>
-                <Server className="h-4 w-4 mr-2" />
-                Restart App
-              </Button>
+              <form action="/api/health" method="GET">
+                <Button variant="outline" type="submit">
+                  <Server className="h-4 w-4 mr-2" />
+                  Health Check
+                </Button>
+              </form>
               <Button variant="outline" asChild>
                 <Link href="/admin/content">
                   <Settings className="h-4 w-4 mr-2" />
