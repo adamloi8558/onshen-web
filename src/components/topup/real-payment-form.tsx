@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, QrCode, Clock, CheckCircle, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
-import { QRCodeDataURL } from "@/components/ui/qr-code";
 import QRCodeDisplay from "./qr-code-display";
 
 interface PaymentFormProps {
@@ -150,80 +149,24 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
   };
 
   const startPaymentStatusCheck = (ref: string) => {
-    let checkCount = 0;
-    const maxChecks = 300; // Check for 15 minutes (300 x 3 seconds)
-    
     const checkStatus = async () => {
       try {
-        console.log(`🔍 Checking payment status (${checkCount + 1}/${maxChecks}):`, ref);
-        
         const response = await fetch(`/api/payment/status/${ref}`);
         const data = await response.json();
-        
-        console.log('🔍 Payment status response:', data);
 
         if (data.status === 'paid') {
-          console.log('✅ Payment successful! Triggering webhook...');
-          
-          // Trigger our webhook manually to process payment
-          try {
-            const webhookResponse = await fetch('/api/admin/test-webhook', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                ref: ref,
-                amount: payment.amount,
-                event: 'paid'
-              }),
-            });
-            
-            if (webhookResponse.ok) {
-              console.log('✅ Webhook triggered successfully');
-              setPayment(prev => ({ ...prev, status: 'completed' }));
-              toast.success('ชำระเงินสำเร็จ! เหรียญถูกเพิ่มเข้าบัญชีแล้ว');
-              setTimeout(() => {
-                window.location.href = '/topup';
-              }, 2000);
-            }
-          } catch (webhookError) {
-            console.error('Webhook trigger error:', webhookError);
-            // Still show success to user
-            setPayment(prev => ({ ...prev, status: 'completed' }));
-            toast.success('ชำระเงินสำเร็จ! กรุณารีเฟรชหน้าเพื่ออัปเดตยอดเหรียญ');
-            setTimeout(() => {
-              window.location.href = '/topup';
-            }, 3000);
-          }
+          setPayment(prev => ({ ...prev, status: 'completed' }));
+          toast.success('ชำระเงินสำเร็จ! เหรียญถูกเพิ่มเข้าบัญชีแล้ว');
         } else if (data.status === 'expired') {
-          console.log('❌ Payment expired');
           setPayment(prev => ({ ...prev, status: 'expired' }));
           toast.error('รายการชำระเงินหมดอายุแล้ว');
         } else if (data.status === 'pending') {
-          checkCount++;
-          
-          // Check if exceeded max checks (15 minutes)
-          if (checkCount >= maxChecks) {
-            console.log('⏰ Payment timeout - exceeded 15 minutes');
-            setPayment(prev => ({ ...prev, status: 'expired' }));
-            toast.error('หมดเวลาชำระเงิน (15 นาที)');
-          } else {
-            // Continue checking
-            setTimeout(checkStatus, 3000);
-          }
+          // Continue checking
+          setTimeout(checkStatus, 3000);
         }
       } catch (error) {
         console.error('Status check error:', error);
-        checkCount++;
-        
-        // Retry if not exceeded max checks
-        if (checkCount < maxChecks) {
-          setTimeout(checkStatus, 5000);
-        } else {
-          setPayment(prev => ({ ...prev, status: 'error' }));
-          toast.error('ไม่สามารถตรวจสอบสถานะได้');
-        }
+        setTimeout(checkStatus, 5000); // Retry after 5 seconds
       }
     };
 
@@ -236,26 +179,7 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
     toast.success('คัดลอกแล้ว!');
   };
 
-  const resetPayment = async () => {
-    // Cancel the payment transaction if it exists
-    if (payment.ref && payment.status === 'pending') {
-      try {
-        // Update transaction to cancelled
-        await fetch('/api/payment/cancel', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ref: payment.ref
-          }),
-        });
-      } catch (error) {
-        console.error('Error cancelling payment:', error);
-      }
-    }
-    
-    // Reset form
+  const resetPayment = () => {
     setPayment({
       amount: 0,
       qrCode: '',
@@ -263,7 +187,6 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
       status: 'idle',
     });
     setSelectedAmount(0);
-    setShowQRCode(false);
   };
 
   if (payment.status === 'pending' || payment.status === 'checking') {
@@ -278,6 +201,9 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
             status={payment.status}
             onClose={() => {
               setShowQRCode(false);
+              if (payment.status === 'completed') {
+                window.location.reload();
+              }
             }}
           />
         )}
@@ -292,22 +218,14 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
           <CardContent className="space-y-6">
             {/* QR Code Display */}
             <div className="text-center">
-              <div className="inline-block p-4 bg-white rounded-lg shadow-lg border-2 border-gray-300">
-                {payment.qrCode && payment.qrCode.length > 0 ? (
-                  <QRCodeDataURL
-                    value={payment.qrCode}
-                    size={200}
-                    className="block mx-auto"
-                  />
-                ) : (
-                  <div className="w-48 h-48 mx-auto bg-muted rounded flex items-center justify-center">
-                    <div className="text-center">
-                      <QrCode className="h-16 w-16 mx-auto mb-2 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">กำลังโหลด QR Code...</p>
-                      <p className="text-xs text-muted-foreground font-mono">{payment.ref}</p>
-                    </div>
+              <div className="inline-block p-4 bg-white rounded-lg shadow-lg">
+                <div className="w-48 h-48 mx-auto bg-muted rounded flex items-center justify-center">
+                  <div className="text-center">
+                    <QrCode className="h-16 w-16 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">QR Code</p>
+                    <p className="text-xs text-muted-foreground font-mono">{payment.ref}</p>
                   </div>
-                )}
+                </div>
               </div>
               <p className="text-sm text-muted-foreground mt-4">
                 สแกน QR Code ด้วยแอปธนาคารของคุณ
@@ -361,14 +279,10 @@ export default function RealPaymentForm({ userCoins }: PaymentFormProps) {
             </Button>
             <Button 
               className="flex-1" 
-              onClick={() => {
-                console.log('🔄 Manual status check button clicked');
-                setPayment(prev => ({ ...prev, status: 'checking' }));
-                startPaymentStatusCheck(payment.ref);
-              }}
+              onClick={() => startPaymentStatusCheck(payment.ref)}
               disabled={payment.status === 'checking'}
             >
-              {payment.status === 'checking' ? 'กำลังตรวจสอบ...' : 'ตรวจสอบสถานะ'}
+              ตรวจสอบสถานะ
             </Button>
           </div>
         </CardContent>

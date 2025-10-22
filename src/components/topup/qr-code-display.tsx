@@ -57,8 +57,8 @@ export default function QRCodeDisplay({ qrData, amount, paymentRef, status, onCl
       case 'completed':
         return {
           icon: <CheckCircle className="w-5 h-5 text-green-500" />,
-          badge: <Badge variant="default" className="bg-green-100 text-green-800">ชำระเงินสำเร็จ</Badge>,
-          color: 'border-green-200'
+          badge: <Badge className="bg-green-600 text-white">ชำระเงินสำเร็จ</Badge>,
+          color: ''
         };
       case 'expired':
         return {
@@ -75,20 +75,20 @@ export default function QRCodeDisplay({ qrData, amount, paymentRef, status, onCl
       case 'creating':
         return {
           icon: <Clock className="w-5 h-5 text-orange-500" />,
-          badge: <Badge variant="secondary" className="bg-orange-100 text-orange-800">กำลังสร้างรายการ</Badge>,
-          color: 'border-orange-200'
+          badge: <Badge className="bg-orange-600 text-white">กำลังสร้างรายการ</Badge>,
+          color: ''
         };
       case 'checking':
         return {
           icon: <Clock className="w-5 h-5 text-yellow-500" />,
-          badge: <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">กำลังตรวจสอบ</Badge>,
-          color: 'border-yellow-200'
+          badge: <Badge className="bg-yellow-600 text-white">กำลังตรวจสอบ</Badge>,
+          color: ''
         };
       default: // idle, pending
         return {
           icon: <Clock className="w-5 h-5 text-blue-500" />,
-          badge: <Badge variant="secondary" className="bg-blue-100 text-blue-800">รอการชำระเงิน</Badge>,
-          color: 'border-blue-200'
+          badge: <Badge className="bg-blue-600 text-white">รอการชำระเงิน</Badge>,
+          color: ''
         };
     }
   };

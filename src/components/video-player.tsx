@@ -82,6 +82,25 @@ export default function VideoPlayer({
       const hls = new Hls({
         enableWorker: false,
         lowLatencyMode: true,
+        // Adaptive streaming configuration
+        startLevel: -1, // Auto-select starting quality
+        capLevelToPlayerSize: true, // Cap quality to player size
+        // Preload configuration
+        maxBufferLength: 30, // Max buffer in seconds
+        maxMaxBufferLength: 60, // Max buffer when seeking
+        backBufferLength: 30, // Keep 30s of back buffer
+        // Network optimization
+        maxLoadingDelay: 4, // Max delay before switching quality
+        maxBufferHole: 0.5, // Max buffer hole tolerance
+        // Quality switching
+        abrEwmaFastLive: 3.0, // Fast adaptation for live content
+        abrEwmaSlowLive: 9.0, // Slow adaptation for live content
+        abrEwmaFastVoD: 3.0, // Fast adaptation for VOD
+        abrEwmaSlowVoD: 9.0, // Slow adaptation for VOD
+        // Fragment loading
+        fragLoadingTimeOut: 20000, // 20s timeout for fragments
+        manifestLoadingTimeOut: 10000, // 10s timeout for manifest
+        levelLoadingTimeOut: 10000, // 10s timeout for level
       });
       
       hlsRef.current = hls;
@@ -93,6 +112,22 @@ export default function VideoPlayer({
         if (autoplay) {
           video.play().catch(console.error);
         }
+      });
+      
+      // Preload next segments for better performance
+      hls.on(Hls.Events.FRAG_LOADED, () => {
+        // Preload next fragment if available
+        if (hls.media && hls.media.readyState >= 2) {
+          hls.startLoad();
+        }
+      });
+      
+      // Handle quality changes
+      hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+        console.log('Quality switched', { 
+          level: data.level, 
+          bitrate: hls.levels[data.level]?.bitrate 
+        });
       });
       
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -396,7 +431,8 @@ export default function VideoPlayer({
         className="w-full h-full"
         poster={poster}
         playsInline
-        preload="metadata"
+        preload="auto"
+        crossOrigin="anonymous"
         onClick={togglePlay}
       />
 
