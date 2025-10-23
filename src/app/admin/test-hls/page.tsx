@@ -8,6 +8,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { TestTube, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { requireAdmin } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'ทดสอบ HLS Streaming | Admin',
   description: 'ทดสอบประสิทธิภาพ HLS streaming',
