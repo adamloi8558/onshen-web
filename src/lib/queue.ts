@@ -68,6 +68,15 @@ export interface PosterUploadJobData {
   uploadPath: string;
 }
 
+export interface YoutubeDownloadJobData {
+  jobId: string;
+  userId: string;
+  contentId: string;
+  youtubeUrl: string;
+  videoId: string;
+  title: string;
+}
+
 // Queue functions
 export async function addVideoProcessingJob(data: VideoUploadJobData): Promise<string> {
   console.log('📹 Adding video processing job to queue:', {
@@ -103,6 +112,27 @@ export async function addPosterProcessingJob(data: PosterUploadJobData): Promise
   const job = await imageQueue.add('process-poster', data, {
     jobId: data.jobId,
     priority: 5,
+  });
+
+  return job.id!;
+}
+
+export async function addYoutubeDownloadJob(data: YoutubeDownloadJobData): Promise<string> {
+  console.log('📺 Adding YouTube download job to queue:', {
+    jobId: data.jobId,
+    contentId: data.contentId,
+    youtubeUrl: data.youtubeUrl,
+    videoId: data.videoId,
+  });
+
+  const job = await videoQueue.add('download-youtube', data, {
+    jobId: data.jobId,
+    priority: 2, // Higher priority than normal uploads
+  });
+
+  console.log('✅ YouTube download job added to queue:', {
+    queueJobId: job.id,
+    jobId: data.jobId,
   });
 
   return job.id!;
