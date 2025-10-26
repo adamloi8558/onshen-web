@@ -67,7 +67,7 @@ export default function UploadForm({ contentId }: UploadFormProps) {
       // Step 1: Get presigned URL
       toast.info("กำลังเตรียมการอัปโหลด...");
       
-      const presignedResponse = await fetch('/api/test-upload-simple', {
+      const presignedResponse = await fetch('/api/upload/presigned-url', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,9 @@ export default function UploadForm({ contentId }: UploadFormProps) {
       }
 
       const responseData = await presignedResponse.json();
-      const { uploadUrl } = responseData.data || responseData;
+      console.log('Presigned response:', responseData);
+      
+      const { uploadUrl, jobId, fileUrl } = responseData;
 
       // Step 2: Upload file to R2
       toast.info("กำลังอัปโหลดไฟล์...");
@@ -135,8 +137,8 @@ export default function UploadForm({ contentId }: UploadFormProps) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            jobId: responseData.jobId,
-            fileUrl: responseData.data?.fileUrl || responseData.fileUrl
+            jobId: jobId,
+            fileUrl: fileUrl
           }),
         });
 
