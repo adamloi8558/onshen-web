@@ -78,6 +78,13 @@ export async function POST(request: NextRequest) {
 
     switch (uploadJob.file_type) {
       case 'video':
+        console.log('🎬 Preparing video job data:', {
+          jobId: uploadJob.job_id,
+          contentId: uploadJob.content_id,
+          episodeId: uploadJob.episode_id,
+          uploadUrl: uploadJob.upload_url,
+        });
+
         const videoJobData: VideoUploadJobData = {
           jobId: uploadJob.job_id,
           userId: uploadJob.user_id,
@@ -87,7 +94,14 @@ export async function POST(request: NextRequest) {
           fileSize: uploadJob.file_size,
           uploadPath: uploadJob.upload_url!,
         };
-        queueJobId = await addVideoProcessingJob(videoJobData);
+
+        try {
+          queueJobId = await addVideoProcessingJob(videoJobData);
+          console.log('✅ Video job queued successfully:', { queueJobId });
+        } catch (error) {
+          console.error('❌ Failed to queue video job:', error);
+          throw error;
+        }
         break;
 
       case 'avatar':

@@ -7,8 +7,8 @@ if (!process.env.REDIS_URL) {
 
 // Create Redis connection
 const redis = new Redis(process.env.REDIS_URL!, {
-  maxRetriesPerRequest: 3,
-  lazyConnect: true,
+  maxRetriesPerRequest: null, // Required for BullMQ
+  enableOfflineQueue: false,
 });
 
 // Video processing queue
@@ -70,9 +70,21 @@ export interface PosterUploadJobData {
 
 // Queue functions
 export async function addVideoProcessingJob(data: VideoUploadJobData): Promise<string> {
+  console.log('📹 Adding video processing job to queue:', {
+    jobId: data.jobId,
+    contentId: data.contentId,
+    episodeId: data.episodeId,
+    uploadPath: data.uploadPath,
+  });
+
   const job = await videoQueue.add('process-video', data, {
     jobId: data.jobId,
     priority: 1,
+  });
+
+  console.log('✅ Video job added to queue successfully:', {
+    queueJobId: job.id,
+    jobId: data.jobId,
   });
 
   return job.id!;
