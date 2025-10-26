@@ -125,35 +125,42 @@ export default function UploadForm({ contentId }: UploadFormProps) {
       toast.success("อัปโหลดไฟล์สำเร็จ!");
 
       setUploadProgress(75);
-      toast.info("อัปโหลดสำเร็จ! กำลังอัพเดตฐานข้อมูล...");
+      toast.info("กำลังส่งไปประมวลผลแปลงเป็น HLS...");
 
-      // Step 3: Update content video_url in database
+      // Step 3: Notify backend that upload is complete and trigger HLS conversion
       try {
-        const updateResponse = await fetch(`/api/admin/content/${contentId}/set-video`, {
+        const completeResponse = await fetch('/api/upload/complete', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            video_url: responseData.data?.fileUrl || responseData.fileUrl
+            jobId: responseData.jobId,
+            fileUrl: responseData.data?.fileUrl || responseData.fileUrl
           }),
         });
 
-        if (updateResponse.ok) {
-          setUploadProgress(100);
-          setUploadStatus('completed');
-          toast.success("อัปโหลดและอัพเดตฐานข้อมูลสำเร็จ! วิดีโอพร้อมดูได้แล้ว");
+        const completeData = await completeResponse.json();
+
+        if (completeResponse.ok) {
+          setUploadProgress(90);
+          setUploadStatus('processing');
+          toast.success("ส่งไปประมวลผลแล้ว! กำลังแปลงเป็น HLS...");
+          toast.info("การแปลงวิดีโอจะใช้เวลาประมาณ 2-5 นาที ตรวจสอบความคืบหน้าได้ในหน้า Content");
           
-          // Upload completed
+          // Upload completed, processing in background
           setTimeout(() => {
+            setUploadProgress(100);
+            setUploadStatus('completed');
             router.refresh();
-          }, 1000);
+          }, 2000);
         } else {
-          toast.warning("อัปโหลดสำเร็จ แต่ไม่สามารถอัพเดตฐานข้อมูลได้ กรุณาอัพเดต URL ด้วยตนเอง");
+          toast.error(completeData.error || "ไม่สามารถส่งไปประมวลผลได้");
+          console.error('Complete upload error:', completeData);
         }
-      } catch (dbError) {
-        console.error('Database update error:', dbError);
-        toast.warning("อัปโหลดสำเร็จ แต่ไม่สามารถอัพเดตฐานข้อมูลได้ กรุณาอัพเดต URL ด้วยตนเอง");
+      } catch (completeError) {
+        console.error('Complete upload error:', completeError);
+        toast.error("ไม่สามารถส่งไปประมวลผลได้ กรุณาลองใหม่อีกครั้ง");
       }
       
       // Reset form
