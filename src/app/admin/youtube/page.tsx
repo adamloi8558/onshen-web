@@ -204,16 +204,37 @@ export default function YouTubeDownloadPage() {
                   📝 วิธีดึง Cookies จาก YouTube
                 </summary>
                 <div className="mt-2 space-y-2 text-xs text-muted-foreground bg-muted p-3 rounded">
-                  <p><strong>ขั้นตอน:</strong></p>
+                  <p><strong>ขั้นตอนที่ 1 - วิธีแบบง่าย (แนะนำ):</strong></p>
+                  <ol className="list-decimal list-inside space-y-1 mb-3">
+                    <li>เปิด YouTube.com ใน Chrome (ต้อง login)</li>
+                    <li>กด F12 → คลิก tab "Console"</li>
+                    <li>Paste คำสั่งนี้แล้วกด Enter:</li>
+                  </ol>
+                  <pre className="bg-black text-green-400 p-2 rounded text-[10px] overflow-x-auto mb-3">
+{`document.cookie.split('; ').filter(c => 
+  c.startsWith('__Secure-1PSID=') || 
+  c.startsWith('__Secure-3PSID=') ||
+  c.startsWith('SIDCC=')
+).join('; ')`}
+                  </pre>
+                  <p>4. Copy ผลลัพธ์ที่ได้ มา paste ในช่องด้านบน</p>
+                  
+                  <p className="mt-3"><strong>ขั้นตอนที่ 2 - วิธีแบบละเอียด:</strong></p>
                   <ol className="list-decimal list-inside space-y-1">
                     <li>เปิด YouTube.com ใน Chrome (ต้อง login)</li>
                     <li>กด F12 → คลิก tab "Application"</li>
                     <li>ซ้ายมือ: Storage → Cookies → https://www.youtube.com</li>
-                    <li>หา cookie ชื่อ <code>__Secure-1PSID</code></li>
-                    <li>Copy ค่า (ทั้งหมด) มา paste ที่นี่</li>
+                    <li>หา cookies เหล่านี้:</li>
                   </ol>
-                  <p className="mt-2 text-yellow-600">
-                    ⚠️ Cookies เป็นข้อมูลส่วนตัว ใช้ในระบบนี้เท่านั้น
+                  <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                    <li><code>__Secure-1PSID</code> (สำคัญที่สุด)</li>
+                    <li><code>__Secure-3PSID</code></li>
+                    <li><code>SIDCC</code></li>
+                  </ul>
+                  <p className="mt-2">5. Copy แบบนี้: <code>__Secure-1PSID=value1; __Secure-3PSID=value2; SIDCC=value3</code></p>
+                  
+                  <p className="mt-3 text-yellow-600">
+                    ⚠️ Cookies เป็นข้อมูลส่วนตัว ใช้ในระบบนี้เท่านั้น และจะถูกลบหลังดาวน์โหลดเสร็จ
                   </p>
                 </div>
               </details>
