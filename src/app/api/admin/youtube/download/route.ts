@@ -15,6 +15,7 @@ const youtubeDownloadSchema = z.object({
   description: z.string().optional(),
   categoryId: z.string().optional(),
   type: z.enum(['movie', 'series']).default('movie'),
+  cookies: z.string().optional(),
 });
 
 // Extract YouTube video ID
@@ -101,6 +102,7 @@ export async function POST(req: NextRequest) {
       youtubeUrl: validatedData.url,
       videoId,
       title: validatedData.title,
+      cookies: validatedData.cookies,
     };
 
     console.log('Creating YouTube download job:', downloadJobData);

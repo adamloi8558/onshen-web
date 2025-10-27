@@ -75,6 +75,7 @@ export interface YoutubeDownloadJobData {
   youtubeUrl: string;
   videoId: string;
   title: string;
+  cookies?: string;
 }
 
 // Queue functions

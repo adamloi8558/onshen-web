@@ -17,6 +17,7 @@ export default function YouTubeDownloadPage() {
   const { toast } = useToast();
   
   const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [youtubeCookies, setYoutubeCookies] = useState('');
   const [isLoadingInfo, setIsLoadingInfo] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   
@@ -100,6 +101,7 @@ export default function YouTubeDownloadPage() {
           description,
           categoryId: categoryId || undefined,
           type: contentType,
+          cookies: youtubeCookies || undefined,
         }),
       });
 
@@ -184,6 +186,37 @@ export default function YouTubeDownloadPage() {
               <p className="text-xs text-muted-foreground mt-1">
                 รองรับ: youtube.com/watch, youtu.be, youtube.com/shorts
               </p>
+            </div>
+
+            <div>
+              <Label htmlFor="cookies">YouTube Cookies (ไม่บังคับ แต่แนะนำ)</Label>
+              <Textarea
+                id="cookies"
+                value={youtubeCookies}
+                onChange={(e) => setYoutubeCookies(e.target.value)}
+                placeholder="Paste cookies จาก Chrome DevTools (F12 > Application > Cookies)"
+                rows={3}
+                className="font-mono text-xs"
+                disabled={isLoadingInfo || isDownloading}
+              />
+              <details className="mt-2">
+                <summary className="text-xs text-muted-foreground cursor-pointer hover:underline">
+                  📝 วิธีดึง Cookies จาก YouTube
+                </summary>
+                <div className="mt-2 space-y-2 text-xs text-muted-foreground bg-muted p-3 rounded">
+                  <p><strong>ขั้นตอน:</strong></p>
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>เปิด YouTube.com ใน Chrome (ต้อง login)</li>
+                    <li>กด F12 → คลิก tab "Application"</li>
+                    <li>ซ้ายมือ: Storage → Cookies → https://www.youtube.com</li>
+                    <li>หา cookie ชื่อ <code>__Secure-1PSID</code></li>
+                    <li>Copy ค่า (ทั้งหมด) มา paste ที่นี่</li>
+                  </ol>
+                  <p className="mt-2 text-yellow-600">
+                    ⚠️ Cookies เป็นข้อมูลส่วนตัว ใช้ในระบบนี้เท่านั้น
+                  </p>
+                </div>
+              </details>
             </div>
 
             {videoInfo && (
