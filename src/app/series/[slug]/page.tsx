@@ -49,9 +49,8 @@ export async function generateMetadata({ params }: SeriesPageProps): Promise<Met
       .from(content)
       .where(and(
         eq(content.slug, resolvedParams.slug),
-        eq(content.type, 'series'),
-        eq(content.status, 'published')
-      )!)
+        eq(content.type, 'series')
+      ))
       .limit(1);
 
   if (!series) {
@@ -133,9 +132,9 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
       .leftJoin(categories, eq(content.category_id, categories.id))
       .where(and(
         eq(content.slug, resolvedParams.slug),
-        eq(content.type, 'series'),
-        eq(content.status, 'published')
-      )!)
+        eq(content.type, 'series')
+        // Removed status filter to show drafts too
+      ))
       .limit(1);
 
     if (!series) {
