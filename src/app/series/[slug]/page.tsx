@@ -510,13 +510,26 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
   );
   } catch (error) {
     console.error('Series page error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown',
+      stack: error instanceof Error ? error.stack : undefined,
+      error: error,
+    });
+    
     return (
       <div className="min-h-screen">
         <div className="container py-12">
           <h1 className="text-4xl font-bold mb-8">ซีรี่ย์</h1>
-          <p className="text-muted-foreground">
-            เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง
-          </p>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง
+            </p>
+            {process.env.NODE_ENV === 'development' && (
+              <pre className="text-xs bg-muted p-4 rounded overflow-auto">
+                {error instanceof Error ? error.message : JSON.stringify(error)}
+              </pre>
+            )}
+          </div>
         </div>
       </div>
     );
