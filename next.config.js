@@ -9,10 +9,17 @@ const nextConfig = {
     // ⚠️ Temporarily ignore eslint errors during build
     ignoreDuringBuilds: true,
   },
+  // Reduce memory usage during build
+  swcMinify: true,
+  poweredByHeader: false,
+  compress: true,
   experimental: {
     serverActions: {
       allowedOrigins: ["localhost:3000", "*.adamloi.me"]
-    }
+    },
+    // Reduce memory usage
+    workerThreads: false,
+    cpus: 1,
   },
   images: {
     remotePatterns: [
