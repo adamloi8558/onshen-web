@@ -186,6 +186,17 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
       total_episodes: number | null;
     }> = [];
     try {
+      // Build where conditions
+      const whereConditions = [
+        eq(content.type, 'series'),
+        eq(content.status, 'published'),
+      ];
+      
+      // Only add category filter if category exists
+      if (series.category?.id) {
+        whereConditions.push(eq(content.category_id, series.category.id));
+      }
+      
       relatedSeries = await db
         .select({
           id: content.id,
@@ -198,11 +209,7 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
           total_episodes: content.total_episodes,
         })
         .from(content)
-        .where(and(
-          eq(content.type, 'series'),
-          eq(content.status, 'published'),
-          series.category?.id ? eq(content.category_id, series.category.id) : undefined
-        )!)
+        .where(and(...whereConditions))
         .orderBy(desc(content.views))
         .limit(6);
     } catch (error) {
