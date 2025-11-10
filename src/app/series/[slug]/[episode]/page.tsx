@@ -33,6 +33,8 @@ export const dynamic = 'force-dynamic';
 
 
 export async function generateMetadata({ params }: EpisodePageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  
   // Skip database queries during build with placeholder database
   if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
     return {
@@ -48,7 +50,7 @@ export async function generateMetadata({ params }: EpisodePageProps): Promise<Me
     })
     .from(content)
     .where(and(
-      eq(content.slug, params.slug),
+      eq(content.slug, resolvedParams.slug),
       eq(content.type, 'series'),
       eq(content.status, 'published')
     ))
@@ -69,17 +71,17 @@ export async function generateMetadata({ params }: EpisodePageProps): Promise<Me
     .from(episodes)
     .innerJoin(content, eq(episodes.content_id, content.id))
     .where(and(
-      eq(content.slug, params.slug),
-      eq(episodes.episode_number, params.episode)
+      eq(content.slug, resolvedParams.slug),
+      eq(episodes.episode_number, resolvedParams.episode)
     ))
     .limit(1);
 
   return {
-    title: `${series.title} - ตอนที่ ${params.episode}: ${episode?.title || 'ไม่มีชื่อ'} - Ronglakorn`,
-    description: episode?.description || `ดู ${series.title} ตอนที่ ${params.episode} ออนไลน์คุณภาพ HD`,
+    title: `${series.title} - ตอนที่ ${resolvedParams.episode}: ${episode?.title || 'ไม่มีชื่อ'} - Ronglakorn`,
+    description: episode?.description || `ดู ${series.title} ตอนที่ ${resolvedParams.episode} ออนไลน์คุณภาพ HD`,
     openGraph: {
-      title: `${series.title} - ตอนที่ ${params.episode}: ${episode?.title || 'ไม่มีชื่อ'}`,
-      description: episode?.description || `ดู ${series.title} ตอนที่ ${params.episode} ออนไลน์คุณภาพ HD`,
+      title: `${series.title} - ตอนที่ ${resolvedParams.episode}: ${episode?.title || 'ไม่มีชื่อ'}`,
+      description: episode?.description || `ดู ${series.title} ตอนที่ ${resolvedParams.episode} ออนไลน์คุณภาพ HD`,
       images: [series.poster_url || "/og-episode-default.jpg"],
       type: "video.episode",
     },
@@ -87,6 +89,7 @@ export async function generateMetadata({ params }: EpisodePageProps): Promise<Me
 }
 
 export default async function EpisodePage({ params }: EpisodePageProps) {
+  const resolvedParams = await params;
   const user = await getCurrentUser();
 
   // Skip database queries during build with placeholder database
@@ -115,7 +118,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     })
     .from(content)
     .where(and(
-      eq(content.slug, params.slug),
+      eq(content.slug, resolvedParams.slug),
       eq(content.type, 'series'),
       eq(content.status, 'published')
     ))
@@ -141,7 +144,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     .from(episodes)
     .where(and(
       eq(episodes.content_id, series.id),
-      eq(episodes.episode_number, params.episode)
+      eq(episodes.episode_number, resolvedParams.episode)
     ))
     .limit(1);
 
@@ -157,7 +160,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     .from(episodes)
     .where(and(
       eq(episodes.content_id, series.id),
-      lt(episodes.episode_number, params.episode)
+      lt(episodes.episode_number, resolvedParams.episode)
     ))
     .orderBy(desc(episodes.episode_number))
     .limit(1);
@@ -170,7 +173,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     .from(episodes)
     .where(and(
       eq(episodes.content_id, series.id),
-      gt(episodes.episode_number, params.episode)
+      gt(episodes.episode_number, resolvedParams.episode)
     ))
     .orderBy(asc(episodes.episode_number))
     .limit(1);
@@ -244,7 +247,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                   {series.title}
                 </Link>
                 <span className="text-muted-foreground">•</span>
-                <span className="text-sm text-muted-foreground">ตอนที่ {params.episode}</span>
+                <span className="text-sm text-muted-foreground">ตอนที่ {resolvedParams.episode}</span>
               </div>
               
               <h1 className="text-2xl md:text-3xl font-bold mb-2">
@@ -356,7 +359,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 <h3 className="text-lg font-bold mb-4">ตอนอื่นๆ</h3>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {allEpisodes.map((ep) => {
-                    const isCurrentEpisode = ep.episode_number === params.episode;
+                    const isCurrentEpisode = ep.episode_number === resolvedParams.episode;
                     const episodeCanWatch = user && (!ep.is_vip_required || user.is_vip);
                     
                     return (

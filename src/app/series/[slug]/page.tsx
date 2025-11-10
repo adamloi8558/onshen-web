@@ -28,6 +28,8 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: SeriesPageProps): Promise<Metadata> {
   try {
+    const resolvedParams = await params;
+    
     // Skip database queries during build with placeholder database
     if (!db || process.env.DATABASE_URL?.includes("placeholder")) {
       return {
@@ -46,7 +48,7 @@ export async function generateMetadata({ params }: SeriesPageProps): Promise<Met
       })
       .from(content)
       .where(and(
-        eq(content.slug, params.slug),
+        eq(content.slug, resolvedParams.slug),
         eq(content.type, 'series'),
         eq(content.status, 'published')
       )!)
@@ -86,6 +88,7 @@ export async function generateMetadata({ params }: SeriesPageProps): Promise<Met
 
 export default async function SeriesPage({ params }: SeriesPageProps) {
   try {
+    const resolvedParams = await params;
     const user = await getCurrentUser();
 
     // Skip database queries during build with placeholder database
@@ -129,7 +132,7 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
       .from(content)
       .leftJoin(categories, eq(content.category_id, categories.id))
       .where(and(
-        eq(content.slug, params.slug),
+        eq(content.slug, resolvedParams.slug),
         eq(content.type, 'series'),
         eq(content.status, 'published')
       )!)
